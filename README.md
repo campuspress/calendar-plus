@@ -1,5 +1,13 @@
 # Calendar Plus
 
+[Calendar+](https://campuspress.com/accessible-wordpress-calendar-plugin/) is a WordPress calendar and events plugin developed by the team at [CampusPress](https://campuspress.com).
+
+Calendar+ is specifically developed to be friendly for visitors using screen-readers and other assistive technologies. Calendar owners can import events from iCal and Google Calendar feeds and choose form multiple display options.
+
+Site visitors can easily add events to their own Google Calendar, Outlook, or download an ical file. 
+
+## More info
+
 Calendar Plus uses several technologies to generate the CSS/JS bundles:
 
 - React for the Calendar shortcode
