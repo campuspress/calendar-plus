@@ -1,0 +1,88 @@
+
+.calendar-plus-a8e-link {
+	border: 0;
+	clip: rect(1px, 1px, 1px, 1px);
+	-webkit-clip-path: inset(50%);
+	clip-path: inset(50%);
+	height: 1px;
+	margin: -1px;
+	overflow: hidden;
+	padding: 0;
+	position: absolute;
+	width: 1px;
+	word-wrap: normal !important;
+
+	&:focus, &:active {
+		-webkit-clip-path: none;
+		clip-path: none;
+		clip: auto;
+		height: auto;
+		margin: auto;
+		overflow: auto;
+		position: initial;
+	}
+}
+
+
+.calendar-plus-accessible-calendar {
+	table-layout: fixed;
+
+	max-width: 100%;
+	caption {
+		display: none;
+	}
+	& th, & td {
+		width: 14.2%;
+		max-width: 0;
+	}
+	& td[data-date] hr:last-of-type {
+		display: none;
+	}
+	.event {
+		margin-top: 1em;
+		margin-bottom: 1em;
+		padding: 0;
+	}
+	.event .event-title {
+		font-weight: normal;
+		font-size: 1em;
+		margin: 0;
+		padding: 0;
+		line-height: 1.3em;
+		text-transform: none;
+		letter-spacing: normal;
+	}
+	.event.collapsed .event-title {
+		white-space: nowrap;
+		overflow: hidden;
+		text-overflow: ellipsis;
+	}
+	.event .event-details .event-section {
+		margin-top: 1em;
+		margin-bottom: 1em;
+	}
+
+	.event-details, [aria-hidden=true] {
+		display: none;
+	}
+
+	[aria-hidden=false] {
+		display: block;
+	}
+
+	.event > a {
+		display: block;
+	}
+
+	button {
+		padding: 4px 11px;
+	}
+
+	hr {
+		margin: 0.7em 0;
+	}
+
+	td {
+		vertical-align: top;
+	}
+}

@@ -1,0 +1,61 @@
+@import '../../../../public/settings';
+
+.single_event {
+  .single_event_inner {
+    color:#333;
+    position: absolute;
+    top:1em;
+    z-index: 990;
+    padding:2rem;
+    background:#FFF;
+    border:1px solid #DADADA;
+    font-size:14px;
+    left:0;
+    right:0;
+    .close {
+      display:inline-block;
+      position:absolute;
+      right:rem-calc( 39 );
+      top:2rem;
+      .dashicons {
+        font-size:rem-calc( 36 );
+        color:$dark-gray;
+        cursor:pointer;
+        &:hover {
+          color:$black;
+        }
+      }
+    }
+    > div {
+      margin-bottom:.3rem;
+      &.event_dates
+      {
+        color:#666;
+        font-size:13px;
+      }
+    }
+
+    h3 {
+      color:$primary-color;
+      font-weight:bold;
+      padding-right:rem-calc( 15 );
+    }
+
+    @media only screen and (min-width: 49.30769em) {
+      left:3rem;
+      right:3rem;
+    }
+  }
+}
+
+
+.backdrop {
+  position: absolute;
+  top: 0;
+  background: rgba( 0,0,0, 0.7);
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index:900;
+  padding:3rem;
+}

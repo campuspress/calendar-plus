@@ -1,0 +1,9 @@
+Change Log:
+----------------------------------------------------------------------
+2.2.6.4-beta-1 - 2020-02-04
+----------------------------------------------------------------------
+- Fix: Can’t import events
+- Fix: Migrate The Events Cal to Cal+
+- Fix/Add: Gutenberg blocks
+- Fix: (WUSTL) Outlook sync events
+- Fix: Accessible calendar JS issues

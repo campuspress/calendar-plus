@@ -1,0 +1,26 @@
+#calendarp-users > li > *:first-child,
+#calendarp-users > li > a.dashicons {
+	padding: 5px;
+	border: 1px solid #b4b9be;
+	display: inline-block;
+	background: white;
+}
+
+#calendarp-users > li > *:first-child {
+	width: 200px;
+	display: inline-block;
+	word-wrap: break-word;
+	font-size: 13px;
+	line-height: 18px;
+}
+
+#calendarp-users > li > a.dashicons {
+	color: #e83535;
+	border-left-width: 0;
+	height: 18px;
+	width: 18px;
+}
+
+.ical-feed-meta-info span {
+	border-bottom: 1px dotted #bbb;
+}

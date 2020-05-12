@@ -1,0 +1,41 @@
+.calendar-theme-hueman .page-title {
+    padding-top: 18px;
+    padding-bottom: 17px;
+}
+
+.calendar-theme-hueman .page-title h1 {
+    color:#666;
+    font-weight: 600;
+    -ms-word-wrap: break-word;
+    word-wrap: break-word;
+    font-size: 100%;
+    margin: 0;
+    padding: 0;
+    font-family: Titillium, Arial, sans-serif;
+}
+
+.calendar-theme-hueman .pad {
+    padding:30px 30px 20px;
+}
+
+.calendar-theme-hueman article.calendar_event {
+    border-bottom: 1px solid #eee;
+}
+.calendar-theme-hueman article.event footer {
+    width: 100%;
+    padding: 10px;
+}
+
+#calendarp-add-to-calendar {
+    margin-left:10px;
+    margin-top: 10px;
+}
+
+#calendarp-add-to-calendar a.button {
+    padding: 14px;
+    font-size: 15px;
+}
+
+#calendarp-add-to-calendar a.button .dashicons {
+    font-size:16px;
+}

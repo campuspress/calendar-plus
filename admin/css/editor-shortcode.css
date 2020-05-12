@@ -1,0 +1,36 @@
+i.mce-i-mce-i-calendarp {
+	position: relative;
+}
+
+i.mce-i-mce-i-calendarp:before {
+	font-family: 'dashicons';
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	text-align: center;
+	content: "\f508";
+	font-size: 20px;
+}
+
+.mce-container .calp_mce_categories_list {
+	max-height: 150px;
+	overflow-y: scroll;
+	overflow-x: hidden;
+}
+
+.mce-container .ui-autocomplete {
+	background: white;
+	overflow-y: auto;
+}
+
+.mce-container .ui-autocomplete-loading {
+	background: white url("images/spinner.gif") right center no-repeat;
+}
+
+.mce-container .mce-categories-infobox p {
+	white-space: normal;
+	font-style: italic;
+	border: none;
+}

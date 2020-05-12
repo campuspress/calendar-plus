@@ -1,0 +1,20 @@
+#calendarp-add-to-calendar {
+    margin-left:10px;
+    margin-top: 10px;
+}
+
+#calendarp-add-to-calendar a.button {
+    padding: 14px;
+    font-size: 15px;
+}
+
+#calendarp-add-to-calendar a.button .dashicons {
+    font-size:16px;
+}
+
+article[id*=event-] {
+    padding: 20px 0;
+    word-wrap: break-word;
+    border-bottom: 1px dotted #ccc;
+    margin: 0 10px;
+}

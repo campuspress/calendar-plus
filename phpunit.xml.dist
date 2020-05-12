@@ -1,0 +1,16 @@
+<phpunit
+        bootstrap="build/tests/bootstrap.php"
+        backupGlobals="false"
+        colors="true"
+        convertErrorsToExceptions="true"
+        convertNoticesToExceptions="false"
+        convertWarningsToExceptions="false">
+    <php>
+        <const name="WP_TESTS_MULTISITE" value="1" />
+    </php>
+    <testsuites>
+        <testsuite>
+            <directory prefix="test-" suffix=".php">./build/tests/tests/</directory>
+        </testsuite>
+    </testsuites>
+</phpunit>

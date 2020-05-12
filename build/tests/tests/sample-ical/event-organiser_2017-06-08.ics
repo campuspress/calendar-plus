@@ -1,0 +1,116 @@
+BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//Operations &amp; Facilities Management Department//NONSGML Events//EN
+CALSCALE:GREGORIAN
+X-WR-CALNAME:Operations &amp; Facilities Management Department - Events
+X-ORIGINAL-URL:https://facilities.med.wustl.edu/calendar/list/
+X-WR-CALDESC:Operations &amp; Facilities Management Department - Events
+BEGIN:VEVENT
+UID:20140827T1617Z-1409156246.7042-EO-398-1@128.252.98.35
+STATUS:CONFIRMED
+LOCATION:Somewhere
+DTSTAMP:20170608T041803Z
+CREATED:20140701T164537Z
+LAST-MODIFIED:20140701T164607Z
+DTSTART;TZID=America/Chicago:20140712T070000
+DTEND;TZID=America/Chicago:20140712T150000
+SUMMARY: Clinical Sciences Research Building Exhaust Fan 3rd Floor
+DESCRIPTION: This outage will only affect the 3rd floor exhaust and fume ho
+ ods.
+X-ALT-DESC;FMTTYPE=text/html: <p>This outage will only affect the 3rd floor
+  exhaust and fume hoods.</p>
+CATEGORIES:Planned Service Interruption
+ORGANIZER;CN="Michelle":MAILTO:mgubin@wustl.edu
+URL;VALUE=URI:https://facilities.med.wustl.edu/calendar/event/clinical-scie
+ nces-research-building-exhaust-fan-3rd-floor/
+END:VEVENT
+BEGIN:VEVENT
+UID:20140827T1617Z-1409156246.7077-EO-717-1@128.252.98.35
+STATUS:CONFIRMED
+DTSTAMP:20170608T041803Z
+CREATED:20140716T121734Z
+LAST-MODIFIED:20140716T121904Z
+DTSTART;TZID=America/Chicago:20140719T070000
+DTEND;TZID=America/Chicago:20140719T110000
+SUMMARY: McDonnell Sciences – Electric
+DESCRIPTION: This outage is needed to update the emergency power system. Th
+ e outage will affect the 3rd\, 4th\, and 5th floors…
+X-ALT-DESC;FMTTYPE=text/html: <p>This outage is needed to update the emerge
+ ncy power system. The outage will affect the 3rd\, 4th\, and 5th floors on
+ the South end. Affected during the outage will be outlets\, cold rooms\, -8
+ 0 freezers and some lighting that is on emergency power.</p>
+CATEGORIES:Limited Notice Interruption
+ORGANIZER;CN="Michelle":MAILTO:mgubin@wustl.edu
+URL;VALUE=URI:https://facilities.med.wustl.edu/calendar/event/mcdonnell-sci
+ ences-electric-outage/
+END:VEVENT
+BEGIN:VEVENT
+UID:20140827T1617Z-1409156246.7109-EO-399-1@128.252.98.35
+STATUS:CONFIRMED
+DTSTAMP:20170608T041803Z
+CREATED:20140701T164741Z
+LAST-MODIFIED:20141110T204047Z
+DTSTART;VALUE=DATE:20140721
+DTEND;VALUE=DATE:20141118
+SUMMARY: McKinley Avenue Closure
+DESCRIPTION: From July 21st until November 17th\, 2014\, McKinley Avenue\,
+ between Taylor Avenue and the Olin Circle\, will be closed to…
+X-ALT-DESC;FMTTYPE=text/html: <p>From July 21st until November 17th\, 2014\
+ , McKinley Avenue\, between Taylor Avenue and the Olin Circle\, will be clo
+ sed to pedestrian\, motor vehicles and shuttle bus traffic as shown on the
+ attached EH&S Logistics Plan. This closure is needed in order to install a
+ new underground tunnel that will connect the EH&S Building and the Scott Mc
+ Kinley Research Building.</p><p>Please note the alternate pedestrian route
+ is on Clayton Ave. to the stairs on the west side of the 4533 Clayton Build
+ ing #27 and the sidewalk east of SRF East Building #46.</p>
+CATEGORIES:Road Closures
+ORGANIZER;CN="Michelle":MAILTO:mgubin@wustl.edu
+URL;VALUE=URI:https://facilities.med.wustl.edu/calendar/event/mckinley-aven
+ ue-closure/
+END:VEVENT
+BEGIN:VTIMEZONE
+TZID:America/Chicago
+BEGIN:DAYLIGHT
+TZOFFSETFROM:-0600
+TZOFFSETTO:-0500
+DTSTART:20140309T080000
+TZNAME:CDT
+END:DAYLIGHT
+BEGIN:STANDARD
+TZOFFSETFROM:-0500
+TZOFFSETTO:-0600
+DTSTART:20141102T070000
+TZNAME:CST
+END:STANDARD
+BEGIN:DAYLIGHT
+TZOFFSETFROM:-0600
+TZOFFSETTO:-0500
+DTSTART:20150308T080000
+TZNAME:CDT
+END:DAYLIGHT
+BEGIN:STANDARD
+TZOFFSETFROM:-0500
+TZOFFSETTO:-0600
+DTSTART:20151101T070000
+TZNAME:CST
+END:STANDARD
+BEGIN:DAYLIGHT
+TZOFFSETFROM:-0600
+TZOFFSETTO:-0500
+DTSTART:20160313T080000
+TZNAME:CDT
+END:DAYLIGHT
+BEGIN:STANDARD
+TZOFFSETFROM:-0500
+TZOFFSETTO:-0600
+DTSTART:20161106T070000
+TZNAME:CST
+END:STANDARD
+BEGIN:DAYLIGHT
+TZOFFSETFROM:-0600
+TZOFFSETTO:-0500
+DTSTART:20170312T080000
+TZNAME:CDT
+END:DAYLIGHT
+END:VTIMEZONE
+END:VCALENDAR

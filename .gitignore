@@ -1,0 +1,4 @@
+node_modules/
+vendor/
+dist/
+calendar-plus.*.zip

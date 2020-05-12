@@ -1,0 +1,76 @@
+// the :not pseudo selector here increases the specificity of the .calendarp rules
+.calendarp:not(#nocalendarp) .agenda-minified-calendar {
+
+	.calendarp-date-item {
+		overflow: hidden;
+		margin-bottom: 1.53846rem;
+		border-bottom: 1px solid #eee;
+
+		.calendarp-date {
+			width: 80px;
+			background: #fff;
+
+			.calendarp-date-month {
+				background: #34495e;
+				color: #fff;
+				font-size: 1.15385rem;
+				border: 1px solid #aaa;
+			}
+
+			.calendarp-date-day {
+				border-left: 1px solid #aaa;
+				border-right: 1px solid #aaa;
+				font-size: 1.69231rem;
+				border-bottom: 1px solid #aaa;
+			}
+		}
+
+		.calendarp-events .calendar-event {
+			padding: 0 0.76923rem 1.53846rem;
+
+			h3 {
+				font-size: 1.23077rem;
+			}
+
+			.calendarp-event-meta {
+				font-style: italic;
+				font-size: 13px;
+			}
+		}
+
+		.calendarp-events > .calendar-event:first-child {
+			h3 {
+				margin-top: 0;
+				padding-top: 0;
+			}
+		}
+	}
+
+	.row {
+		max-width: 76.92308rem;
+		width: 100%;
+	}
+
+	.text-center {
+		text-align: center !important;
+	}
+
+	@media only screen and (min-width: 78.84615em) {
+		.large-2 {
+			width: 16.66667%;
+		}
+		.large-10 {
+			width: 83.33333%;
+		}
+	}
+
+	@media only screen and (min-width: 78.84615em) {
+		.column, .columns {
+			position: relative;
+			padding-left: 1.15385rem;
+			padding-right: 1.15385rem;
+			float: left;
+		}
+	}
+
+}

@@ -1,0 +1,27 @@
+BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//Operations &amp; Facilities Management Department//NONSGML Events//EN
+CALSCALE:GREGORIAN
+X-WR-CALNAME:Operations &amp; Facilities Management Department - Events
+X-ORIGINAL-URL:https://facilities.med.wustl.edu/calendar/list/
+X-WR-CALDESC:Operations &amp; Facilities Management Department - Events
+BEGIN:VEVENT
+UID:20140827T1617Z-1409156246.7042-EO-398-1@128.252.98.35
+STATUS:CONFIRMED
+LOCATION:Somewhere
+DTSTAMP:20170608T041803Z
+CREATED:20140701T164537Z
+LAST-MODIFIED:20140701T164607Z
+DTSTART;TZID=America/Chicago:20140712T070000
+DTEND;TZID=America/Chicago:20140712T150000
+SUMMARY: Clinical Sciences Research Building Exhaust Fan 3rd Floor
+DESCRIPTION: This outage will only affect the 3rd floor exhaust and fume ho
+ ods.
+X-ALT-DESC;FMTTYPE=text/html: <p>This outage will only affect the 3rd floor
+  exhaust and fume hoods.</p>
+CATEGORIES:Planned Service Interruption
+ORGANIZER;CN="Michelle":MAILTO:mgubin@wustl.edu
+URL;VALUE=URI:https://facilities.med.wustl.edu/calendar/event/clinical-scie
+ nces-research-building-exhaust-fan-3rd-floor/
+END:VEVENT
+END:VCALENDAR
