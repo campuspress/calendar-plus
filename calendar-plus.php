@@ -3,12 +3,12 @@
  * @package Calendar_Plus
  *
  * @wordpress-plugin
- * Plugin Name: Calendar+
- * Plugin URI:
- * Description: Create, manage, and share your calendar and upcoming events.
+ * Plugin Name: Calendar+ (An Accessible Events Calendar)
+ * Plugin URI:  https://campuspress.com/accessible-wordpress-calendar-plugin/
+ * Description: Accessibility-ready complete calendar and events plugin. Import from Google Calendar, subscribe to events, and more.
  * Version:     2.2.6.7
- * Author:      WPMU DEV
- * Author URI:  https://premium.wpmudev.org/
+ * Author:      CampusPress
+ * Author URI:  https://campuspress.com
  * License:     GPL-2.0+
  * License URI: https://www.gnu.org/licenses/gpl-2.0.txt
  * Text Domain: calendar-plus
