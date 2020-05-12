@@ -20,7 +20,6 @@ if ( ! defined( 'ABSPATH' ) ) {
 	return;
 }
 
-include_once plugin_dir_path( __FILE__ ) . 'eb-mods/eb-mods.php';
 require_once plugin_dir_path( __FILE__ ) . 'vendor/autoload.php';
 
 /**
