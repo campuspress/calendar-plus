@@ -72,3 +72,16 @@ calendar_plus();
 // Load hooks
 include_once 'includes/hooks/calendar-plus-hooks.php';
 
+/**
+ * Enables automatic updates from GitHub
+ */
+require_once plugin_dir_path( __FILE__ ) . 'includes/plugin-update-checker/plugin-update-checker.php';
+if ( class_exists( 'Puc_v4_Factory' ) ) {
+	$calendar_plus_update_checker = Puc_v4_Factory::buildUpdateChecker(
+		'https://github.com/campuspress/calendar-plus',
+		__FILE__,
+		'calendar-plus'
+	);
+
+	$calendar_plus_update_checker->getVcsApi()->enableReleaseAssets();
+}
