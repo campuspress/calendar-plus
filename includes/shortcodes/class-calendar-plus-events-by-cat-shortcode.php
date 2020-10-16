@@ -22,7 +22,8 @@ class Calendar_Plus_Events_By_Category_Shortcode {
 		wp_enqueue_style(
 			'calendarp-events-by-cat',
 			calendarp_get_plugin_url() . 'public/css/calendar-plus-events-by-cat-shortcode.css',
-			[], calendarp_get_version()
+			array(),
+			calendarp_get_version()
 		);
 	}
 
@@ -71,52 +72,32 @@ class Calendar_Plus_Events_By_Category_Shortcode {
 			);
 		}
 
-		ob_start();
-		foreach ( $event_groups as $events_by_date ) {
-			foreach ( $events_by_date as $date => $events ) {
-				$month_name = mysql2date( 'M', $date, true );
-				$day = mysql2date( 'd', $date, true );
-
-				?>
-				<div class="calendarp">
-					<div class="calendarp_calendar agenda-minified-calendar">
-						<div class="calendarp-date-item row">
-							<div class="calendarp-date large-2 columns text-center">
-								<?php if ( 'sticky' !== $date ) : ?>
-									<div class="calendarp-date-month"><?php echo $month_name; ?></div>
-									<div class="calendarp-date-day"><?php echo $day; ?></div>
-								<?php endif; ?>
-							</div>
-							<div class="calendarp-events large-10 columns">
-								<?php
-								/** @var Calendar_Plus_Event $event */
-								foreach ( $events as $event ) :
-									?>
-									<div class="calendar-event">
-										<h3>
-											<a href="<?php echo esc_url( get_permalink( $event->ID ) ); ?>">
-												<?php echo get_the_title( $event->ID ); ?>
-											</a>
-										</h3>
-										<div class="calendarp-event-meta">
-											<?php echo calendarp_get_human_read_dates( $event->ID ); ?>
-										</div>
-									</div>
-								<?php endforeach; ?>
-							</div>
-						</div>
-					</div>
-				</div>
-				<?php
-			}
+		if ( ! function_exists( 'calendarp_locate_template' ) ) {
+			require_once calendarp_get_plugin_dir() . 'public/helpers-templates.php';
 		}
 
+		ob_start();
+
+		include( calendarp_locate_template( 'shortcodes/events-list.php' ) );
+
 		$content = ob_get_clean();
+
 		if ( empty( $content ) && calendarp_is_rest_api_request() ) {
 			$content = calendarp_block_error_msg(
 				__( 'There are no events matching your query to show.', 'calendar-plus' )
 			);
 		}
+
+		if ( $content ) {
+			$class = "calendarp-events-by-cat";
+			if ( isset( $atts['class'] ) ) {
+				$class = $atts['class'];
+			}
+			if( $class ) {
+				$content = '<div class="' . esc_attr( $class ) . '">' . $content . '</div>';
+			}
+		}
+
 		return apply_filters( 'calendarp_events_list_shortcode_content', $content, $event_groups, $atts );
 	}
 	
@@ -125,7 +106,8 @@ class Calendar_Plus_Events_By_Category_Shortcode {
 	 */
 	public function register_block() {
 		if(function_exists('register_block_type')) {
-			register_block_type( 'calendar-plus/events-list', 
+			register_block_type(
+				'calendar-plus/events-list',
 				array(
 					'render_callback' => array( $this, 'blocks_content' ),
 					'attributes' => array(
@@ -136,7 +118,7 @@ class Calendar_Plus_Events_By_Category_Shortcode {
 						'category' => array(
 							'type' => 'string',
 						),
-					)
+					),
 				)
 			);
 		}
