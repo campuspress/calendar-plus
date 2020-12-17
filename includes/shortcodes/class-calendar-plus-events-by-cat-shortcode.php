@@ -111,6 +111,11 @@ class Calendar_Plus_Events_By_Category_Shortcode {
 				array(
 					'render_callback' => array( $this, 'blocks_content' ),
 					'attributes' => array(
+						//Ref: https://github.com/WordPress/gutenberg/issues/16850#issuecomment-633203698
+						'className' => array(
+							'default' => '',
+							'type'    => 'string'
+						),
 						'events' => array(
 							'type' => 'number',
 							'default' => 5,
