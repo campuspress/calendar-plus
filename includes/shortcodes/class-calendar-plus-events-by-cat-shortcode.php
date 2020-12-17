@@ -89,10 +89,15 @@ class Calendar_Plus_Events_By_Category_Shortcode {
 		}
 
 		if ( $content ) {
-			$class = "calendarp-events-by-cat";
+			$class = 'calendarp-events-by-cat';
 			if ( isset( $atts['class'] ) ) {
 				$class = $atts['class'];
 			}
+
+			if ( isset( $atts['className'] ) ) {
+				$class =  !empty( $class ) ? $class . ' ' . $atts['className'] :  $atts['className'];
+			}
+
 			if( $class ) {
 				$content = '<div class="' . esc_attr( $class ) . '">' . $content . '</div>';
 			}
@@ -110,7 +115,7 @@ class Calendar_Plus_Events_By_Category_Shortcode {
 				'calendar-plus/events-list',
 				array(
 					'render_callback' => array( $this, 'blocks_content' ),
-					'attributes' => array(
+					'attributes'      => array(
 						//Ref: https://github.com/WordPress/gutenberg/issues/16850#issuecomment-633203698
 						'className' => array(
 							'default' => '',
