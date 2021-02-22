@@ -268,7 +268,16 @@ class Calendar_Plus_The_Events_Calendar_Importer extends WP_Importer {
 		} else {
 			_e( 'or assign posts to an existing user:', 'calendar-plus' );
 		}
-		wp_dropdown_users( array( 'name' => "user_map[$n]", 'multi' => true, 'show_option_all' => __( '- Select -', 'calendar-plus' ) ) );
+		wp_dropdown_users(
+			array(
+				'name'            => "user_map[$n]",
+				'multi'           => true,
+				'show_option_all' => __(
+					'- Select -',
+					'calendar-plus'
+				),
+			)
+		);
 		echo '<input type="hidden" name="imported_authors[' . $n . ']" value="' . esc_attr( $author['author_login'] ) . '" />';
 
 		if ( '1.0' != $this->version ) {
@@ -555,8 +564,11 @@ class Calendar_Plus_The_Events_Calendar_Importer extends WP_Importer {
 			// add/update post meta
 			if ( ! empty( $post['postmeta'] ) ) {
 
+				$event_details = array();
+
 				$date_start = false;
 				$date_end = false;
+				$all_day_event = false;
 				foreach ( $post['postmeta'] as $meta ) {
 					$key = $meta['key'];
 					$value = false;
@@ -586,6 +598,7 @@ class Calendar_Plus_The_Events_Calendar_Importer extends WP_Importer {
 
 					if ( '_EventAllDay' === $key ) {
 						$all_day_event = 'yes' === $meta['value'] ? true : false;
+						continue;
 					}
 
 					if ( $key ) {
@@ -605,8 +618,44 @@ class Calendar_Plus_The_Events_Calendar_Importer extends WP_Importer {
 
 				// Process the dates
 				if ( ! empty( $date_start ) && ! empty( $date_end ) ) {
-					$date_start_date = mysql2date( 'Y-m-d', $date_start );
-					$date_start_time = mysql2date( 'H:i', $date_start );
+					$from_date  = mysql2date( 'Y-m-d', $date_start );
+					$until_date = mysql2date( 'Y-m-d', $date_end );
+
+					if ( $from_date != $until_date ) {
+						$event_details['recurrence'] = 'datespan';
+
+						$event_details['datespan'] = array(
+							'from_date'  => $from_date,
+							'until_date' => $until_date,
+						);
+						if ( ! $all_day_event ) {
+							$event_details['datespan']['from_time_hour']    = mysql2date( 'H', $date_start );
+							$event_details['datespan']['from_time_minute']  = mysql2date( 'i', $date_start );
+							$event_details['datespan']['until_time_hour']   = mysql2date( 'H', $date_end );
+							$event_details['datespan']['until_time_minute'] = mysql2date( 'i', $date_end );
+						} else {
+							$event_details['datespan']['all_day_event'] = true;
+						}
+					} else {
+						$event_details = array(
+							'recurrence' => 'regular',
+							'from_date'  => array( $from_date ),
+							'until_date' => array( $from_date ),
+						);
+
+						if ( ! $all_day_event ) {
+							$event_details['from_time_hour']    = array( mysql2date( 'H', $date_start ) );
+							$event_details['from_time_minute']  = array( mysql2date( 'i', $date_start ) );
+							$event_details['until_time_hour']   = array( mysql2date( 'H', $date_end ) );
+							$event_details['until_time_minute'] = array( mysql2date( 'i', $date_end ) );
+						} else {
+							$event_details['all_day_event'] = true;
+						}
+					}
+				}
+
+				if( $event_details ) {
+					calendar_plus_save_event_details( $post_id, $event_details );
 				}
 			}
 		}
@@ -829,7 +878,11 @@ class Calendar_Plus_The_Events_Calendar_Importer extends WP_Importer {
 				}
 			}
 			$description = isset( $term['term_description'] ) ? $term['term_description'] : '';
-			$termarr = array( 'slug' => $term['slug'], 'description' => $description, 'parent' => intval( $parent ) );
+			$termarr     = array(
+				'slug'        => $term['slug'],
+				'description' => $description,
+				'parent'      => intval( $parent ),
+			);
 
 			$id = wp_insert_term( $term['term_name'], $term['term_taxonomy'], $termarr );
 			if ( ! is_wp_error( $id ) ) {
