@@ -133,6 +133,7 @@ registerBlockType( 'calendar-plus/event', {
                     createElement(TextControl, {
                         value: props.attributes.event_id,
                         label: __( 'Event Id' ),
+                        help: __( 'Use Events > Events on admin area to search for your event by title or ID' ),
                         type: 'number',
                         onChange: function(value){
                             props.setAttributes( { event_id: value } );
