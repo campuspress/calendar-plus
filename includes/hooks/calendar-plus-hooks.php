@@ -34,3 +34,4 @@ add_action( 'calendar_plus_delete_old_dates', array( $calendar_plus->generator, 
 
 // Sync iCal events
 add_action( 'calendar_plus_sync_ical_events', 'calendarp_ical_sync_events' );
+add_action( 'calendar_plus_sync_ical_events', 'calendarp_ical_clear_legacy_scheduling', 0 );

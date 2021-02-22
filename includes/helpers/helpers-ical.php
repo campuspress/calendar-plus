@@ -20,6 +20,43 @@ function calendarp_unschedule_ical_sync_cron() {
 	}
 }
 
+/**
+ * Clear legacy scheduled events - i.e. the ones with arguments
+ *
+ * @param array $args Arguments for scheduled cron event.
+ */
+function calendarp_unschedule_ical_legacy_sync_cron( $args ) {
+	if ( wp_next_scheduled( 'calendar_plus_sync_ical_events', $args ) ) {
+		wp_clear_scheduled_hook( 'calendar_plus_sync_ical_events', $args );
+	}
+}
+
+/**
+ * Clears *all* cron schedules for remote feeds sync
+ *
+ * @return bool
+ */
+function calendarp_unschedule_all_ical_sync_crons() {
+	return false !== wp_unschedule_hook( 'calendar_plus_sync_ical_events' );
+}
+
+/**
+ * Clears legacy scheduling cron hook handler
+ *
+ * Boots up early and takes care of any events scheduled with arguments.
+ *
+ * @param array $args Optional args - only set for legacy events.
+ */
+function calendarp_ical_clear_legacy_scheduling( $args = [] ) {
+	if ( empty( $args ) ) {
+		// Nothing to do.
+		return false;
+	}
+	$args = func_get_args();
+	calendarp_unschedule_ical_legacy_sync_cron( $args );
+	return true;
+}
+
 function calendarp_ical_sync_events() {
 	$feeds = get_option( 'calendar_plus_remote_feeds' );
 
@@ -29,8 +66,7 @@ function calendarp_ical_sync_events() {
 	}
 
 	if ( empty( $feeds ) ) {
-		calendarp_unschedule_ical_sync_cron();
-		return;
+		return calendarp_unschedule_all_ical_sync_crons();
 	}
 
 	foreach ( $feeds as $i => $feed ) {
