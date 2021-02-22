@@ -143,6 +143,7 @@ class Calendar_Plus_iCal_Generator {
 
 		$text = str_replace( '\\', '\\\\', $text );
 		$text = str_replace( "\n", '\n', $text );
+		$text = str_replace( "\r", '', $text );
 		$text = str_replace( ',', '\,', $text );
 		$text = str_replace( ';', '\;', $text );
 
