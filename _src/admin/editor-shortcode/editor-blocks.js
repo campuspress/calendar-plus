@@ -22,7 +22,7 @@ registerBlockType( 'calendar-plus/calendar', {
     },
 	edit: withSelect( function( select ) {
         return {
-            categories: select('core').getEntityRecords('taxonomy', 'calendar_event_category')
+            categories: select('core').getEntityRecords('taxonomy', 'calendar_event_category', {per_page: -1})
         };
     } )( function( props ) {
         var categoryOptions = [ { value: '', label: __( 'All' ) } ];
@@ -161,7 +161,7 @@ registerBlockType( 'calendar-plus/events-list', {
     },
 	edit: withSelect( function( select ) {
         return {
-            categories: select('core').getEntityRecords('taxonomy', 'calendar_event_category')
+            categories: select('core').getEntityRecords('taxonomy', 'calendar_event_category', {per_page: -1})
         };
     } )( function( props ) {
         var categoryOptions = [ { value: '', label: __( 'All' ) } ];
