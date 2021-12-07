@@ -123,6 +123,7 @@ function calendarp_get_calendar_widget( $initial = true, $echo = true, $event_id
 	}
 	$key = md5( $key );
 
+	/*
 	if ( $cache = wp_cache_get( 'get_calendar_plus_widget', 'calendar' ) ) {
 		if ( is_array( $cache ) && isset( $cache[ $key ] ) ) {
 			if ( $echo ) {
@@ -134,6 +135,7 @@ function calendarp_get_calendar_widget( $initial = true, $echo = true, $event_id
 			}
 		}
 	}
+	*/
 
 	if ( ! is_array( $cache ) ) {
 		$cache = array();
@@ -197,6 +199,24 @@ function calendarp_get_calendar_widget( $initial = true, $echo = true, $event_id
 
 	$previous = $wpdb->get_row( $q );
 
+	// Its possible for event to end in previous month but start even earlier.
+	if( !$previous ) {
+		$q = "SELECT MONTH(c.until_date) AS month, YEAR(c.until_date) AS year
+			FROM $wpdb->posts p
+			INNER JOIN $wpdb->calendarp_calendar c ON c.event_id = p.ID
+			WHERE c.until_date < '$thisyear-$thismonth-01'";
+
+		if ( $event ) {
+			$q .= $wpdb->prepare( ' AND p.ID = %d', $event->ID );
+		}
+
+		$q .= " AND p.post_type = 'calendar_event' AND p.post_status = 'publish'
+				ORDER BY c.until_date DESC
+				LIMIT 1";
+
+		$previous = $wpdb->get_row( $q );
+	}
+
 	$q = "SELECT MONTH(c.from_date) AS month, YEAR(c.from_date) AS year
 		FROM $wpdb->posts p
 		INNER JOIN $wpdb->calendarp_calendar c ON c.event_id = p.ID
@@ -211,6 +231,25 @@ function calendarp_get_calendar_widget( $initial = true, $echo = true, $event_id
 			LIMIT 1";
 
 	$next = $wpdb->get_row( $q );
+	
+	// Its possible for event to start in current month but end in next.
+	if( !$next ) {
+		$q = "SELECT MONTH(c.until_date) AS month, YEAR(c.until_date) AS year
+		FROM $wpdb->posts p
+		INNER JOIN $wpdb->calendarp_calendar c ON c.event_id = p.ID
+		WHERE c.until_date > '$thisyear-$thismonth-{$last_day}'";
+
+		if ( $event ) {
+			$q .= $wpdb->prepare( ' AND p.ID = %d', $event->ID );
+		}
+
+		$q .= " AND p.post_type = 'calendar_event' AND p.post_status = 'publish'
+				ORDER BY c.until_date ASC
+				LIMIT 1";
+
+		$next = $wpdb->get_row( $q );
+	}
+
 
 	// Backdrop
 	$calendar_output = '<div class="calendarp-backdrop"></div>';
@@ -288,7 +327,7 @@ function calendarp_get_calendar_widget( $initial = true, $echo = true, $event_id
 
 				$_from_date = strtotime( '+1 day', $_from_date );
 				$_from_date = date( 'Y-m-d', $_from_date );
-			} while ( strtotime( $_from_date ) <= strtotime( $event->until_date ) && date( 'm', strtotime( $_from_date ) ) == date( 'm', strtotime( $event->until_date ) ) );
+			} while ( strtotime( $_from_date ) <= strtotime( $event->until_date ) && date( 'm', strtotime( $_from_date ) ) == $thismonth );
 		} else {
 			$dom = date( 'j', strtotime( $event->from_date ) );
 			$daywithpost[] = $dom;
