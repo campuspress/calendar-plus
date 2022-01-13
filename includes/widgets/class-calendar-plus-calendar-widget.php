@@ -123,7 +123,6 @@ function calendarp_get_calendar_widget( $initial = true, $echo = true, $event_id
 	}
 	$key = md5( $key );
 
-	/*
 	if ( $cache = wp_cache_get( 'get_calendar_plus_widget', 'calendar' ) ) {
 		if ( is_array( $cache ) && isset( $cache[ $key ] ) ) {
 			if ( $echo ) {
@@ -135,7 +134,6 @@ function calendarp_get_calendar_widget( $initial = true, $echo = true, $event_id
 			}
 		}
 	}
-	*/
 
 	if ( ! is_array( $cache ) ) {
 		$cache = array();
@@ -199,7 +197,8 @@ function calendarp_get_calendar_widget( $initial = true, $echo = true, $event_id
 
 	$previous = $wpdb->get_row( $q );
 
-	// Its possible for event to end in previous month but start even earlier.
+	// Its possible for event to end in previous month but start even earlier. 
+	// TODO fix it for events that span across 2+ months.
 	if( !$previous ) {
 		$q = "SELECT MONTH(c.until_date) AS month, YEAR(c.until_date) AS year
 			FROM $wpdb->posts p
@@ -233,6 +232,7 @@ function calendarp_get_calendar_widget( $initial = true, $echo = true, $event_id
 	$next = $wpdb->get_row( $q );
 	
 	// Its possible for event to start in current month but end in next.
+	// TODO fix it for events that span across 2+ months.
 	if( !$next ) {
 		$q = "SELECT MONTH(c.until_date) AS month, YEAR(c.until_date) AS year
 		FROM $wpdb->posts p
@@ -317,17 +317,20 @@ function calendarp_get_calendar_widget( $initial = true, $echo = true, $event_id
 			$_from_date = $event->from_date;
 			do {
 				$_from_date = strtotime( $_from_date );
-				$dom = date( 'j', $_from_date );
-				$daywithpost[] = $dom;
-				$ak_post_titles[] = (object) array(
-					'ID'         => $event_id,
-					'post_title' => get_the_title( $event_id ),
-					'dom'        => $dom,
-				);
+				if( date( 'm', $_from_date ) == $thismonth && date( 'Y', $_from_date ) == $thisyear  ) {
+					$dom = date( 'j', $_from_date );
+					$daywithpost[] = $dom;
+					$ak_post_titles[] = (object) array(
+						'ID'         => $event_id,
+						'post_title' => get_the_title( $event_id ),
+						'dom'        => $dom,
+					);
+				}
 
 				$_from_date = strtotime( '+1 day', $_from_date );
 				$_from_date = date( 'Y-m-d', $_from_date );
-			} while ( strtotime( $_from_date ) <= strtotime( $event->until_date ) && date( 'm', strtotime( $_from_date ) ) == $thismonth );
+				
+			} while ( strtotime( $_from_date ) <= strtotime( $event->until_date ) );
 		} else {
 			$dom = date( 'j', strtotime( $event->from_date ) );
 			$daywithpost[] = $dom;
