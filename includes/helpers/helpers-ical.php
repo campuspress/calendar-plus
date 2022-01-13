@@ -126,26 +126,37 @@ function calendarp_ical_sync_events() {
 			// loop through the SimplePie data and convert it into a format the synchronisation class will accept
 			$items = $rss->get_items();
 			$events = [];
-			$event_ns = 'http://purl.org/rss/1.0/modules/event/';
+			$ns_event = 'http://purl.org/rss/1.0/modules/event/';
+			$ns_cal_rss = 'http://sidearmsports.com/schemas/cal_rss/1.0/';
 
 			/** @var SimplePie_Item $item */
 			foreach ( $items as $item ) {
 				$event_data = [
 					'uid'          => $item->get_id(),
-					'post_title'   => $item->get_title(),
-					'post_content' => $item->get_content(),
+					'post_title'   => html_entity_decode( $item->get_title() ),
+					'post_content' => html_entity_decode( $item->get_content() ),
 				];
 
-				if ( $location = $item->get_item_tags( $event_ns, 'location' ) ) {
+				if ( $location = $item->get_item_tags( $ns_event, 'location' ) ) {
 					$event_data['location'] = $location[0]['data'];
 				}
 
-				if ( $from = $item->get_item_tags( $event_ns, 'startdate' ) ) {
+				if ( $from = $item->get_item_tags( $ns_cal_rss, 'localstartdate' ) ) {
 					$event_data['from'] = strtotime( $from[0]['data'] );
 				}
+				else {
+					if ( $from = $item->get_item_tags( $ns_event, 'startdate' ) ) {
+						$event_data['from'] = strtotime( $from[0]['data'] );
+					}
+				}
 
-				if ( $to = $item->get_item_tags( $event_ns, 'enddate' ) ) {
+				if ( $to = $item->get_item_tags( $ns_cal_rss, 'localenddate' ) ) {
 					$event_data['to'] = strtotime( $to[0]['data'] );
+				}
+				else {
+					if ( $to = $item->get_item_tags( $ns_event, 'enddate' ) ) {
+						$event_data['to'] = strtotime( $to[0]['data'] );
+					}
 				}
 
 				$events[] = $event_data;
