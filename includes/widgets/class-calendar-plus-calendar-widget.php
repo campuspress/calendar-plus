@@ -55,7 +55,7 @@ EOT;
 
 		wp_enqueue_script(
 			'calendar-plus-widget',
-			calendarp_get_plugin_url() . 'public/js/calendar-widget.js',
+            calendarp_get_plugin_url() . 'public/js/calendar-widget.js',
 			[ 'jquery' ], calendarp_get_version(), true
 		);
 
@@ -314,30 +314,40 @@ function calendarp_get_calendar_widget( $initial = true, $echo = true, $event_id
 		$event_id = $event->event_id;
 		if ( $event->from_date != $event->until_date && $event->until_date > $event->from_date ) {
 			// Event spanned in several days
-			$_from_date = $event->from_date;
-			do {
-				$_from_date = strtotime( $_from_date );
-				if( date( 'm', $_from_date ) == $thismonth && date( 'Y', $_from_date ) == $thisyear  ) {
-					$dom = date( 'j', $_from_date );
-					$daywithpost[] = $dom;
-					$ak_post_titles[] = (object) array(
-						'ID'         => $event_id,
-						'post_title' => get_the_title( $event_id ),
-						'dom'        => $dom,
-					);
-				}
+			$_from_date = $event->from_date  . ' ' . $event->from_time;
 
-				$_from_date = strtotime( '+1 day', $_from_date );
-				$_from_date = date( 'Y-m-d', $_from_date );
-				
-			} while ( strtotime( $_from_date ) <= strtotime( $event->until_date ) );
+			$selected_start_date = $thisyear . '-' . $thismonth . '-01 00:00:00';
+			$selected_start_time = strtotime( $thisyear . '-' . $thismonth . '-01 00:00:00' );
+			$start_time = strtotime( $_from_date );
+
+			if( $start_time < $selected_start_time ) {
+				$_from_date = $selected_start_date;
+			}
+			$_from_date_obj = date_create( $_from_date );
+
+			$selected_end_date = strtotime( $thisyear . '-' . $thismonth . '-' . $last_day . ' 23:59:00' );
+			$end_time          = strtotime( $event->until_date . ' ' . $event->until_time );
+			if( $end_time > $selected_end_date ) {
+				$end_time = $selected_end_date;
+			}
+
+			while (  $_from_date_obj->getTimestamp() <= $end_time ) {
+				$dom              = $_from_date_obj->format( 'j' );
+				$daywithpost[]    = $dom;
+				$ak_post_titles[] = (object) array(
+					'ID'         => $event_id,
+					'post_title' => get_the_title( $event_id ),
+					'dom'        => $dom,
+				);
+				$_from_date_obj   = $_from_date_obj->add( new DateInterval( 'P1D' ) );
+			}
 		} else {
-			$dom = date( 'j', strtotime( $event->from_date ) );
-			$daywithpost[] = $dom;
+			$dom              = date( 'j', strtotime( $event->from_date ) );
+			$daywithpost[]    = $dom;
 			$ak_post_titles[] = (object) array(
-				'ID'         => $event_id,
-				'post_title' => get_the_title( $event_id ),
-				'dom'        => $dom,
+                'ID'         => $event_id,
+                'post_title' => get_the_title( $event_id ),
+                'dom'        => $dom,
 			);
 		}
 	}
@@ -405,8 +415,8 @@ function calendarp_get_calendar_widget( $initial = true, $echo = true, $event_id
 		$newrow = false;
 
 		if ( gmdate( 'j', current_time( 'timestamp' ) ) == $day &&
-		     gmdate( 'm', current_time( 'timestamp' ) ) == $thismonth &&
-		     gmdate( 'Y', current_time( 'timestamp' ) ) == $thisyear ) {
+             gmdate( 'm', current_time( 'timestamp' ) ) == $thismonth &&
+             gmdate( 'Y', current_time( 'timestamp' ) ) == $thisyear ) {
 			$calendar_output .= '<td id="today">';
 		} else {
 			$calendar_output .= '<td>';
@@ -415,10 +425,10 @@ function calendarp_get_calendar_widget( $initial = true, $echo = true, $event_id
 		if ( in_array( $day, $daywithpost ) ) {// any posts today?
 			$day_link = add_query_arg(
 				array(
-					'from'           => "$thisyear-$thismonth-$day",
-					'to'             => "$thisyear-$thismonth-$day",
-					'calendar_month' => $thismonth,
-					'calendar_year'  => $thisyear,
+                    'from'           => "$thisyear-$thismonth-$day",
+                    'to'             => "$thisyear-$thismonth-$day",
+                    'calendar_month' => $thismonth,
+                    'calendar_year'  => $thisyear,
 				),
 				$event_archives
 			);
