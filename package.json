@@ -13,7 +13,7 @@
         "react-big-calendar": "^0.20.3",
         "react-dom": "^16.8.2",
         "react-scroll": "^1.7.11",
-        "urijs": "^1.19.1",
+        "urijs": "^1.19.10",
         "whatwg-fetch": "^3.0.0"
     },
     "devDependencies": {
