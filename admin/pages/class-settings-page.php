@@ -167,6 +167,15 @@ class Calendar_Plus_Admin_Settings_Page {
 						),
 					),
 				),
+				'templates'   => array(
+					'title'  => __( 'Templates', 'calendar-plus' ),
+					'fields' => array(
+						'single-event-template-source' => array(
+							'title'    => __( 'Single event template', 'calendar-plus' ),
+							'args'     => $settings['single_event_template_source'],
+						),
+					),
+				),
 			),
 			'media'       => array(
 				'media' => array(
@@ -358,6 +367,9 @@ class Calendar_Plus_Admin_Settings_Page {
 			}
 		} elseif ( isset( $input['submit-general'] ) ) {
 			$settings['display_location_country'] = isset( $input['display_location_country'] );
+			if( isset( $input['single_event_template_source'] ) && in_array( $input['single_event_template_source'], array('calendar_plus', 'theme_default') ) ) {
+				$settings['single_event_template_source'] = $input['single_event_template_source'];
+			}
 
 		} elseif ( isset( $input['submit-ical-import'] ) ) {
 
