@@ -309,6 +309,23 @@ class Calendar_Plus_Settings_Fields {
 
 	}
 
+	function render_event_archive_template_source_field( $value ) {
+		?>
+        <select name="<?php echo calendarp_get_settings_slug(); ?>[event_archive_template_source]">
+            <option value="calendar_plus_new" <?php selected( $value, 'calendar_plus' ); ?>>
+				<?php _e( 'Calendar plus template (new)', 'calendar-plus' ); ?>
+            </option>
+            <option value="calendar_plus" <?php selected( $value, 'calendar_plus' ); ?>>
+				<?php _e( 'Calendar plus template', 'calendar-plus' ); ?>
+            </option>
+            <option value="theme_default" <?php selected( $value, 'theme_default' ); ?>>
+				<?php _e( 'Theme default template', 'calendar-plus' ); ?>
+            </option>
+        </select>
+		<?php
+
+	}
+
 	function render_export_fields_field() {
 
 		$fields = array(

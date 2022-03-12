@@ -174,6 +174,10 @@ class Calendar_Plus_Admin_Settings_Page {
 							'title'    => __( 'Single event template', 'calendar-plus' ),
 							'args'     => $settings['single_event_template_source'],
 						),
+						'event-archive-template-source' => array(
+							'title'    => __( 'Event archive template', 'calendar-plus' ),
+							'args'     => $settings['event_archive_template_source'],
+						),
 					),
 				),
 			),

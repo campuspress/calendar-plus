@@ -66,6 +66,7 @@ class Calendar_Plus_Settings {
 			'gmaps_api_key'            => '',
 			'ical_feed'                => '',
 			'single_event_template_source' => 'theme_default',
+			'event_archive_template_source' => 'theme_default',
 		);
 
 		return apply_filters( 'calendarp_default_settings', $defaults );
