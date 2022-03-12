@@ -165,6 +165,8 @@ class Calendar_Plus_Theme_Compat {
 						'is_page'        => true,
 						'comment_status' => 'closed'
 					) );
+
+					$template  = locate_template( array( 'single-event.php', 'single.php', 'page.php' ) );
 				}
 			}
 		}
