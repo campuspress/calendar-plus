@@ -124,6 +124,12 @@ class Calendar_Plus_Theme_Compat {
 		}
 
 		if( is_archive() ) {
+
+			$source = calendarp_get_setting( 'event_archive_template_source' );
+			if( $source !== 'calendar_plus_new' ) {
+				return $template;
+			}
+
 			$type = '';
 
 			if( is_tax( 'calendar_event_category' ) ) {
