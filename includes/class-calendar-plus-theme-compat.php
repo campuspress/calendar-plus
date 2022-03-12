@@ -113,6 +113,12 @@ class Calendar_Plus_Theme_Compat {
 		}
 
 		if( is_singular( 'calendar_event' ) ) {
+
+			$source = calendarp_get_setting( 'single_event_template_source' );
+			if( $source !== 'calendar_plus_new' ) {
+				return $template;
+			}
+
 			$updated_content = $shortcodes['single-event']->render( array( 'event_id' => get_the_ID() ) );
 			calendar_plus_reset_post( array( 'post_content' => $updated_content ) );
 		}
