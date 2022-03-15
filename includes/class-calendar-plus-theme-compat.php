@@ -115,7 +115,7 @@ class Calendar_Plus_Theme_Compat {
 		if( is_singular( 'calendar_event' ) ) {
 
 			$source = calendarp_get_setting( 'single_event_template_source' );
-			if( $source !== 'calendar_plus_v2' ) {
+			if( $source === 'calendar_plus' ) {
 				return $template;
 			}
 
@@ -126,7 +126,7 @@ class Calendar_Plus_Theme_Compat {
 		if( is_archive() ) {
 
 			$source = calendarp_get_setting( 'event_archive_template_source' );
-			if( $source !== 'calendar_plus_v2' ) {
+			if( $source === 'calendar_plus' ) {
 				return $template;
 			}
 
