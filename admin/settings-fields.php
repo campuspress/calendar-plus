@@ -301,9 +301,6 @@ class Calendar_Plus_Settings_Fields {
             <option value="calendar_plus" <?php selected( $value, 'calendar_plus' ); ?>>
 				<?php _e( 'Calendar plus template', 'calendar-plus' ); ?>
             </option>
-            <option value="theme_default" <?php selected( $value, 'theme_default' ); ?>>
-				<?php _e( 'Theme default template', 'calendar-plus' ); ?>
-            </option>
         </select>
 		<?php
 
@@ -317,9 +314,6 @@ class Calendar_Plus_Settings_Fields {
             </option>
             <option value="calendar_plus" <?php selected( $value, 'calendar_plus' ); ?>>
 				<?php _e( 'Calendar plus template', 'calendar-plus' ); ?>
-            </option>
-            <option value="theme_default" <?php selected( $value, 'theme_default' ); ?>>
-				<?php _e( 'Theme default template', 'calendar-plus' ); ?>
             </option>
         </select>
 		<?php
