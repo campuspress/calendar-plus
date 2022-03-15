@@ -296,7 +296,7 @@ class Calendar_Plus_Settings_Fields {
 		?>
         <select name="<?php echo calendarp_get_settings_slug(); ?>[single_event_template_source]">
             <option value="calendar_plus_v2" <?php selected( $value, 'calendar_plus' ); ?>>
-				<?php _e( 'Calendar plus template (v2)', 'calendar-plus' ); ?>
+				<?php _e( 'Calendar plus theme compat', 'calendar-plus' ); ?>
             </option>
             <option value="calendar_plus" <?php selected( $value, 'calendar_plus' ); ?>>
 				<?php _e( 'Calendar plus template', 'calendar-plus' ); ?>
@@ -313,7 +313,7 @@ class Calendar_Plus_Settings_Fields {
 		?>
         <select name="<?php echo calendarp_get_settings_slug(); ?>[event_archive_template_source]">
             <option value="calendar_plus_v2" <?php selected( $value, 'calendar_plus' ); ?>>
-				<?php _e( 'Calendar plus template (v2)', 'calendar-plus' ); ?>
+				<?php _e( 'Calendar plus theme compat', 'calendar-plus' ); ?>
             </option>
             <option value="calendar_plus" <?php selected( $value, 'calendar_plus' ); ?>>
 				<?php _e( 'Calendar plus template', 'calendar-plus' ); ?>
