@@ -55,7 +55,7 @@ EOT;
 
 		wp_enqueue_script(
 			'calendar-plus-widget',
-            calendarp_get_plugin_url() . 'public/js/calendar-widget.js',
+			calendarp_get_plugin_url() . 'public/js/calendar-widget.js',
 			[ 'jquery' ], calendarp_get_version(), true
 		);
 
@@ -345,9 +345,9 @@ function calendarp_get_calendar_widget( $initial = true, $echo = true, $event_id
 			$dom              = date( 'j', strtotime( $event->from_date ) );
 			$daywithpost[]    = $dom;
 			$ak_post_titles[] = (object) array(
-                'ID'         => $event_id,
-                'post_title' => get_the_title( $event_id ),
-                'dom'        => $dom,
+				'ID'         => $event_id,
+				'post_title' => get_the_title( $event_id ),
+				'dom'        => $dom,
 			);
 		}
 	}
@@ -415,8 +415,8 @@ function calendarp_get_calendar_widget( $initial = true, $echo = true, $event_id
 		$newrow = false;
 
 		if ( gmdate( 'j', current_time( 'timestamp' ) ) == $day &&
-             gmdate( 'm', current_time( 'timestamp' ) ) == $thismonth &&
-             gmdate( 'Y', current_time( 'timestamp' ) ) == $thisyear ) {
+			 gmdate( 'm', current_time( 'timestamp' ) ) == $thismonth &&
+			 gmdate( 'Y', current_time( 'timestamp' ) ) == $thisyear ) {
 			$calendar_output .= '<td id="today">';
 		} else {
 			$calendar_output .= '<td>';
@@ -425,10 +425,10 @@ function calendarp_get_calendar_widget( $initial = true, $echo = true, $event_id
 		if ( in_array( $day, $daywithpost ) ) {// any posts today?
 			$day_link = add_query_arg(
 				array(
-                    'from'           => "$thisyear-$thismonth-$day",
-                    'to'             => "$thisyear-$thismonth-$day",
-                    'calendar_month' => $thismonth,
-                    'calendar_year'  => $thisyear,
+					'from'           => "$thisyear-$thismonth-$day",
+					'to'             => "$thisyear-$thismonth-$day",
+					'calendar_month' => $thismonth,
+					'calendar_year'  => $thisyear,
 				),
 				$event_archives
 			);
