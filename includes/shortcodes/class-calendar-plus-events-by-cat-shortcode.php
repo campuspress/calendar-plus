@@ -118,6 +118,10 @@ class Calendar_Plus_Events_By_Category_Shortcode {
 						'category' => array(
 							'type' => 'string',
 						),
+						'past_events' => array(
+							'type' => 'bool',
+							'default' => false
+						),
 					),
 				)
 			);
