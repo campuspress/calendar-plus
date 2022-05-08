@@ -61,12 +61,16 @@ class Calendar_Plus_Events_By_Category_Shortcode {
 		$from_date = false;
 		$to_date   = false;
 		if( isset( $atts['past_events'] ) ) {
+
 			if( $atts['past_events'] === 'true' ) {
+
 				$to_date = $current_time;
 			} else {
+
 				$from_date = $current_time;
 			}
 		} else {
+
 			$from_date = $current_time;
 		}
 
