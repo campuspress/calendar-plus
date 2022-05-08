@@ -158,6 +158,7 @@ registerBlockType( 'calendar-plus/events-list', {
     attributes: {
         events: {default: 5},
         category: {},
+		layout: 'list'
     },
 	edit: withSelect( function( select ) {
         return {
@@ -196,6 +197,17 @@ registerBlockType( 'calendar-plus/events-list', {
                         min: 1,
                         max: 100,
                     }),
+					createElement(SelectControl, {
+						value: props.attributes.layout,
+						label: __( 'Layout' ),
+						options: [
+							{value: 'list', label: __('List')},
+							{value: 'grid', label: __('Grid')}
+						],
+						onChange: function(value){
+							props.setAttributes( { layout: value } );
+						}
+					}),
                 )
 			)
 		] )
