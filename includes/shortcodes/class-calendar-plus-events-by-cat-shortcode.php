@@ -121,6 +121,10 @@ class Calendar_Plus_Events_By_Category_Shortcode {
 						'layout' => array(
 							'type' => 'string',
 							'default' => 'list'
+						),
+						'columns' => array(
+							'type' => 'number',
+							'default' => 1
 						)
 					),
 				)

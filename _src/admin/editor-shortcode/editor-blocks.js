@@ -158,7 +158,8 @@ registerBlockType( 'calendar-plus/events-list', {
     attributes: {
         events: {default: 5},
         category: {},
-		layout: 'list'
+		layout: 'list',
+		columns: 1
     },
 	edit: withSelect( function( select ) {
         return {
@@ -172,7 +173,52 @@ registerBlockType( 'calendar-plus/events-list', {
 				categoryOptions.push({value:category.id, label:category.name});
 			});
 		}
-        
+        const eventsSettings = [
+			createElement(SelectControl, {
+				value: props.attributes.category,
+				label: __( 'Category' ),
+				onChange: function(value){
+					props.setAttributes( { category: value } );
+				},
+				options: categoryOptions
+			}),
+			createElement(RangeControl, {
+				value: props.attributes.events,
+				label: __( 'Number of events' ),
+				onChange: function(value){
+					props.setAttributes( { events: value } );
+				},
+				min: 1,
+				max: 100,
+			}),
+			createElement(SelectControl, {
+				value: props.attributes.layout,
+				label: __( 'Layout' ),
+				options: [
+					{value: 'list', label: __('List')},
+					{value: 'grid', label: __('Grid')}
+				],
+				onChange: function(value){
+					props.setAttributes( { layout: value } );
+				}
+			}),
+		];
+		if(props.attributes.layout === 'grid') {
+			eventsSettings.push(createElement(SelectControl, {
+				value: props.attributes.columns,
+				label: __( 'Grid size' ),
+				options: [
+					{value: 1, 'label': __('1 Column')},
+					{value: 2, 'label': __('2 Columns')},
+					{value: 3, 'label': __('3 Columns')},
+					{value: 4, 'label': __('4 Columns')}
+				],
+				onChange: function(value){
+					props.setAttributes( { columns: parseInt(value) } );
+				}
+			}));
+		}
+
 		return createElement('div', {}, [
             createElement( 'div', {}, createElement( ServerSideRender, {
                 block: "calendar-plus/events-list",
@@ -180,34 +226,7 @@ registerBlockType( 'calendar-plus/events-list', {
             } ) ),
             createElement( InspectorControls, {},
                 createElement( PanelBody, { title: __( 'Events Settings' ), initialOpen: true },
-                    createElement(SelectControl, {
-                        value: props.attributes.category,
-                        label: __( 'Category' ),
-                        onChange: function(value){
-                            props.setAttributes( { category: value } );
-                        },
-                        options: categoryOptions
-                    }),
-                    createElement(RangeControl, {
-                        value: props.attributes.events,
-                        label: __( 'Number of events' ),
-                        onChange: function(value){
-                            props.setAttributes( { events: value } );
-                        },
-                        min: 1,
-                        max: 100,
-                    }),
-					createElement(SelectControl, {
-						value: props.attributes.layout,
-						label: __( 'Layout' ),
-						options: [
-							{value: 'list', label: __('List')},
-							{value: 'grid', label: __('Grid')}
-						],
-						onChange: function(value){
-							props.setAttributes( { layout: value } );
-						}
-					}),
+					...eventsSettings
                 )
 			)
 		] )
