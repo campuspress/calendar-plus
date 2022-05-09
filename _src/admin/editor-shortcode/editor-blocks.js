@@ -158,8 +158,8 @@ registerBlockType( 'calendar-plus/events-list', {
     attributes: {
         events: {default: 5},
         category: {},
-		layout: 'list',
-		columns: 2
+		layout: {default: 'list'},
+		columns: {default: 2}
     },
 	edit: withSelect( function( select ) {
         return {
