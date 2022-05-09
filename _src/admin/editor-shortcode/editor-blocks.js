@@ -20,20 +20,20 @@ registerBlockType( 'calendar-plus/calendar', {
         day_format: {},
         date_format: {}
     },
-	edit: withSelect( function( select ) {
+    edit: withSelect( function( select ) {
         return {
             categories: select('core').getEntityRecords('taxonomy', 'calendar_event_category', {per_page: -1})
         };
     } )( function( props ) {
         var categoryOptions = [ { value: '', label: __( 'All' ) } ];
         
-		if( props.categories ) {
-			props.categories.forEach((category) => {
-				categoryOptions.push({value:category.id, label:category.name});
-			});
-		}
+        if( props.categories ) {
+            props.categories.forEach((category) => {
+                categoryOptions.push({value:category.id, label:category.name});
+            });
+        }
         
-		return createElement('div', {}, [
+        return createElement('div', {}, [
             createElement( 'div', {}, createElement( 'img', {src: CalPlusBlocksOptions.calendar_image} ) ),
             createElement( InspectorControls, {},
                 createElement( PanelBody, { title: __( 'Calendar Settings' ), initialOpen: true },
@@ -45,70 +45,70 @@ registerBlockType( 'calendar-plus/calendar', {
                         },
                         options: categoryOptions
                     }),
-					createElement(SelectControl, {
-						value: props.attributes.time_format,
+                    createElement(SelectControl, {
+                        value: props.attributes.time_format,
                         label: __( 'Time format' ),
                         onChange: function(value){
                             props.setAttributes( { time_format: value } );
                         },
-						options: [
-							{value: 'g:i a', label: '11:00 pm'},
-							{value: 'H:i', label: '23:00'},
-						]
-					}),
-					createElement(SelectControl, {
-						value: props.attributes.dow_format,
+                        options: [
+                            {value: 'g:i a', label: '11:00 pm'},
+                            {value: 'H:i', label: '23:00'},
+                        ]
+                    }),
+                    createElement(SelectControl, {
+                        value: props.attributes.dow_format,
                         label: __( 'Day of the week format' ),
                         onChange: function(value){
                             props.setAttributes( { dow_format: value } );
                         },
-						options: [
-							{value: 'l', label: 'Sunday'},
-							{value: 'D', label: 'Sun'},
-						]
-					}),
-					createElement(SelectControl, {
-						value: props.attributes.month_name_format,
+                        options: [
+                            {value: 'l', label: 'Sunday'},
+                            {value: 'D', label: 'Sun'},
+                        ]
+                    }),
+                    createElement(SelectControl, {
+                        value: props.attributes.month_name_format,
                         label: __( 'Month name format' ),
                         onChange: function(value){
                             props.setAttributes( { month_name_format: value } );
                         },
-						options: [
-							{value: 'M', label: 'Jan'},
-							{value: 'F', label: 'January'},
-						]
-					}),
-					createElement(SelectControl, {
-						value: props.attributes.day_format,
+                        options: [
+                            {value: 'M', label: 'Jan'},
+                            {value: 'F', label: 'January'},
+                        ]
+                    }),
+                    createElement(SelectControl, {
+                        value: props.attributes.day_format,
                         label: __( 'Day format' ),
                         onChange: function(value){
                             props.setAttributes( { day_format: value } );
                         },
-						options: [
-							{value: 'd', label: '09'},
-							{value: 'j', label: '9'},
-						]
+                        options: [
+                            {value: 'd', label: '09'},
+                            {value: 'j', label: '9'},
+                        ]
                     }),
-					createElement(SelectControl, {
-						value: props.attributes.date_format,
+                    createElement(SelectControl, {
+                        value: props.attributes.date_format,
                         label: __( 'Date format' ),
                         onChange: function(value){
                             props.setAttributes( { date_format: value } );
                         },
-						options: [
-							{value: 'd/m', label: '15/09'},
+                        options: [
+                            {value: 'd/m', label: '15/09'},
                             {value: 'j/n', label: '15/9'},
                             {value: 'm/d', label: '09/15'},
                             {value: 'n/j', label: '9/15'},
-						]
+                        ]
                     }),
                 )
-			)
-		] )
-	} ),
-	save(){
+            )
+        ] )
+    } ),
+    save(){
         return null;
-	}
+    }
 });
 
 registerBlockType( 'calendar-plus/event', {
@@ -140,12 +140,12 @@ registerBlockType( 'calendar-plus/event', {
                         },
                     }),
                 )
-			)
-		] )
+            )
+        ] )
     },
-	save(){
+    save(){
         return null;
-	}
+    }
 });
 
 registerBlockType( 'calendar-plus/events-list', {
@@ -158,79 +158,79 @@ registerBlockType( 'calendar-plus/events-list', {
     attributes: {
         events: {default: 5},
         category: {},
-		layout: {default: 'list'},
-		columns: {default: 2}
+        layout: {default: 'list'},
+        columns: {default: 2}
     },
-	edit: withSelect( function( select ) {
+    edit: withSelect( function( select ) {
         return {
             categories: select('core').getEntityRecords('taxonomy', 'calendar_event_category', {per_page: -1})
         };
     } )( function( props ) {
         var categoryOptions = [ { value: '', label: __( 'All' ) } ];
         
-		if( props.categories ) {
-			props.categories.forEach((category) => {
-				categoryOptions.push({value:category.id, label:category.name});
-			});
-		}
+        if( props.categories ) {
+            props.categories.forEach((category) => {
+                categoryOptions.push({value:category.id, label:category.name});
+            });
+        }
         const eventsSettings = [
-			createElement(SelectControl, {
-				value: props.attributes.category,
-				label: __( 'Category' ),
-				onChange: function(value){
-					props.setAttributes( { category: value } );
-				},
-				options: categoryOptions
-			}),
-			createElement(RangeControl, {
-				value: props.attributes.events,
-				label: __( 'Number of events' ),
-				onChange: function(value){
-					props.setAttributes( { events: value } );
-				},
-				min: 1,
-				max: 100,
-			}),
-			createElement(SelectControl, {
-				value: props.attributes.layout,
-				label: __( 'Layout' ),
-				options: [
-					{value: 'list', label: __('List')},
-					{value: 'grid', label: __('Grid')}
-				],
-				onChange: function(value){
-					props.setAttributes( { layout: value } );
-				}
-			}),
-		];
-		if(props.attributes.layout === 'grid') {
-			eventsSettings.push(createElement(SelectControl, {
-				value: props.attributes.columns,
-				label: __( 'Grid size' ),
-				options: [
-					{value: 2, 'label': __('2 Columns')},
-					{value: 3, 'label': __('3 Columns')},
-					{value: 4, 'label': __('4 Columns')}
-				],
-				onChange: function(value){
-					props.setAttributes( { columns: parseInt(value) } );
-				}
-			}));
-		}
+            createElement(SelectControl, {
+                value: props.attributes.category,
+                label: __( 'Category' ),
+                onChange: function(value){
+                    props.setAttributes( { category: value } );
+                },
+                options: categoryOptions
+            }),
+            createElement(RangeControl, {
+                value: props.attributes.events,
+                label: __( 'Number of events' ),
+                onChange: function(value){
+                    props.setAttributes( { events: value } );
+                },
+                min: 1,
+                max: 100,
+            }),
+            createElement(SelectControl, {
+                value: props.attributes.layout,
+                label: __( 'Layout' ),
+                options: [
+                    {value: 'list', label: __('List')},
+                    {value: 'grid', label: __('Grid')}
+                ],
+                onChange: function(value){
+                    props.setAttributes( { layout: value } );
+                }
+            }),
+        ];
+        if(props.attributes.layout === 'grid') {
+            eventsSettings.push(createElement(SelectControl, {
+                value: props.attributes.columns,
+                label: __( 'Grid size' ),
+                options: [
+                    {value: 2, 'label': __('2 Columns')},
+                    {value: 3, 'label': __('3 Columns')},
+                    {value: 4, 'label': __('4 Columns')}
+                ],
+                onChange: function(value){
+                    props.setAttributes( { columns: parseInt(value) } );
+                }
+            }));
+        }
 
-		return createElement('div', {}, [
+        return createElement('div', {}, [
             createElement( 'div', {}, createElement( ServerSideRender, {
                 block: "calendar-plus/events-list",
                 attributes: props.attributes,
             } ) ),
             createElement( InspectorControls, {},
                 createElement( PanelBody, { title: __( 'Events Settings' ), initialOpen: true },
-					...eventsSettings
+                    ...eventsSettings
                 )
-			)
-		] )
-	} ),
-	save(){
+            )
+        ] )
+    } ),
+    save(){
         return null;
-	}
+    }
 });
