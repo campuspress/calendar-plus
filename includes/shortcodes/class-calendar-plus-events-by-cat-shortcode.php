@@ -72,13 +72,23 @@ class Calendar_Plus_Events_By_Category_Shortcode {
 			);
 		}
 
+		$template_data = array();
+
+		if( $atts['layout'] === 'grid' ){
+			$layout = 'grid';
+			$template_data['columns'] = absint( $atts['columns'] );
+			$template_data['column_size'] = 12 / $template_data['columns'];
+		} else {
+			$layout = 'list';
+		}
+
 		if ( ! function_exists( 'calendarp_locate_template' ) ) {
 			require_once calendarp_get_plugin_dir() . 'public/helpers-templates.php';
 		}
 
 		ob_start();
 
-		include( calendarp_locate_template( 'shortcodes/events-list.php' ) );
+		include( calendarp_locate_template( 'shortcodes/events-' . $layout . '.php' ) );
 
 		$content = ob_get_clean();
 
@@ -93,6 +103,11 @@ class Calendar_Plus_Events_By_Category_Shortcode {
 			if ( isset( $atts['class'] ) ) {
 				$class = $atts['class'];
 			}
+
+			if( $atts['layout'] === 'grid' ){
+				$class  .= ' calendarp-events--grid columns';
+			}
+
 			if( $class ) {
 				$content = '<div class="' . esc_attr( $class ) . '">' . $content . '</div>';
 			}
