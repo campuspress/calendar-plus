@@ -159,7 +159,7 @@ registerBlockType( 'calendar-plus/events-list', {
         events: {default: 5},
         category: {},
 		layout: 'list',
-		columns: 1
+		columns: 2
     },
 	edit: withSelect( function( select ) {
         return {
@@ -208,7 +208,6 @@ registerBlockType( 'calendar-plus/events-list', {
 				value: props.attributes.columns,
 				label: __( 'Grid size' ),
 				options: [
-					{value: 1, 'label': __('1 Column')},
 					{value: 2, 'label': __('2 Columns')},
 					{value: 3, 'label': __('3 Columns')},
 					{value: 4, 'label': __('4 Columns')}

@@ -139,7 +139,7 @@ class Calendar_Plus_Events_By_Category_Shortcode {
 						),
 						'columns' => array(
 							'type' => 'number',
-							'default' => 1
+							'default' => 2
 						)
 					),
 				)
