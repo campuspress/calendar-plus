@@ -1,4 +1,6 @@
 <?php
+$is_inline = true;
+
 foreach ( $event_groups as $events_by_date ) {
 	foreach ( $events_by_date as $date => $events ) {
 		$month_name = mysql2date( 'M', $date, true );

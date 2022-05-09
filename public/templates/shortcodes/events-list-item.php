@@ -1,12 +1,18 @@
+<?php
+/**
+ * @var bool $is_inline
+ * @var Calendar_Plus_Event[] $events
+ */
+?>
 <div class="calendarp_calendar agenda-minified-calendar">
 	<div class="calendarp-date-item row">
-		<div class="calendarp-date large-2 columns text-center">
+		<div class="calendarp-date<?php echo $is_inline ? ' large-2 columns' : ''; ?> text-center">
 			<?php if ( 'sticky' !== $date ) : ?>
 				<div class="calendarp-date-month"><?php echo $month_name; ?></div>
 				<div class="calendarp-date-day"><?php echo $day; ?></div>
 			<?php endif; ?>
 		</div>
-		<div class="calendarp-events large-10 columns">
+		<div class="calendarp-events<?php echo $is_inline ? ' large-10 columns' : ''; ?>">
 			<?php
 			/** @var Calendar_Plus_Event $event */
 			foreach ( $events as $event ) :

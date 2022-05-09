@@ -6,6 +6,8 @@
  *      @param int columns
  * }
  */
+$is_inline = false;
+
 foreach ( $event_groups as $events_by_date ) {
     $items_in_row = 0;
 
