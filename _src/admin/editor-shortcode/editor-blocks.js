@@ -2,7 +2,7 @@ const {registerBlockType} = wp.blocks;
 const {createElement, useState} = wp.element;
 const {__} = wp.i18n;
 const {InspectorControls} = wp.editor;
-const {TextControl, RangeControl, SelectControl, ServerSideRender, PanelBody} = wp.components;
+const {TextControl, RangeControl, SelectControl, ServerSideRender, PanelBody, ToggleControl} = wp.components;
 const {withSelect} = window.wp.data;
 
 registerBlockType( 'calendar-plus/calendar', {
@@ -158,6 +158,7 @@ registerBlockType( 'calendar-plus/events-list', {
     attributes: {
         events: {default: 5},
         category: {},
+		featured_image: {default: false},
     },
 	edit: withSelect( function( select ) {
         return {
@@ -196,6 +197,14 @@ registerBlockType( 'calendar-plus/events-list', {
                         min: 1,
                         max: 100,
                     }),
+					createElement(ToggleControl, {
+						value: props.attributes.featured_image,
+						label: __( 'Show featured image' ),
+						checked: props.attributes.featured_image,
+						onChange: function(value){
+							props.setAttributes( {featured_image: value} );
+						}
+					}),
                 )
 			)
 		] )

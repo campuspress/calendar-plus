@@ -1,4 +1,10 @@
 <?php
+/**
+ * @var array $template_data {
+ *    @type bool $featured_image
+ * }
+ */
+
 foreach ( $event_groups as $events_by_date ) {
 	foreach ( $events_by_date as $date => $events ) {
 		$month_name = mysql2date( 'M', $date, true );
@@ -28,6 +34,12 @@ foreach ( $event_groups as $events_by_date ) {
 								<div class="calendarp-event-meta">
 									<?php echo calendarp_get_human_read_dates( $event->ID ); ?>
 								</div>
+								<?php if( $template_data['featured_image'] && has_post_thumbnail( $event->ID ) ):
+									?>
+									<div class="calendarp-event-thumbnail">
+										<?php echo get_the_post_thumbnail( $event->ID ); ?>
+									</div>
+								<?php endif; ?>
 							</div>
 						<?php endforeach; ?>
 					</div>
