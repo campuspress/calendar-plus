@@ -118,9 +118,17 @@ class Calendar_Plus_Theme_Compat {
 			if( $source === 'calendar_plus' ) {
 				return $template;
 			}
+			$event = calendarp_get_event( get_the_ID() );
+			$event_post  = $event->post;
+			$event_post->post_content = $shortcodes['single-event']->render_compat( array( 'event_id' => get_the_ID() ) );
 
-			$updated_content = $shortcodes['single-event']->render( array( 'event_id' => get_the_ID() ) );
-			calendar_plus_reset_post( array( 'post_content' => $updated_content ) );
+			calendar_plus_reset_post( (array) $event_post );
+
+			// This small hack allows avoiding duplications of meta
+			add_filter( 'cpschool_post_meta_items', function( $meta, $post_id ) {
+				$meta[] = 'empty';
+				return $meta;
+			}, 10, 2 );
 		}
 
 		if( is_archive() ) {
@@ -166,10 +174,9 @@ class Calendar_Plus_Theme_Compat {
 						'comment_status' => 'closed'
 					) );
 
-					$template  = locate_template( array( 'single-event.php', 'single.php', 'page.php' ) );
 				}
 			}
 		}
-		return $template;
+		return locate_template( array(  'single.php', 'page.php' ) );
 	}
 }
