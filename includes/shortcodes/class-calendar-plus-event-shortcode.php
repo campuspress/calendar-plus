@@ -20,13 +20,35 @@ class Calendar_Plus_Event_Shortcode {
 	}
 
 	/**
+	 * Renders shortcode
+	 *
+	 * @param array $atts Shortcode attributes
+	 *
+	 * @return string Shortcode html
+	 */
+	public function render( $atts ) {
+		return $this->render_attributes( $atts, 'shortcodes/event-single.php' );
+	}
+
+	/**
+	 * Renders shortcode. The function is used for compatibility with themes
+	 *
+	 * @param array $atts Shortcode attributes
+	 *
+	 * @return string Shortcode html
+	 */
+	public function render_compat( $atts ) {
+		return $this->render_attributes( $atts, 'shortcodes/event-single.plain.php' );
+	}
+
+	/**
 	 * Render the shortcode content
 	 *
 	 * @param array $atts Shortcode attributes
 	 *
 	 * @return string Shortcode output
 	 */
-	public function render( $atts ) {
+	private function render_attributes( $atts, $template ) {
 
 		if ( empty( $atts['event_id'] ) || ! $event = calendarp_get_event( $atts['event_id'] ) ) {
 			return calendarp_is_rest_api_request()
@@ -40,7 +62,7 @@ class Calendar_Plus_Event_Shortcode {
 
 		ob_start();
 
-		include( calendarp_locate_template( 'shortcodes/event-single.php' ) );
+		include( calendarp_locate_template( $template ) );
 
 		return ob_get_clean();
 	}
