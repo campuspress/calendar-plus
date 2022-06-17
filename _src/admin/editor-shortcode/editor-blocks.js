@@ -2,7 +2,15 @@ const {registerBlockType} = wp.blocks;
 const {createElement, useState} = wp.element;
 const {__} = wp.i18n;
 const {InspectorControls} = wp.editor;
-const {TextControl, RangeControl, SelectControl, ServerSideRender, PanelBody} = wp.components;
+const {
+    TextControl,
+    RangeControl,
+    SelectControl,
+    ServerSideRender,
+    PanelBody,
+    __experimentalHeading,
+    CheckboxControl
+} = wp.components;
 const {withSelect} = window.wp.data;
 
 registerBlockType( 'calendar-plus/calendar', {
@@ -158,6 +166,10 @@ registerBlockType( 'calendar-plus/events-list', {
     attributes: {
         events: {default: 5},
         category: {},
+        display_location: {
+            type: 'boolean',
+            default: false
+        },
     },
 	edit: withSelect( function( select ) {
         return {
@@ -196,6 +208,23 @@ registerBlockType( 'calendar-plus/events-list', {
                         min: 1,
                         max: 100,
                     }),
+                    createElement('div', {}, [
+                        createElement(
+                            __experimentalHeading,
+                            { level: 5, style: { marginBottom: '20px' } },
+                            __( 'Choose fields to display' )
+                        ),
+                        createElement(
+                            CheckboxControl,
+                            {
+                                label: __( 'Location' ),
+                                checked: props.attributes.display_location,
+                                onChange: function(value) {
+                                    props.setAttributes( { display_location: value } );
+                                }
+                            }
+                        ),
+                    ]),
                 )
 			)
 		] )

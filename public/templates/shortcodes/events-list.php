@@ -28,6 +28,16 @@ foreach ( $event_groups as $events_by_date ) {
 								<div class="calendarp-event-meta">
 									<?php echo calendarp_get_human_read_dates( $event->ID ); ?>
 								</div>
+								<?php
+								/** @var bool $display_location */
+								if ( $display_location && $event->get_location() ) :
+									?>
+									<div class="calendarp-even-location">
+										<p><?php echo esc_html( $event->get_location()->get_full_address() ); ?></p>
+									</div>
+									<?php
+								endif;
+								?>
 							</div>
 						<?php endforeach; ?>
 					</div>

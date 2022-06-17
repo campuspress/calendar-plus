@@ -56,6 +56,8 @@ class Calendar_Plus_Events_By_Category_Shortcode {
 			$args['events_per_page'] = absint( $atts['events'] );
 		}
 
+		$display_location = isset( $atts['display_location'] ) && $atts['display_location'];
+
 		$sticky_ids = get_option( 'sticky_posts' );
 
 		if ( empty( $sticky_ids ) ) {
@@ -117,6 +119,10 @@ class Calendar_Plus_Events_By_Category_Shortcode {
 						),
 						'category' => array(
 							'type' => 'string',
+						),
+						'display_location' => array(
+							'type'    => 'boolean',
+							'default' => false,
 						),
 					),
 				)
