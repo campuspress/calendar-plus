@@ -57,6 +57,7 @@ class Calendar_Plus_Events_By_Category_Shortcode {
 		}
 
 		$display_location = isset( $atts['display_location'] ) && $atts['display_location'];
+		$display_excerpt  = isset( $atts['display_excerpt'] ) && $atts['display_excerpt'];
 
 		$sticky_ids = get_option( 'sticky_posts' );
 
@@ -123,6 +124,10 @@ class Calendar_Plus_Events_By_Category_Shortcode {
 						'display_location' => array(
 							'type'    => 'boolean',
 							'default' => false,
+						),
+						'display_excerpt' => array(
+							'type'    => 'boolean',
+							'default' => 'false',
 						),
 					),
 				)

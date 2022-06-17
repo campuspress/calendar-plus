@@ -170,6 +170,10 @@ registerBlockType( 'calendar-plus/events-list', {
             type: 'boolean',
             default: false
         },
+        display_excerpt: {
+            type: 'boolean',
+            default: false
+        },
     },
 	edit: withSelect( function( select ) {
         return {
@@ -221,6 +225,16 @@ registerBlockType( 'calendar-plus/events-list', {
                                 checked: props.attributes.display_location,
                                 onChange: function(value) {
                                     props.setAttributes( { display_location: value } );
+                                }
+                            }
+                        ),
+                        createElement(
+                            CheckboxControl,
+                            {
+                                label: __( 'Excerpt' ),
+                                checked: props.attributes.display_excerpt,
+                                onChange: function(value) {
+                                    props.setAttributes( { display_excerpt: value } );
                                 }
                             }
                         ),
