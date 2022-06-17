@@ -9,6 +9,8 @@ const {
     ServerSideRender,
     PanelBody,
     __experimentalHeading,
+    __experimentalView,
+    __experimentalSpacer,
     CheckboxControl
 } = wp.components;
 const {withSelect} = window.wp.data;
@@ -212,11 +214,15 @@ registerBlockType( 'calendar-plus/events-list', {
                         min: 1,
                         max: 100,
                     }),
-                    createElement('div', {}, [
+                    createElement(__experimentalView, {}, [
                         createElement(
-                            __experimentalHeading,
-                            { level: 5, style: { marginBottom: '20px' } },
-                            __( 'Choose fields to display' )
+                            __experimentalSpacer,
+                            {},
+                            createElement(
+                                __experimentalHeading,
+                                { level: 5 },
+                                __( 'Choose fields to display' )
+                            ),
                         ),
                         createElement(
                             CheckboxControl,
