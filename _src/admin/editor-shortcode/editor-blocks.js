@@ -11,9 +11,81 @@ const {
     __experimentalHeading,
     __experimentalView,
     __experimentalSpacer,
-    CheckboxControl
+    __experimentalScrollable,
+    __experimentalVStack,
+    CheckboxControl,
+    SearchControl
 } = wp.components;
 const {withSelect} = window.wp.data;
+
+const CategorySelect = function(props) {
+    const [ searchText, setSearchText ] = useState('');
+    const categories = props.categories ? props.categories : [];
+    const [ items, setItems ] = useState(categories);
+    const selected = props.selected ? props.selected : [];
+
+    const list = [];
+    for (const item of items) {
+
+        list.push(
+            createElement(
+                CheckboxControl,
+                {
+                    label: item.label,
+                    checked: selected.indexOf( item.value ) !== -1 ,
+                    key: item.label,
+                    style: { marginBottom: 5 },
+                    onChange: function(value) {
+                        if ( props.onSelect ) {
+                            props.onSelect( item.value, value );
+                        }
+                    }
+                }
+            ),
+        );
+    }
+    var elements = [
+        createElement(
+            __experimentalSpacer,
+            { marginBottom: 5 },
+            createElement(
+                SearchControl,
+                {
+                    value: searchText,
+                    onChange: function(value) {
+                        const filtered = props.categories.filter(function(item){
+                            return item.label.toLowerCase().indexOf(value) !== -1;
+                        });
+                        setItems(filtered);
+                        setSearchText(value);
+                    }
+                }
+            ),
+        ),
+        createElement(
+            __experimentalScrollable,
+            {
+                style: { maxHeight: 200 }
+            },
+            createElement(__experimentalVStack, {}, list)
+        )
+    ];
+    if ( props.label ) {
+        elements.unshift(
+            createElement(
+                __experimentalSpacer,
+                { marginBottom: 5 },
+                createElement( __experimentalHeading, { level: 5 }, props.label )
+            )
+        );
+    }
+
+     return createElement(
+         __experimentalSpacer,
+         { marginBottom: 10 },
+         createElement(__experimentalView, {}, elements)
+     );
+}
 
 registerBlockType( 'calendar-plus/calendar', {
     title: __( 'Events Calendar' ),
