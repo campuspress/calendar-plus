@@ -126,7 +126,9 @@ registerBlockType( 'calendar-plus/event', {
             createElement( 'div', {}, createElement( ServerSideRender, {
                 block: "calendar-plus/event",
                 attributes: props.attributes,
-                EmptyResponsePlaceholder: createElement( 'div', {}, 'test' )
+                EmptyResponsePlaceholder: function() {
+                    return createElement( 'div', {}, 'test' );
+                }
             } ) ),
             createElement( InspectorControls, {},
                 createElement( PanelBody, { title: __( 'Event Settings' ), initialOpen: true },
