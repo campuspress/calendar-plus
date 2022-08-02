@@ -627,7 +627,13 @@ function calendarp_get_event_type_term_ids() {
 
 	$updated = false;
 	foreach ( $term_ids as $term_name => $term_id ) {
-		if ( ! term_exists( $term_id ) ) {
+
+		$term = get_term( $term_id );
+		if (
+			! $term ||
+			'calendar_event_type' !== $term->taxonomy &&
+			$term_name !== $term->slug
+		) {
 			$updated = true;
 			$term = wp_insert_term( $term_name, 'calendar_event_type' );
 			if ( is_array( $term ) ) {
