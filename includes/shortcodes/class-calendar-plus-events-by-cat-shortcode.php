@@ -64,12 +64,9 @@ class Calendar_Plus_Events_By_Category_Shortcode {
 		$from_date = false;
 		$to_date   = false;
 		if( isset( $atts['past_events'] ) ) {
-
-			if( $atts['past_events'] === 'true' ) {
-
+			if( $atts['past_events'] !== false ) {
 				$to_date = $current_time;
 			} else {
-
 				$from_date = $current_time;
 			}
 		} else {
@@ -148,7 +145,7 @@ class Calendar_Plus_Events_By_Category_Shortcode {
 							'type' => 'string',
 						),
 						'past_events' => array(
-							'type' => 'bool',
+							'type' => 'boolean',
 							'default' => false
 						),
 						'display_location' => array(
@@ -157,7 +154,7 @@ class Calendar_Plus_Events_By_Category_Shortcode {
 						),
 						'display_excerpt' => array(
 							'type'    => 'boolean',
-							'default' => 'false',
+							'default' => false,
 						),
 					),
 				)

@@ -14,7 +14,8 @@ const {
     __experimentalScrollable,
     __experimentalVStack,
     CheckboxControl,
-    SearchControl
+    SearchControl,
+    ToggleControl
 } = wp.components;
 const {withSelect} = window.wp.data;
 
@@ -240,7 +241,9 @@ registerBlockType( 'calendar-plus/events-list', {
         src: 'calendar-alt',
     },
     attributes: {
-        events: {default: 5},
+        events: {
+            default: 5
+        },
         past_events: {
             default: false
         },
