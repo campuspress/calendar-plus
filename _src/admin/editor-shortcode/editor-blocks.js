@@ -2,8 +2,90 @@ const {registerBlockType} = wp.blocks;
 const {createElement, useState} = wp.element;
 const {__} = wp.i18n;
 const {InspectorControls} = wp.editor;
-const {TextControl, RangeControl, SelectControl, ServerSideRender, PanelBody, ToggleControl} = wp.components;
+const {
+    TextControl,
+    RangeControl,
+    SelectControl,
+    ServerSideRender,
+    PanelBody,
+    __experimentalHeading,
+    __experimentalView,
+    __experimentalSpacer,
+    __experimentalScrollable,
+    __experimentalVStack,
+    CheckboxControl,
+    SearchControl
+} = wp.components;
 const {withSelect} = window.wp.data;
+
+const CategorySelect = function(props) {
+    const [ searchText, setSearchText ] = useState('');
+    const categories = props.categories ? props.categories : [];
+    const [ items, setItems ] = useState(categories);
+    const selected = props.selected ? props.selected : [];
+
+    const list = [];
+    for (const item of items) {
+
+        list.push(
+            createElement(
+                CheckboxControl,
+                {
+                    label: item.label,
+                    checked: selected.indexOf( item.value ) !== -1 ,
+                    key: item.label,
+                    style: { marginBottom: 5 },
+                    onChange: function(value) {
+                        if ( props.onSelect ) {
+                            props.onSelect( item.value, value );
+                        }
+                    }
+                }
+            ),
+        );
+    }
+    var elements = [
+        createElement(
+            __experimentalSpacer,
+            { marginBottom: 5 },
+            createElement(
+                SearchControl,
+                {
+                    value: searchText,
+                    onChange: function(value) {
+                        const filtered = props.categories.filter(function(item){
+                            return item.label.toLowerCase().indexOf(value) !== -1;
+                        });
+                        setItems(filtered);
+                        setSearchText(value);
+                    }
+                }
+            ),
+        ),
+        createElement(
+            __experimentalScrollable,
+            {
+                style: { maxHeight: 200 }
+            },
+            createElement(__experimentalVStack, {}, list)
+        )
+    ];
+    if ( props.label ) {
+        elements.unshift(
+            createElement(
+                __experimentalSpacer,
+                { marginBottom: 5 },
+                createElement( __experimentalHeading, { level: 5 }, props.label )
+            )
+        );
+    }
+
+     return createElement(
+         __experimentalSpacer,
+         { marginBottom: 10 },
+         createElement(__experimentalView, {}, elements)
+     );
+}
 
 registerBlockType( 'calendar-plus/calendar', {
     title: __( 'Events Calendar' ),
@@ -159,16 +241,40 @@ registerBlockType( 'calendar-plus/events-list', {
     },
     attributes: {
         events: {default: 5},
-        category: {},
-		past_events: {default: false},
+        past_events: {
+            default: false
+        },
+        category: {
+            default: ''
+        },
+        display_location: {
+            type: 'boolean',
+            default: false
+        },
+        display_excerpt: {
+            type: 'boolean',
+            default: false
+        },
     },
     edit: withSelect( function( select ) {
         return {
             categories: select('core').getEntityRecords('taxonomy', 'calendar_event_category', {per_page: -1})
         };
     } )( function( props ) {
-        var categoryOptions = [ { value: '', label: __( 'All' ) } ];
-        
+        var categoryOptions = [ { value: 0, label: __( 'All' ) } ];
+        var selectedCategories = props.attributes.category
+            .split( ',' )
+            .map(
+                function( value ){
+                    return parseInt( value.trim() );
+                }
+            )
+            .filter(
+                function(num) {
+                    return ! isNaN( num );
+                }
+            );
+
         if( props.categories ) {
             props.categories.forEach((category) => {
                 categoryOptions.push({value:category.id, label:category.name});
@@ -182,14 +288,43 @@ registerBlockType( 'calendar-plus/events-list', {
             } ) ),
             createElement( InspectorControls, {},
                 createElement( PanelBody, { title: __( 'Events Settings' ), initialOpen: true },
-                    createElement(SelectControl, {
-                        value: props.attributes.category,
-                        label: __( 'Category' ),
-                        onChange: function(value){
-                            props.setAttributes( { category: value } );
-                        },
-                        options: categoryOptions
-                    }),
+                    createElement(
+                        CategorySelect,
+                        {
+                            label: __( 'Category' ),
+                            categories: categoryOptions,
+                            selected: selectedCategories,
+                            onSelect: function(id, value) {
+                                if ( ! id ) {
+                                    if ( value ) {
+                                        selectedCategories = props.categories.map(
+                                            function( item ) {
+                                                return item.id;
+                                            }
+                                        );
+                                        selectedCategories.push( 0 );
+                                        props.setAttributes( { category: selectedCategories.join( ',' ) } );
+                                    } else {
+                                        props.setAttributes( { category: '' } );
+                                    }
+
+
+                                    return;
+                                }
+
+                                const index = selectedCategories.indexOf( id );
+
+                                if ( value && index === -1 ) {
+                                    selectedCategories.push( id );
+                                } else if ( index !== -1 ) {
+                                    delete selectedCategories[ index ];
+                                }
+                                props.setAttributes( {
+                                    category: selectedCategories.join( ',' )
+                                } );
+                            }
+                        }
+                    ),
                     createElement(RangeControl, {
                         value: props.attributes.events,
                         label: __( 'Number of events' ),
@@ -208,6 +343,37 @@ registerBlockType( 'calendar-plus/events-list', {
 						}
 					}),
 
+                    createElement(__experimentalView, {}, [
+                        createElement(
+                            __experimentalSpacer,
+                            {},
+                            createElement(
+                                __experimentalHeading,
+                                { level: 5 },
+                                __( 'Choose fields to display' )
+                            ),
+                        ),
+                        createElement(
+                            CheckboxControl,
+                            {
+                                label: __( 'Location' ),
+                                checked: props.attributes.display_location,
+                                onChange: function(value) {
+                                    props.setAttributes( { display_location: value } );
+                                }
+                            }
+                        ),
+                        createElement(
+                            CheckboxControl,
+                            {
+                                label: __( 'Excerpt' ),
+                                checked: props.attributes.display_excerpt,
+                                onChange: function(value) {
+                                    props.setAttributes( { display_excerpt: value } );
+                                }
+                            }
+                        ),
+                    ]),
                 )
             )
         ] )

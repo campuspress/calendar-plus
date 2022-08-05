@@ -56,6 +56,9 @@ class Calendar_Plus_Events_By_Category_Shortcode {
 			$args['events_per_page'] = absint( $atts['events'] );
 		}
 
+		$display_location = ! empty( $atts['display_location'] ) && $atts['display_location'] !== 'false';
+		$display_excerpt  = ! empty( $atts['display_excerpt'] ) && $atts['display_excerpt'] !== 'false';
+
 		$sticky_ids = get_option( 'sticky_posts' );
 
 		$from_date = false;
@@ -147,6 +150,14 @@ class Calendar_Plus_Events_By_Category_Shortcode {
 						'past_events' => array(
 							'type' => 'bool',
 							'default' => false
+						),
+						'display_location' => array(
+							'type'    => 'boolean',
+							'default' => false,
+						),
+						'display_excerpt' => array(
+							'type'    => 'boolean',
+							'default' => 'false',
 						),
 					),
 				)
