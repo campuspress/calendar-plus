@@ -7,7 +7,7 @@
         "core-js": "^2.6.9",
         "es6-promise": "^4.2.6",
         "hash-generator": "^0.1.0",
-        "moment": "^2.24.0",
+        "moment": "^2.29.4",
         "prop-types": "^15.7.2",
         "react": "^16.8.2",
         "react-big-calendar": "^0.20.3",
