@@ -22,7 +22,7 @@ function calendarp_get_template_part( $slug, $name = '' ) {
 	// calendar-plus/public/templates/slug-name.php
 	if ( ! $template ) {
 		if( $name ) {
-		$file = calendarp_get_plugin_dir() . 'public/templates/' . $slug . '-' . $name . '.php';
+			$file = calendarp_get_plugin_dir() . 'public/templates/' . $slug . '-' . $name . '.php';
 		}
 		else {
 			$file = calendarp_get_plugin_dir() . 'public/templates/' . $slug . '.php';

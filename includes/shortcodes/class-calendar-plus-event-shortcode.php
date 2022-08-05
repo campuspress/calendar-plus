@@ -38,11 +38,34 @@ class Calendar_Plus_Event_Shortcode {
 			require_once calendarp_get_plugin_dir() . 'public/helpers-templates.php';
 		}
 
+		setup_postdata( $event->ID );
+
 		ob_start();
 
 		include( calendarp_locate_template( 'shortcodes/event-single.php' ) );
 
-		return ob_get_clean();
+		wp_reset_postdata();
+
+		/**
+		 * Filters single event shortcode content
+		 *
+		 * @since 2.2.6.7
+		 *
+		 * @param string $content Shortcode content.
+		 * @param object $event Calendar event being rendered.
+		 * @param array  $atts Shortcode attributes.
+		 *
+		 * @return string
+		 */
+
+		$content = ob_get_clean();
+
+		return apply_filters(
+			'calendarp_event_shortcode_content',
+			$content,
+			$event,
+			$atts
+		);
 	}
 
 	/**
