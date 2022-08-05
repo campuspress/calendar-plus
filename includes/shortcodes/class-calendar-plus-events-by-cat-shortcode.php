@@ -58,17 +58,33 @@ class Calendar_Plus_Events_By_Category_Shortcode {
 
 		$sticky_ids = get_option( 'sticky_posts' );
 
+		$from_date = false;
+		$to_date   = false;
+		if( isset( $atts['past_events'] ) ) {
+
+			if( $atts['past_events'] === 'true' ) {
+
+				$to_date = $current_time;
+			} else {
+
+				$from_date = $current_time;
+			}
+		} else {
+
+			$from_date = $current_time;
+		}
+
 		if ( empty( $sticky_ids ) ) {
 
 			$event_groups = array(
-				calendarp_get_events_in_date_range( $current_time, false, $args ),
+				calendarp_get_events_in_date_range( $from_date, $to_date, $args ),
 			);
 
 		} else {
 
 			$event_groups = array(
-				calendarp_get_events_in_date_range( $current_time, false, $args + array( 'include_ids' => $sticky_ids ) ),
-				calendarp_get_events_in_date_range( $current_time, false, $args + array( 'exclude_ids' => $sticky_ids ) ),
+				calendarp_get_events_in_date_range( $from_date, $to_date, $args + array( 'include_ids' => $sticky_ids ) ),
+				calendarp_get_events_in_date_range( $from_date, $to_date, $args + array( 'exclude_ids' => $sticky_ids ) ),
 			);
 		}
 
@@ -127,6 +143,10 @@ class Calendar_Plus_Events_By_Category_Shortcode {
 						),
 						'category' => array(
 							'type' => 'string',
+						),
+						'past_events' => array(
+							'type' => 'bool',
+							'default' => false
 						),
 					),
 				)

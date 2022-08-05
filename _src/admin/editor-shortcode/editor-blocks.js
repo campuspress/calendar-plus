@@ -2,7 +2,7 @@ const {registerBlockType} = wp.blocks;
 const {createElement, useState} = wp.element;
 const {__} = wp.i18n;
 const {InspectorControls} = wp.editor;
-const {TextControl, RangeControl, SelectControl, ServerSideRender, PanelBody} = wp.components;
+const {TextControl, RangeControl, SelectControl, ServerSideRender, PanelBody, ToggleControl} = wp.components;
 const {withSelect} = window.wp.data;
 
 registerBlockType( 'calendar-plus/calendar', {
@@ -160,6 +160,7 @@ registerBlockType( 'calendar-plus/events-list', {
     attributes: {
         events: {default: 5},
         category: {},
+		past_events: {default: false},
     },
     edit: withSelect( function( select ) {
         return {
@@ -198,6 +199,15 @@ registerBlockType( 'calendar-plus/events-list', {
                         min: 1,
                         max: 100,
                     }),
+					createElement(ToggleControl, {
+						value: props.attributes.past_events,
+						checked: props.attributes.past_events,
+						label: __( 'Display past events' ),
+						onChange: function(value){
+							props.setAttributes( { past_events: value } );
+						}
+					}),
+
                 )
             )
         ] )
