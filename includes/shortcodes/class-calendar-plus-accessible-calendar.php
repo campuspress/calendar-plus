@@ -336,7 +336,6 @@ class Calendar_Plus_Accessible_Calendar {
 			</nav>
 
 			<table
-				role="main"
 				aria-label="<?php _e( 'Calendar Dates', 'calendar-plus' ); ?>"
 			>
 				<caption>
