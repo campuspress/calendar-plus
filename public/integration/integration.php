@@ -7,6 +7,10 @@ if ( is_file( $file ) ) {
 	include_once( $file );
 }
 
+if ( ! function_exists( 'is_plugin_active' ) ) {
+	require_once ABSPATH . 'wp-admin/includes/plugin.php';
+}
+
 if (
 	is_plugin_active( 'divi-builder/divi-builder.php' )
 ) {
