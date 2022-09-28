@@ -234,17 +234,18 @@ class Calendar_Plus_Accessible_Calendar {
 	 * Render a single event within the calendar
 	 *
 	 * @param Calendar_Plus_Event $event
+	 * @param string $formatted_date
 	 */
-	private function render_calendar_event( Calendar_Plus_Event $event ) {
+	private function render_calendar_event( Calendar_Plus_Event $event, string $formatted_date ) {
 		?>
 		<section class="event collapsed">
 			<header>
 				<h2 
 					class="event-title">
-					<?php echo esc_html( get_the_title( $event->post ) ); ?></h2>
+					<?php echo esc_html( get_the_title( $event->post ) ); ?> (<time><?php echo esc_html( $formatted_date ); ?></time>)</h2>
 			</header>
 			<button class="toggle-event-details" aria-expanded="false">
-				<?php echo sprintf( esc_html__( 'Show Details for %s', 'calendar-plus' ), get_the_title( $event->post ) ); ?>
+				<?php echo sprintf( esc_html__( 'Show Details for %s', 'calendar-plus' ) . ' (<time>%s</time>)', get_the_title( $event->post ), esc_html( $formatted_date ) ); ?>
 			</button>
 
 			<div class="event-details" aria-hidden="true">
@@ -379,7 +380,8 @@ class Calendar_Plus_Accessible_Calendar {
 
 						foreach ( $events as $event ) {
 							if ( $event['start'] <= $current_datetime && $event['finish'] >= $current_datetime ) {
-								$this->render_calendar_event( $event['event'] );
+								$formatted_time = date( 'Y-m-d', $current_datetime );
+								$this->render_calendar_event( $event['event'], $formatted_time );
 							}
 						}
 
