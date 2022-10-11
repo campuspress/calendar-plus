@@ -59,6 +59,7 @@ class Calendar_Plus_Admin {
 		$this->version = $version;
 		$this->meta_boxes = array();
 		$this->menu_pages = array();
+		include_once calendarp_get_plugin_dir() . 'admin/integration/integration.php';
 
 		require_once calendarp_get_plugin_dir() . 'admin/meta-boxes/event/class-event-details-meta-box.php';
 
