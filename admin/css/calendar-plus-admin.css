@@ -353,18 +353,27 @@
 	position: absolute;
 	top: 0.2em;
 	right: 0;
+	visibility: visible;
+	display: none;
 }
 
 #location-results {
 	display: none;
+	border: 1px solid #efefef;
+	margin-bottom: 10px;
+	box-shadow: 0 2px 5px rgb(0 0 0 / 20%);
+	z-index: 1000;
+	background: #fff;
+	position: fixed;
 }
 
 #location-results .location-result {
-	border: 1px solid #dbdbdb;
-	box-shadow: 1px 1px 0px rgb(207, 205, 205);
-	cursor: pointer;
-	padding: 10px;
-	background: #f7f7f7;
+	border-bottom: 1px solid #efefef;
+	padding: 8px 10px;
+	display: block;
+	text-decoration: none;
+	color: #000;
+	width: 212px;
 }
 
 #location-results .location-result:hover {

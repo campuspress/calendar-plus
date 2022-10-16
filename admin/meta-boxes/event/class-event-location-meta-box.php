@@ -9,7 +9,7 @@ class Calendar_Plus_Event_Location_Metabox extends Calendar_Plus_Meta_Box {
 		$this->meta_box_priority = 'high';
 		$this->post_type = 'calendar_event';
 
-		//add_action( 'wp_ajax_search_event_location', array( $this, 'search_location' ) );
+		add_action( 'wp_ajax_search_event_location', array( $this, 'search_location' ) );
 		parent::__construct();
 	}
 
@@ -18,28 +18,26 @@ class Calendar_Plus_Event_Location_Metabox extends Calendar_Plus_Meta_Box {
 		$meta_box_slug = $this->meta_box_slug;
 
 		$location_id = $event->location_id;
+		$_current_location = calendarp_get_location( $location_id );
 
-		/**
-		 * $_current_location = calendarp_get_location( $location_id );
-		 *
-		 * $current_location = new stdClass();
-		 * if ( $_current_location ) {
-		 * $query = new WP_Query(
-		 * array(
-		 * 'post_type' => 'calendar_location',
-		 * 'supress_filters' => true,
-		 * 'ignore_sticky_posts' => true,
-		 * 'posts_per_page' => 1,
-		 * 'post__in' => array( $_current_location->ID )
-		 * )
-		 * );
-		 *
-		 * $results = $this->get_javascript_location( $query );
-		 * $current_location = $results[0];
-		 * }
-		 *
-		 * $current_location = json_encode($current_location);
-		 **/
+		$current_location = new stdClass();
+		if ( $_current_location ) {
+			$query = new WP_Query(
+				array(
+					'post_type'				=> 'calendar_location',
+					'supress_filters'		=> true,
+					'ignore_sticky_posts'	=> true,
+					'posts_per_page'		=> 1,
+					'post__in'				=> array( $_current_location->ID )
+				)
+			);
+
+			$results			= $this->get_javascript_location( $query );
+			$current_location	= $results[0];
+		}
+
+		$current_location = json_encode( $current_location );
+
 		include_once calendarp_get_plugin_dir() . 'admin/views/event-location-meta-box.php';
 	}
 
@@ -59,12 +57,12 @@ class Calendar_Plus_Event_Location_Metabox extends Calendar_Plus_Meta_Box {
 	public function search_location() {
 
 		$query = new WP_Query( array(
-			's'                   => $_REQUEST['s'],
-			'post_type'           => 'calendar_location',
-			'supress_filters'     => true,
-			'ignore_sticky_posts' => true,
-			'orderby'             => 'title',
-			'order'               => 'ASC',
+			's'						=> $_REQUEST['s'],
+			'post_type'				=> 'calendar_location',
+			'supress_filters'		=> true,
+			'ignore_sticky_posts'	=> true,
+			'orderby'				=> 'title',
+			'order'					=> 'ASC',
 		) );
 
 		$results = $this->get_javascript_location( $query );
@@ -88,14 +86,12 @@ class Calendar_Plus_Event_Location_Metabox extends Calendar_Plus_Meta_Box {
 				$query->the_post();
 
 				$results[] = array(
-					'id'        => get_the_ID(),
-					'excerpt'   => get_the_excerpt(),
-					'title'     => get_the_title(),
-					'thumbnail' => get_the_post_thumbnail( get_the_ID(), 'thumbnail' ),
+					'id'		=> get_the_ID(),
+					'title'		=> get_the_title(),
+					'slug'      => $query->post->post_name,
 				);
 			}
 		}
-		remove_filter( 'excerpt_more', array( $this, 'set_excerpt_more_on_locations_search' ), 999 );
 
 		wp_reset_postdata();
 

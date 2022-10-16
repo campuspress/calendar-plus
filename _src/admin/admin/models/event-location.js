@@ -5,9 +5,8 @@
 	window.CalendarPlusAdmin.models.EventLocation = Backbone.Model.extend({
 		defaults: {
 			id: 0,
-			excerpt: '',
-			thumbnail: '',
-			title: ''
+			title: '',
+			slug: ''
 		}
 	});
 })(jQuery);
