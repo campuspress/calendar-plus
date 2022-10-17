@@ -13,7 +13,7 @@
 
 		events: {
 			'keyup #location-search-string': 'preSearchLocation',
-			'click #location-search-close': 'cleanSearchBox'
+			'click #location-search-close': 'cleanSearchBox',
 		},
 
 		render: function () {
@@ -34,6 +34,18 @@
 
 			return this;
 		},
+		showResults: function() {
+			if (this.$resultsWrapper.children().length) {
+				this.$resultsWrapper.css({
+					left: this.$searchInput.offset().left,
+					top: this.$searchInput.offset().top - this.$resultsWrapper.height() - 10
+				});
+				this.$resultsWrapper.show();
+			}
+		},
+		hideResults: function() {
+			this.$resultsWrapper.hide();
+		},
 		preSearchLocation: function (e) {
 			this.initTimer();
 
@@ -52,7 +64,7 @@
 			// Do not seach if we are currently searching.
 			// The search needs to be more than 2 characters
 			if (!self.searching && model.get('searchString').length > 2) {
-
+				this.hideResults();
 				// Show the spinner gif
 				if (this.$spinner)
 					this.$spinner.show();
@@ -69,11 +81,16 @@
 					},
 				})
 					.done(function (results) {
-						// Create the new collection and view
-						let searchResultsCollection = new CalendarPlusAdmin.collections.searchResults(results);
-						let searchResults = new CalendarPlusAdmin.views.searchResults({collection: searchResultsCollection});
-
-						self.displayResults(searchResults);
+						self.searching = false;
+						if (results.length) {
+							// Create the new collection and view
+							let searchResultsCollection = new CalendarPlusAdmin.collections.searchResults(results);
+							let searchResults = new CalendarPlusAdmin.views.searchResults({
+								collection: searchResultsCollection,
+								searchInput: self
+							});
+							self.displayResults(searchResults);
+						}
 					})
 					.always(function () {
 						if (self.$spinner)
@@ -92,7 +109,7 @@
 		cleanSearchBox: function () {
 			this.$searchInput.val('');
 			this.model.set('searchString', '');
-			this.$resultsWrapper.slideUp();
+			this.$resultsWrapper.hide();
 			this.$resultsWrapper.html('');
 		},
 		cleanSearch: function () {
@@ -107,7 +124,11 @@
 		displayResults: function (results) {
 			this.cleanSearch();
 			this.$resultsWrapper.append(results.render().el);
-			this.$resultsWrapper.slideDown();
+			this.$resultsWrapper.css({
+				left: this.$searchInput.offset().left,
+				top: this.$searchInput.offset().top - this.$resultsWrapper.height() - 10
+			});
+			this.$resultsWrapper.show();
 		}
 	});
 
@@ -117,7 +138,7 @@
 	window.CalendarPlusAdmin.views.SearchResult = Backbone.View.extend({
 		tagName: 'li',
 		events: {
-			'click .location-result': 'selectLocation'
+			'mousedown .location-result': 'selectLocation'
 		},
 		render: function () {
 			let template = CalendarPlusAdmin.helpers.template('location-search-result-template');
@@ -127,10 +148,9 @@
 		selectLocation: function (e) {
 			let location_id = this.model.get('id');
 			$('#event-location-hidden').val(location_id);
-			$('#location-results').slideUp();
 
-			CalendarPlusAdmin.helpers.setSelectedLocation(this.model);
-
+			const dispatcher = Backbone.Events;
+			dispatcher.trigger('location:selected', this.model);
 		}
 	});
 

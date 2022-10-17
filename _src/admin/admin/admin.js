@@ -45,3 +45,8 @@ require('./models/location-gmap.js');
 require('./views/location-gmap.js');
 require('./misc/event-details.js');
 require('./misc/calendar.js');
+
+require('./models/event-location');
+require('./collections/event-location-searcher');
+require('./models/event-location-searcher');
+require('./views/event-location-searcher');

@@ -389,4 +389,64 @@
 		return this.$exclusionsList;
 	};
 
+	window.CalendarPlusAdmin.misc.eventLocationSearch = function() {
+		this.handleSearchBlur = this.handleSearchBlur.bind(this);
+		this.handleSearchFocus = this.handleSearchFocus.bind(this);
+	};
+
+	window.CalendarPlusAdmin.misc.eventLocationSearch.prototype.init = function(args) {
+		if(! args.model) {
+			this.location = new CalendarPlusAdmin.models.EventLocation();
+		} else if(! (args.model instanceof CalendarPlusAdmin.models.EventLocation)) {
+			this.location = new CalendarPlusAdmin.models.EventLocation(args.model)
+		} else {
+			this.location = $.clone(defaultLocation);
+		}
+		const dispatcher = Backbone.Events;
+		const self = this;
+
+		dispatcher.on('location:selected', function(model){
+			const searchArgs = {...args, model:model};
+			self.renderLocation(searchArgs);
+			self.releaseSidebar();
+		});
+
+		this.renderLocation({...args, model: this.location});
+	};
+
+	window.CalendarPlusAdmin.misc.eventLocationSearch.prototype.renderLocation = function(args) {
+		const $search = $('#location-search');
+		$search.children().remove();
+
+		this.locationSearchView  = new CalendarPlusAdmin.views.LocationSearcher(args);
+		$search.append(this.locationSearchView.render().el);
+		this.attachEvents();
+	};
+
+	window.CalendarPlusAdmin.misc.eventLocationSearch.prototype.attachEvents = function(){
+		this.locationSearchView.$searchInput.on('focus', this.handleSearchFocus);
+		this.locationSearchView.$searchInput.on('blur', this.handleSearchBlur);
+	};
+
+	window.CalendarPlusAdmin.misc.eventLocationSearch.prototype.handleSearchFocus = function(){
+		this.lockSidebar();
+		this.locationSearchView.showResults();
+	};
+	window.CalendarPlusAdmin.misc.eventLocationSearch.prototype.lockSidebar = function() {
+		const sidebar = document.getElementsByClassName('interface-interface-skeleton__sidebar')[0];
+		var scrollTop = sidebar.scrollTop;
+		var scrollLeft = sidebar.scrollLeft;
+		sidebar.onscroll = function() {
+			sidebar.scrollTo(scrollLeft, scrollTop);
+		};
+	}
+
+	window.CalendarPlusAdmin.misc.eventLocationSearch.prototype.handleSearchBlur = function() {
+		this.locationSearchView.hideResults();
+		this.releaseSidebar();
+	};
+	window.CalendarPlusAdmin.misc.eventLocationSearch.prototype.releaseSidebar = function() {
+		const sidebar = document.getElementsByClassName('interface-interface-skeleton__sidebar')[0];
+		sidebar.onscroll = function(){};
+	};
 })(jQuery);
