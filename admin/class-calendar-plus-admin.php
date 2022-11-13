@@ -71,6 +71,10 @@ class Calendar_Plus_Admin {
 
 		add_filter( 'manage_calendar_event_posts_columns', array( $this, 'event_columns' ) );
 		add_action( 'manage_calendar_event_posts_custom_column', array( $this, 'event_column' ), 10, 2 );
+        // Make event date column sortable
+        add_filter( 'manage_edit-calendar_event_sortable_columns', array( $this, 'event_sortable_column' ), 10, 1 );
+        add_action( 'current_screen', array( $this, 'maybe_sort_events_table_by_start_date' ) );
+
 		add_action( 'admin_head', array( $this, 'event_columns_styles' ) );
 		add_filter( 'manage_calendar_location_posts_columns', array( $this, 'location_columns' ) );
 		add_action( 'manage_calendar_location_posts_custom_column', array( $this, 'location_column' ), 10, 2 );
@@ -137,8 +141,8 @@ class Calendar_Plus_Admin {
 	private function get_clone_event_url( $post_id ) {
 		$clone_url = add_query_arg(
 			array(
-				'action' => 'clone_calendar_event',
-				'post'   => $post_id,
+                'action' => 'clone_calendar_event',
+                'post'   => $post_id,
 			),
 			admin_url( 'admin.php' )
 		);
@@ -345,6 +349,41 @@ class Calendar_Plus_Admin {
 		}
 	}
 
+	public function event_sortable_column( $columns ) {
+		$columns['details'] = 'details';
+		return $columns;
+	}
+
+	public function maybe_sort_events_table_by_start_date() {
+		$screen = get_current_screen();
+		if (
+			'edit-calendar_event' === $screen->id &&
+			isset( $_GET['orderby'] ) &&
+			'details' === $_GET['orderby']
+		) {
+			add_filter( 'posts_join', array( $this, 'events_query_join_dates_table' ), 10, 2 );
+			add_filter( 'posts_orderby', array( $this, 'events_query_order_by_start_date' ), 10, 2 );
+		}
+	}
+
+	public function events_query_join_dates_table( $join, $query ) {
+		if ( 'calendar_event' === $query->query_vars['post_type'] ) {
+			global $wpdb;
+			$calendar_table = $wpdb->prefix . 'calendarp_calendar';
+			$join .= " LEFT JOIN {$wpdb->prefix}calendarp_calendar ON {$wpdb->posts}.ID=$calendar_table.event_id ";
+		}
+		return $join;
+	}
+
+	public function events_query_order_by_start_date( $orderby, $query ) {
+		if ( 'calendar_event' === $query->query_vars['post_type'] ) {
+			global $wpdb;
+			$calendar_table = $wpdb->prefix . 'calendarp_calendar';
+			$orderby = $calendar_table . '.from_date ' . $query->query_vars['order'];
+		}
+		return $orderby;
+	}
+
 	public function event_columns_styles() {
 		$screen = get_current_screen();
 		if ( 'edit-calendar_event' != $screen->id ) {
@@ -403,23 +442,23 @@ class Calendar_Plus_Admin {
 
 			wp_enqueue_script(
 				'calendar-plus-admin',
-				calendarp_get_plugin_url() . 'admin/js/admin.js',
+                calendarp_get_plugin_url() . 'admin/js/admin.js',
 				[ 'jquery', 'backbone' ],
 				calendarp_get_version()
 			);
 			wp_enqueue_script( 'wp-api' );
 
 			$i10n = array(
-				'ajaxurl'                  => admin_url( 'admin-ajax.php' ),
-				'edit_gmap_address_button' => __( 'Edit', 'calendar-plus' ),
-				'delete_calendar_event'    => __( 'Are you sure that you want to delete this recurrence for this event?', 'calendar-plus' ),
-				'gmaps_api_key_error'      => sprintf( __( 'There was an error loading Google Maps. Please, check that <a href="%s">your API Key is valid</a>', 'calendar-plus' ), admin_url( 'edit.php?post_type=calendar_event&page=calendar-plus-settings' ) ),
+                'ajaxurl'                  => admin_url( 'admin-ajax.php' ),
+                'edit_gmap_address_button' => __( 'Edit', 'calendar-plus' ),
+                'delete_calendar_event'    => __( 'Are you sure that you want to delete this recurrence for this event?', 'calendar-plus' ),
+                'gmaps_api_key_error'      => sprintf( __( 'There was an error loading Google Maps. Please, check that <a href="%s">your API Key is valid</a>', 'calendar-plus' ), admin_url( 'edit.php?post_type=calendar_event&page=calendar-plus-settings' ) ),
 			);
 			wp_localize_script( 'calendar-plus-admin', 'CalendarPlusi18n', $i10n );
 
 			wp_enqueue_style(
 				'calendar-plus-admin-styles',
-				calendarp_get_plugin_url() . 'admin/css/calendar-plus-admin.css',
+                calendarp_get_plugin_url() . 'admin/css/calendar-plus-admin.css',
 				[], calendarp_get_version()
 			);
 		}
@@ -436,7 +475,7 @@ class Calendar_Plus_Admin {
 		if ( get_post_type() === 'calendar_event' || get_post_type() === 'calendar_location' ) {
 			wp_enqueue_style(
 				'calendar-plus-admin-post-types-styles',
-				calendarp_get_plugin_url() . 'admin/css/post-types.css',
+                calendarp_get_plugin_url() . 'admin/css/post-types.css',
 				[], calendarp_get_version()
 			);
 		}
