@@ -83,17 +83,15 @@ class Calendar_Plus_Event_Location_Metabox extends Calendar_Plus_Meta_Box {
 		$results = array();
 		if ( $query->have_posts() ) {
 			while ( $query->have_posts() ) {
-				$query->the_post();
+				$post = $query->next_post();
 
 				$results[] = array(
-					'id'		=> get_the_ID(),
-					'title'		=> get_the_title(),
-					'slug'      => $query->post->post_name,
+					'id'        => $post->ID,
+					'title'     => apply_filters( 'the_title', $post->post_title, $post->ID ),
+					'slug'      => $post->post_name,
 				);
 			}
 		}
-
-		wp_reset_postdata();
 
 		return $results;
 	}
