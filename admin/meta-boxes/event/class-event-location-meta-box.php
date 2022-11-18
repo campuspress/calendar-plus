@@ -22,17 +22,18 @@ class Calendar_Plus_Event_Location_Metabox extends Calendar_Plus_Meta_Box {
 
 		$current_location = new stdClass();
 		if ( $_current_location ) {
-			$query = new WP_Query(
+
+			$posts = get_posts(
 				array(
-					'post_type'				=> 'calendar_location',
-					'supress_filters'		=> true,
-					'ignore_sticky_posts'	=> true,
-					'posts_per_page'		=> 1,
-					'post__in'				=> array( $_current_location->ID )
+					'post_type'	          => 'calendar_location',
+					'supress_filters'     => true,
+					'ignore_sticky_posts' => true,
+					'posts_per_page'      => 1,
+					'post__in'            => array( $_current_location->ID )
 				)
 			);
 
-			$results			= $this->get_javascript_location( $query );
+			$results			= $this->get_javascript_location( $posts );
 			$current_location	= $results[0];
 		}
 
@@ -56,16 +57,18 @@ class Calendar_Plus_Event_Location_Metabox extends Calendar_Plus_Meta_Box {
 
 	public function search_location() {
 
-		$query = new WP_Query( array(
-			's'						=> $_REQUEST['s'],
-			'post_type'				=> 'calendar_location',
-			'supress_filters'		=> true,
-			'ignore_sticky_posts'	=> true,
-			'orderby'				=> 'title',
-			'order'					=> 'ASC',
-		) );
+		$posts = get_posts(
+			array(
+				's'                     => $_REQUEST['s'],
+				'post_type'             => 'calendar_location',
+				'supress_filters'       => true,
+				'ignore_sticky_posts'   => true,
+				'orderby'               => 'title',
+				'order'                 => 'ASC',
+			)
+		);
 
-		$results = $this->get_javascript_location( $query );
+		$results = $this->get_javascript_location( $posts );
 
 		wp_send_json( $results );
 		die();
@@ -78,23 +81,18 @@ class Calendar_Plus_Event_Location_Metabox extends Calendar_Plus_Meta_Box {
 	 *
 	 * @return array
 	 */
-	private function get_javascript_location( $query ) {
+	private function get_javascript_location( array $posts ) {
 		add_filter( 'excerpt_more', array( $this, 'set_excerpt_more_on_locations_search' ), 999 );
+
 		$results = array();
-		if ( $query->have_posts() ) {
-			while ( $query->have_posts() ) {
-				$query->the_post();
+		foreach ( $posts as $post ) {
 
-				$results[] = array(
-					'id'		=> get_the_ID(),
-					'title'		=> get_the_title(),
-					'slug'      => $query->post->post_name,
-				);
-			}
+			$results[] = array(
+				'id'        => $post->ID,
+				'title'     => apply_filters( 'the_title', $post->post_title, $post->ID ),
+				'slug'      => $post->post_name,
+			);
 		}
-
-		wp_reset_postdata();
-
 		return $results;
 	}
 
