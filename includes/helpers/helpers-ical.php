@@ -158,7 +158,6 @@ function calendarp_ical_sync_events() {
 						$event_data['to'] = strtotime( $to[0]['data'] );
 					}
 				}
-
 				$events[] = $event_data;
 			}
 

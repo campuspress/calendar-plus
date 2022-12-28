@@ -94,6 +94,7 @@ class Calendar_Plus_iCal_Sync {
 			'last_updated' => '',
 			'categories'   => [],
 		] );
+		$event_data['hash'] = md5( serialize( $event_data ) );
 
 		if ( 'publish' === $event_data['post_status'] ) {
 			$event_data['post_status'] = $this->default_status;
@@ -115,7 +116,9 @@ class Calendar_Plus_iCal_Sync {
 				return $event->ID;
 			}
 
-			if ( ! $event_data['last_updated'] || $event_data['last_updated'] === $event->get_meta( 'ical_last_updated' ) ) {
+			$skip_update = ( $event_data['last_updated'] && $event_data['last_updated'] === $event->get_meta( 'ical_last_updated' ) ) ||
+							$event_data['hash'] === $event->get_meta( 'ical_hash' );
+			if ( $skip_update ) {
 				return false;
 			}
 
@@ -167,6 +170,8 @@ class Calendar_Plus_iCal_Sync {
 		if ( $event_data['last_updated'] ) {
 			update_post_meta( $post_id, '_ical_last_updated', $event_data['last_updated'] );
 		}
+
+		update_post_meta( $post_id, '_ical_hash', $event_data['hash'] );
 
 		return $post_id;
 	}
