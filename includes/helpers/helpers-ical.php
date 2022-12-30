@@ -75,6 +75,10 @@ function calendarp_ical_sync_events() {
 			$feed['type'] = $feeds[ $i ]['type'] = 'ical';
 		}
 
+		if ( isset( $feeds[ $i ]['last_sync'] ) ) {
+			$feeds[ $i ]['prev_sync_time'] = $feeds[ $i ]['last_sync']['time'];
+		}
+
 		$feeds[ $i ]['last_sync'] = array(
 			'time'   => current_time( 'timestamp' ),
 			'status' => 'incomplete',
