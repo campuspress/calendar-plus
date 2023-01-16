@@ -267,6 +267,8 @@ function calendarp_get_calendar_widget( $initial = true, $echo = true, $event_id
 		$myweek[] = $wp_locale->get_weekday( ( $wdcount + $week_begins ) % 7 );
 	}
 
+	$initial = apply_filters( 'calendarp_widget_week_initial', $initial );
+
 	foreach ( $myweek as $wd ) {
 		$day_name = ( true == $initial ) ? $wp_locale->get_weekday_initial( $wd ) : $wp_locale->get_weekday_abbrev( $wd );
 		$wd = esc_attr( $wd );
