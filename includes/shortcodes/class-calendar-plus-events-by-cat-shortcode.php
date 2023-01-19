@@ -87,6 +87,9 @@ class Calendar_Plus_Events_By_Category_Shortcode {
 				calendarp_get_events_in_date_range( $from_date, $to_date, $args + array( 'exclude_ids' => $sticky_ids ) ),
 			);
 		}
+		$template_data = array(
+			'featured_image' => isset( $atts['featured_image'] ) && $atts['featured_image']
+		);
 
 		if ( ! function_exists( 'calendarp_locate_template' ) ) {
 			require_once calendarp_get_plugin_dir() . 'public/helpers-templates.php';
@@ -155,6 +158,10 @@ class Calendar_Plus_Events_By_Category_Shortcode {
 						'display_excerpt' => array(
 							'type'    => 'boolean',
 							'default' => false,
+						),
+						'featured_image' => array(
+							'type' => 'boolean',
+							'default' => false
 						),
 					),
 				)

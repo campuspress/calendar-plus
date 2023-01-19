@@ -258,6 +258,9 @@ registerBlockType( 'calendar-plus/events-list', {
             type: 'boolean',
             default: false
         },
+        featured_image: {
+            default: false
+        }
     },
     edit: withSelect( function( select ) {
         return {
@@ -376,6 +379,14 @@ registerBlockType( 'calendar-plus/events-list', {
                                 }
                             }
                         ),
+                        createElement(ToggleControl, {
+                            value: props.attributes.featured_image,
+                            label: __( 'Featured image' ),
+                            checked: props.attributes.featured_image,
+                            onChange: function(value){
+                                props.setAttributes( {featured_image: value} );
+                            }
+                        }),
                     ]),
                 )
             )
