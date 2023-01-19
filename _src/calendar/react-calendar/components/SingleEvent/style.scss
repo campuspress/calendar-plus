@@ -2,13 +2,13 @@
 
 .single_event {
   .single_event_inner {
-    color:#333;
-    position: absolute;
+    color:#333 !important;
+    position: absolute !important;
     top:1em;
     z-index: 990;
-    padding:2rem;
-    background:#FFF;
-    border:1px solid #DADADA;
+    padding:2rem !important;
+    background:#FFF !important;
+    border:1px solid #DADADA !important;
     font-size:14px;
     left:0;
     right:0;
