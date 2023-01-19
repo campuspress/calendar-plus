@@ -375,7 +375,7 @@ class Calendar_Plus_Admin_Settings_Page {
 			// BUT FIRST! Let's temporarily knock off
 			// the bug workaround in S3 handler:
 			if ( class_exists( 'S3_Uploads' ) ) {
-				$s3 = S3_Uploads::get_instance();
+				$s3 = S3_Uploads\Plugin::get_instance();
 				remove_filter(
 					'wp_handle_sideload_prefilter',
 					array( $s3, 'filter_sideload_move_temp_file_to_s3' )

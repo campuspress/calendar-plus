@@ -18,7 +18,7 @@ export const loadEvents = (year, month, filter) => {
 		},
 		getParams = {
 			credentials: 'same-origin',
-			headers: headers
+			//headers: headers
 		};
 
 	let url = calendarPlusi18n.baseurl + '/events?';

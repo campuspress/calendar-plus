@@ -100,7 +100,7 @@ class Calendar_Plus_Calendar_Shortcode {
 			$acal->render();
 
 		} else { ?>
-			<a href="<?php echo esc_url( add_query_arg( 'acal', true ) ); ?>"><?php
+			<a href="<?php echo esc_url( add_query_arg( 'acal', true ) ); ?>" class="calendar-plus-a8e-link"><?php
 				esc_html_e( 'View Accessible Version', 'calendar-plus' );
 				?></a>
 

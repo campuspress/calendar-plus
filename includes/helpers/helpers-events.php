@@ -20,10 +20,10 @@ function calendarp_get_event( $event ) {
  */
 function calendarp_get_event_statuses() {
 	return apply_filters( 'calendarp_order_statuses', array(
-        'cp-open'    => _x( 'Open', 'Order status', 'calendar-plus' ),
-        'cp-close'   => _x( 'Closed', 'Order status', 'calendar-plus' ),
-        'cp-expire'  => _x( 'Expired', 'Order status', 'calendar-plus' ),
-        'cp-archive' => _x( 'Archived', 'Order status', 'calendar-plus' ),
+		'cp-open'    => _x( 'Open', 'Order status', 'calendar-plus' ),
+		'cp-close'   => _x( 'Closed', 'Order status', 'calendar-plus' ),
+		'cp-expire'  => _x( 'Expired', 'Order status', 'calendar-plus' ),
+		'cp-archive' => _x( 'Archived', 'Order status', 'calendar-plus' ),
 	) );
 }
 
@@ -313,13 +313,13 @@ function calendarp_update_event_uid( $event_id, $uid ) {
 function calendarp_get_event_by_uid( $uid ) {
 
 	$args = array(
-        'post_type'      => 'calendar_event',
-        'posts_per_page' => 1,
-        'post_status'    => get_post_stati( array( 'public' => true, 'protected' => true, 'show_in_admin_all_list' => true ), 'names', 'or' ),
-        'meta_query'     => array(
+		'post_type'      => 'calendar_event',
+		'posts_per_page' => 1,
+		'post_status'    => get_post_stati( array( 'public' => true, 'protected' => true, 'show_in_admin_all_list' => true ), 'names', 'or' ),
+		'meta_query'     => array(
 			array(
-                'key'   => '_event_uid',
-                'value' => $uid,
+				'key'   => '_event_uid',
+				'value' => $uid,
 			),
 		),
 	);
@@ -331,9 +331,9 @@ function calendarp_get_event_by_uid( $uid ) {
 	unset( $args['meta_query'] );
 	$args['tax_query'] = array(
 		array(
-            'taxonomy' => 'calendar_event_uid',
-            'field'    => 'name',
-            'terms'    => $uid,
+			'taxonomy' => 'calendar_event_uid',
+			'field'    => 'name',
+			'terms'    => $uid,
 		),
 	);
 
@@ -361,9 +361,9 @@ function calendarp_get_events_since( $from, $args = array() ) {
 	global $wpdb;
 
 	$defaults = array(
-        'page'            => 1,
-        'events_per_page' => calendarp_get_events_per_page(),
-        'category'        => false,
+		'page'            => 1,
+		'events_per_page' => calendarp_get_events_per_page(),
+		'category'        => false,
 	);
 	$args = wp_parse_args( $args, $defaults );
 
@@ -433,14 +433,14 @@ function calendarp_get_events_in_date_range( $from, $to = false, $args = array()
 	global $wpdb;
 
 	$args = wp_parse_args( $args, array(
-        'category'        => array(),
-        'tag'             => array(),
-        'events_per_page' => false,
-        'grouped_by_day'  => true,
-        'search'          => '',
-        'event_id'    => false,
-        'include_ids' => array(),
-        'exclude_ids' => array(),
+		'category'        => array(),
+		'tag'             => array(),
+		'events_per_page' => false,
+		'grouped_by_day'  => true,
+		'search'          => '',
+		'event_id'        => false,
+		'include_ids'     => array(),
+		'exclude_ids'     => array(),
 	) );
 
 	$timespan = new Calendar_Plus_Timespan( $from, $to );
@@ -502,11 +502,11 @@ function calendarp_get_events_in_date_range( $from, $to = false, $args = array()
 	$where = array("p.post_status = 'publish'");
 	if ( $args['search'] ) {
 		$search_results = get_posts( array(
-            'post_type' => 'calendar_event',
-            's'         => $args['search'],
-            'fields'    => 'ids',
-            'posts_per_page' => 500,
-            'orderby' => 'none'
+			'post_type' => 'calendar_event',
+			's'         => $args['search'],
+			'fields'    => 'ids',
+			'posts_per_page' => 500,
+			'orderby' => 'none'
 		) );
 
 		if ( empty( $search_results ) ) {
@@ -587,9 +587,9 @@ function _calendarp_group_events_by_date( $results ) {
 	$events_ids = array_unique( wp_list_pluck( $results, 'event_id' ) );
 
 	$args = array(
-        'post__in'       => $events_ids,
-        'post_status'    => 'publish',
-        'posts_per_page' => -1,
+		'post__in'       => $events_ids,
+		'post_status'    => 'publish',
+		'posts_per_page' => -1,
 	);
 
 	$events = calendarp_get_events( $args );
@@ -601,11 +601,11 @@ function _calendarp_group_events_by_date( $results ) {
 		}
 
 		$dates_data = array(
-            'from_date'        => $result->from_date,
-            'until_date'       => $result->until_date,
-            'from_time'        => $result->from_time,
-            'until_time'       => $result->until_time,
-            'calendar_cell_id' => $result->ID,
+			'from_date'        => $result->from_date,
+			'until_date'       => $result->until_date,
+			'from_time'        => $result->from_time,
+			'until_time'       => $result->until_time,
+			'calendar_cell_id' => $result->ID,
 		);
 
 		$events_for_date = wp_list_filter( $events, array( 'ID' => absint( $result->event_id ) ) );
@@ -624,8 +624,8 @@ function _calendarp_group_events_by_date( $results ) {
 
 function calendarp_get_event_type_term_ids() {
 	$defaults = array(
-        'recurrent' => 0,
-        'datespan'  => 0,
+		'recurrent' => 0,
+		'datespan'  => 0,
 	);
 
 	$term_ids = get_option( 'calendarp_event_type_term_ids', array() );
@@ -636,9 +636,9 @@ function calendarp_get_event_type_term_ids() {
 
 		$term = get_term( $term_id );
 		if (
-            ! $term ||
-            'calendar_event_type' !== $term->taxonomy &&
-            $term_name !== $term->slug
+			! $term ||
+			'calendar_event_type' !== $term->taxonomy &&
+			$term_name !== $term->slug
 		) {
 			$updated = true;
 			$term = wp_insert_term( $term_name, 'calendar_event_type' );
