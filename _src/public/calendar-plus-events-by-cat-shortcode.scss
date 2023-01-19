@@ -78,3 +78,40 @@
 	}
 
 }
+
+@media only screen and (min-width: 78.84615em) {
+	.calendarp.large-3 {
+		width: 25%;
+	}
+
+	.calendarp.large-4 {
+		width: 33.33333%;
+	}
+
+	.calendarp.large-6 {
+		width: 50%;
+	}
+
+	.columns.calendarp-grid-row {
+		display: flex;
+		flex-direction: row;
+		margin-bottom: 1.25rem;
+		padding: 0;
+
+		.column {
+			padding-left: 1.15385rem;
+			padding-right: 1.15385rem;
+		}
+
+		.calendarp-date-item {
+			border-bottom: 0 !important;
+
+			.calendarp-date {
+				margin-bottom: 1rem;
+			}
+			.calendar-event {
+				padding: 0;
+			}
+		}
+	}
+}
