@@ -26,6 +26,30 @@
 					<div class="calendarp-event-meta">
 						<?php echo calendarp_get_human_read_dates( $event->ID ); ?>
 					</div>
+					<?php
+					if ( $template_data['display_location'] && $event->get_location() ) :
+						?>
+						<div class="calendarp-even-location">
+							<p><?php echo esc_html( $event->get_location()->get_full_address() ); ?></p>
+						</div>
+						<?php
+					endif;
+					?>
+					<?php
+					if ( $template_data['display_excerpt'] && has_excerpt( $event->get_post() ) ) :
+						?>
+						<div class="calendarp-event-excerpt">
+							<p><?php echo esc_html( get_the_excerpt( $event->get_post() ) ); ?></p>
+						</div>
+					<?php
+					endif;
+					?>
+					<?php if( $template_data['featured_image'] && has_post_thumbnail( $event->ID ) ):
+						?>
+						<div class="calendarp-event-thumbnail">
+							<?php echo get_the_post_thumbnail( $event->ID ); ?>
+						</div>
+					<?php endif; ?>
 				</div>
 			<?php endforeach; ?>
 		</div>

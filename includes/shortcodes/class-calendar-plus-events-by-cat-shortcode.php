@@ -7,9 +7,20 @@ class Calendar_Plus_Events_By_Category_Shortcode {
 	public function __construct() {
 		add_shortcode( 'calendarp-events-by-category', array( $this, 'render' ) );
 		add_shortcode( 'calendarp-events-list', array( $this, 'render' ) );
+		add_action( 'wp_enqueue_scripts', array( $this, 'register_scripts' ) );
+		add_action( 'enqueue_block_editor_assets', array( $this, 'register_scripts' ) );
 		add_action( 'wp_enqueue_scripts', array( $this, 'enqueue_scripts' ) );
 
 		add_action('init', array($this,'register_block'));
+	}
+
+	public function register_scripts() {
+		wp_register_style(
+			'calendarp-events-by-cat',
+			calendarp_get_plugin_url() . 'public/css/calendar-plus-events-by-cat-shortcode.css',
+			array(),
+			calendarp_get_version()
+		);
 	}
 
 	public function enqueue_scripts() {
@@ -19,12 +30,13 @@ class Calendar_Plus_Events_By_Category_Shortcode {
 
 		calendarp_enqueue_public_script_and_styles();
 
-		wp_enqueue_style(
+		wp_register_style(
 			'calendarp-events-by-cat',
 			calendarp_get_plugin_url() . 'public/css/calendar-plus-events-by-cat-shortcode.css',
 			array(),
 			calendarp_get_version()
 		);
+		wp_enqueue_style( 'calendarp-events-by-cat' );
 	}
 
 	public function render( $atts ) {
@@ -56,9 +68,6 @@ class Calendar_Plus_Events_By_Category_Shortcode {
 			$args['events_per_page'] = absint( $atts['events'] );
 		}
 
-		$display_location = ! empty( $atts['display_location'] ) && $atts['display_location'] !== 'false';
-		$display_excerpt  = ! empty( $atts['display_excerpt'] ) && $atts['display_excerpt'] !== 'false';
-
 		$sticky_ids = get_option( 'sticky_posts' );
 
 		$from_date = false;
@@ -75,27 +84,24 @@ class Calendar_Plus_Events_By_Category_Shortcode {
 		}
 
 		if ( empty( $sticky_ids ) ) {
-
 			$event_groups = array(
 				calendarp_get_events_in_date_range( $from_date, $to_date, $args ),
 			);
-
 		} else {
-
 			$event_groups = array(
 				calendarp_get_events_in_date_range( $from_date, $to_date, $args + array( 'include_ids' => $sticky_ids ) ),
 				calendarp_get_events_in_date_range( $from_date, $to_date, $args + array( 'exclude_ids' => $sticky_ids ) ),
 			);
 		}
 		$template_data = array(
-			'featured_image' => isset( $atts['featured_image'] ) && $atts['featured_image']
+			'featured_image' => isset( $atts['featured_image'] ) && $atts['featured_image'],
+			'display_location' => isset( $atts['display_location'] ) && $atts['display_location'],
+			'display_excerpt' => isset( $atts['display_excerpt'] ) && $atts['display_excerpt']
 		);
-
-		$template_data = array();
 
 		if( $atts['layout'] === 'grid' ){
 			$layout = 'grid';
-			$template_data['columns'] = absint( $atts['columns'] );
+			$template_data['columns'] = (int) $atts['columns'];
 			$template_data['column_size'] = 12 / $template_data['columns'];
 		} else {
 			$layout = 'list';
@@ -185,6 +191,7 @@ class Calendar_Plus_Events_By_Category_Shortcode {
 							'default' => 2
 						)
 					),
+					'editor_style' => 'calendarp-events-by-cat',
 				)
 			);
 		}

@@ -259,6 +259,7 @@ registerBlockType( 'calendar-plus/events-list', {
             default: false
         },
         featured_image: {
+            type: 'boolean',
             default: false
         },
         layout: {
@@ -273,7 +274,7 @@ registerBlockType( 'calendar-plus/events-list', {
             categories: select('core').getEntityRecords('taxonomy', 'calendar_event_category', {per_page: -1})
         };
     } )( function( props ) {
-        var categoryOptions = [ { value: 0, label: __( 'All' ) } ];
+        var categoryOptions = [ /* { value: 0, label: __( 'All' ) } */ ];
         var selectedCategories = props.attributes.category
             .split( ',' )
             .map(
@@ -286,12 +287,6 @@ registerBlockType( 'calendar-plus/events-list', {
                     return ! isNaN( num );
                 }
             );
-
-        if( props.categories ) {
-            props.categories.forEach((category) => {
-                categoryOptions.push({value:category.id, label:category.name});
-            });
-        }
         
         if( props.categories ) {
             props.categories.forEach((category) => {
@@ -299,14 +294,6 @@ registerBlockType( 'calendar-plus/events-list', {
             });
         }
         const eventsSettings = [
-            createElement(SelectControl, {
-                value: props.attributes.category,
-                label: __( 'Category' ),
-                onChange: function(value){
-                    props.setAttributes( { category: value } );
-                },
-                options: categoryOptions
-            }),
             createElement(RangeControl, {
                 value: props.attributes.events,
                 label: __( 'Number of events' ),
@@ -316,6 +303,94 @@ registerBlockType( 'calendar-plus/events-list', {
                 min: 1,
                 max: 100,
             }),
+            createElement(
+                CategorySelect,
+                {
+                    label: __( 'Category' ),
+                    categories: categoryOptions,
+                    selected: selectedCategories,
+                    onSelect: function(id, value) {
+                        /*
+                        if ( ! id ) {
+                            if ( value ) {
+                                selectedCategories = props.categories.map(
+                                    function( item ) {
+                                        return item.id;
+                                    }
+                                );
+                                selectedCategories.push( 0 );
+                                props.setAttributes( { category: selectedCategories.join( ',' ) } );
+                            } else {
+                                props.setAttributes( { category: '' } );
+                            }
+
+
+                            return;
+                        }
+                        */
+
+                        const index = selectedCategories.indexOf( id );
+
+                        if ( value && index === -1 ) {
+                            selectedCategories.push( id );
+                        } else if ( index !== -1 ) {
+                            delete selectedCategories[ index ];
+                        }
+                        props.setAttributes( {
+                            category: selectedCategories.join( ',' )
+                        } );
+                    }
+                }
+            ),
+            createElement(ToggleControl, {
+                value: props.attributes.past_events,
+                checked: props.attributes.past_events,
+                label: __( 'Display past events' ),
+                onChange: function(value){
+                    props.setAttributes( { past_events: value } );
+                }
+            }),
+            createElement(__experimentalView, {}, [
+                createElement(
+                    __experimentalSpacer,
+                    {},
+                    createElement(
+                        __experimentalHeading,
+                        { level: 5 },
+                        __( 'Choose fields to display' )
+                    ),
+                ),
+                createElement(
+                    CheckboxControl,
+                    {
+                        label: __( 'Location' ),
+                        checked: props.attributes.display_location,
+                        onChange: function(value) {
+                            props.setAttributes( { display_location: value } );
+                        }
+                    }
+                ),
+                createElement(
+                    CheckboxControl,
+                    {
+                        label: __( 'Excerpt' ),
+                        checked: props.attributes.display_excerpt,
+                        onChange: function(value) {
+                            props.setAttributes( { display_excerpt: value } );
+                        }
+                    }
+                ),
+                createElement(
+                    CheckboxControl, 
+                    {
+                        label: __( 'Featured image' ),
+                        checked: props.attributes.featured_image,
+                        onChange: function(value){
+                            props.setAttributes( {featured_image: value} );
+                        }
+                    }
+                ),
+            ]),
             createElement(SelectControl, {
                 value: props.attributes.layout,
                 label: __( 'Layout' ),
@@ -350,100 +425,6 @@ registerBlockType( 'calendar-plus/events-list', {
             } ) ),
             createElement( InspectorControls, {},
                 createElement( PanelBody, { title: __( 'Events Settings' ), initialOpen: true },
-                    createElement(
-                        CategorySelect,
-                        {
-                            label: __( 'Category' ),
-                            categories: categoryOptions,
-                            selected: selectedCategories,
-                            onSelect: function(id, value) {
-                                if ( ! id ) {
-                                    if ( value ) {
-                                        selectedCategories = props.categories.map(
-                                            function( item ) {
-                                                return item.id;
-                                            }
-                                        );
-                                        selectedCategories.push( 0 );
-                                        props.setAttributes( { category: selectedCategories.join( ',' ) } );
-                                    } else {
-                                        props.setAttributes( { category: '' } );
-                                    }
-
-
-                                    return;
-                                }
-
-                                const index = selectedCategories.indexOf( id );
-
-                                if ( value && index === -1 ) {
-                                    selectedCategories.push( id );
-                                } else if ( index !== -1 ) {
-                                    delete selectedCategories[ index ];
-                                }
-                                props.setAttributes( {
-                                    category: selectedCategories.join( ',' )
-                                } );
-                            }
-                        }
-                    ),
-                    createElement(RangeControl, {
-                        value: props.attributes.events,
-                        label: __( 'Number of events' ),
-                        onChange: function(value){
-                            props.setAttributes( { events: value } );
-                        },
-                        min: 1,
-                        max: 100,
-                    }),
-					createElement(ToggleControl, {
-						value: props.attributes.past_events,
-						checked: props.attributes.past_events,
-						label: __( 'Display past events' ),
-						onChange: function(value){
-							props.setAttributes( { past_events: value } );
-						}
-					}),
-
-                    createElement(__experimentalView, {}, [
-                        createElement(
-                            __experimentalSpacer,
-                            {},
-                            createElement(
-                                __experimentalHeading,
-                                { level: 5 },
-                                __( 'Choose fields to display' )
-                            ),
-                        ),
-                        createElement(
-                            CheckboxControl,
-                            {
-                                label: __( 'Location' ),
-                                checked: props.attributes.display_location,
-                                onChange: function(value) {
-                                    props.setAttributes( { display_location: value } );
-                                }
-                            }
-                        ),
-                        createElement(
-                            CheckboxControl,
-                            {
-                                label: __( 'Excerpt' ),
-                                checked: props.attributes.display_excerpt,
-                                onChange: function(value) {
-                                    props.setAttributes( { display_excerpt: value } );
-                                }
-                            }
-                        ),
-                        createElement(ToggleControl, {
-                            value: props.attributes.featured_image,
-                            label: __( 'Featured image' ),
-                            checked: props.attributes.featured_image,
-                            onChange: function(value){
-                                props.setAttributes( {featured_image: value} );
-                            }
-                        }),
-                    ]),
                     ...eventsSettings
                 )
             )
