@@ -136,11 +136,14 @@ class Calendar_Plus_iCal_Sync {
 			if ( $event_data['hash'] === $event->get_meta( 'ical_hash' ) ) {
 				return false;
 			}
+			$is_modified = get_post_meta( $event_post->ID, '_event_modified', true );
+			if ( $is_modified ) {
+				return false;
+			}
 			// Skip updating if event was manually modified after creating
-			if (
-				$event_post->post_modified !== $event_post->post_date &&
-				strtotime( $event_post->post_modified ) - $this->prev_sync_time > 30
-			) {
+			$post_modified_time = strtotime( $event_post->post_modified );
+			if ( $post_modified_time - $this->prev_sync_time > 60 ) {
+				update_post_meta( $event_post->ID, '_event_modified', 1 );
 				return false;
 			}
 
