@@ -10,7 +10,7 @@ class Calendar_Plus_Query {
 
 		if ( ! is_admin() ) {
 			add_action( 'pre_get_posts', array( $this, 'pre_get_posts' ) );
-			//add_action( 'wp', array( $this, 'remove_clauses_query' ) );
+			add_filter( 'the_posts', array( $this, 'remove_clauses_query' ), 2 );
 		}
 	}
 
@@ -76,8 +76,6 @@ class Calendar_Plus_Query {
 		do_action( 'calendarp_query', $query, $this );
 
 		remove_action( 'pre_get_posts', array( $this, 'pre_get_posts' ) );
-		remove_filter( 'posts_clauses', array( $this, 'clauses' ) );
-		remove_filter( 'posts_fields', array( $this, 'fields' ) );
 	}
 
 	public function fields( $fields ) {
@@ -119,8 +117,15 @@ class Calendar_Plus_Query {
 		return $clauses;
 	}
 
-	public function remove_clauses_query() {
-		remove_filter( 'posts_clauses', array( $this, 'clauses' ) );
+	public function remove_clauses_query( $posts ) {
+		if ( has_filter( 'posts_clauses', array( $this, 'clauses' ) ) ) {
+			remove_filter( 'posts_clauses', array( $this, 'clauses' ) );
+		}
+		if ( has_filter( 'posts_fields', array( $this, 'fields' ) ) ) {
+			remove_filter( 'posts_fields', array( $this, 'fields' ) );
+		}
+
+		return $posts;
 	}
 
 	public function parse_query( $query ) {
