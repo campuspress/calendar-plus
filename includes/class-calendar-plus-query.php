@@ -76,6 +76,8 @@ class Calendar_Plus_Query {
 		do_action( 'calendarp_query', $query, $this );
 
 		remove_action( 'pre_get_posts', array( $this, 'pre_get_posts' ) );
+		remove_filter( 'posts_clauses', array( $this, 'clauses' ) );
+		remove_filter( 'posts_fields', array( $this, 'fields' ) );
 	}
 
 	public function fields( $fields ) {
