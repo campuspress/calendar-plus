@@ -441,6 +441,7 @@ function calendarp_get_events_in_date_range( $from, $to = false, $args = array()
 		'event_id'        => false,
 		'include_ids'     => array(),
 		'exclude_ids'     => array(),
+		'order'           => 'ASC',
 	) );
 
 	$timespan = new Calendar_Plus_Timespan( $from, $to );
@@ -536,7 +537,18 @@ function calendarp_get_events_in_date_range( $from, $to = false, $args = array()
 
 	$where_not = 'WHERE NOT (' . implode( ' OR ', $where_not ) . ')';
 
-	$order = 'ORDER BY cal.from_date ASC, cal.from_time ASC, cal.event_id ASC';
+	if ( is_string( $args['order'] ) ) {
+		$sort_type = strtoupper( $args['order'] );
+
+		if ( in_array( $sort_type, array( 'ASC', 'DESC' ) ) ) {
+			$order = "ORDER BY cal.from_date $sort_type, cal.from_time $sort_type, cal.event_id $sort_type";
+		} else {
+			$order = 'ORDER BY cal.from_date ASC, cal.from_time ASC, cal.event_id ASC';
+		}
+
+	} else {
+		$order = 'ORDER BY cal.from_date ASC, cal.from_time ASC, cal.event_id ASC';
+	}
 
 	$limit = '';
 	$per_page = intval( $args['events_per_page'] );
