@@ -127,7 +127,7 @@ class Calendar_Plus_iCal_Sync {
 			$event_post  = $event->get_post();
 			// Skip if there are no changes
 			if (
-				! $event_data['last_updated'] ||
+				! empty( $event_data['last_updated'] ) &&
 				$event_data['last_updated'] === $event->get_meta( 'ical_last_updated' )
 			) {
 				return false;
