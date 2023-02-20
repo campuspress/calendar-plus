@@ -93,6 +93,7 @@ class Calendar_Plus_iCal_Sync {
 			'location'     => '',
 			'last_updated' => '',
 			'categories'   => [],
+			'attachment'   => [],
 		] );
 
 		if ( 'publish' === $event_data['post_status'] ) {
@@ -168,7 +169,70 @@ class Calendar_Plus_iCal_Sync {
 			update_post_meta( $post_id, '_ical_last_updated', $event_data['last_updated'] );
 		}
 
+		if( $event_data['attachment'] ) {
+
+			$current_attachment = wp_get_attachment_url( $post_id );
+			if ( $current_attachment !== $event_data['attachment'] ) {
+
+				$attachment_id = $this->import_attachment( $event_data['attachment'] );
+				if ( $attachment_id ) {
+
+					set_post_thumbnail( $post_id, $attachment_id );
+				}
+			}
+		}
+
 		return $post_id;
+	}
+
+	/**
+	 * Stores local copy of remote attachment
+	 *
+	 * @param array $attachment  {
+	 * 		Attachment data
+	 * 		@type string $url Remote file url
+	 * 		@type string $mime File MIME type
+	 * }
+	 * @return int Attachment ID
+	 */
+	private function import_attachment( $attachment ) {
+
+		$file = wp_remote_get( $attachment['url'] );
+		if( ! is_wp_error( $file ) ) {
+
+			$content = wp_remote_retrieve_body( $file );
+			$tmp_file_name = wp_tempnam();
+			file_put_contents( $tmp_file_name, $content );
+
+			$url = wp_parse_url( $attachment['url'] );
+			$attachment_file = array(
+				'name' 		=> wp_basename( $url['path'] ),
+				'type' 		=> $attachment['mime'],
+				'size' 		=> filesize( $tmp_file_name ),
+				'tmp_name' 	=> $tmp_file_name
+			);
+
+			$data = wp_handle_sideload( $attachment_file, array( 'test_form' => false ) );
+			if ( ! isset( $data['error'] ) ) {
+
+				$attachment = wp_insert_attachment(
+					array(
+						'guid'			  => $data['url'],
+						'post_title'	  => $attachment_file['name'],
+						'post_mime_type'  => $attachment['mime']
+					),
+					$data['file']
+				);
+				$image_meta_data = wp_generate_attachment_metadata( $attachment, $data['file'] );
+
+				if( $image_meta_data ) {
+					wp_update_attachment_metadata( $attachment, $data );
+				}
+				return $attachment;
+			}
+		}
+
+		return 0;
 	}
 
 	/**

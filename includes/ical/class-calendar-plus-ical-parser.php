@@ -177,7 +177,7 @@ class Calendar_Plus_iCal_Parser {
 				? $mod_calendar_tz
 				: $calendar_tz;
 
-			$events[] = array(
+			$event_post_data = array(
 				'post_status'   => strtoupper( $_event->status ) === 'CANCELLED' ? 'trash' : 'publish',
 				'post_content'  => $content,
 				'post_title'    => wp_kses( $_event->summary, wp_kses_allowed_html( 'post' ) ),
@@ -188,6 +188,16 @@ class Calendar_Plus_iCal_Parser {
 				'location'      => $_event->location,
 				'categories'    => isset( $_event->categories ) ? array_map( 'trim', explode( ',', $_event->categories ) ) : array(),
 			);
+			if( ! empty( $_event->attach_array ) ) {
+				$event_post_data['attachment'] = array(
+					'url' => $_event->attach_array[1],
+					'mime' => $_event->attach_array[0]['FMTTYPE']
+				);
+			} else {
+				$event_post_data['attachment'] = array();
+			}
+
+			$events[] = $event_post_data;
 		}
 
 		return $events;
