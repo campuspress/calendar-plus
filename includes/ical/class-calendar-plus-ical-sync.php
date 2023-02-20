@@ -44,7 +44,12 @@ class Calendar_Plus_iCal_Sync {
 	 */
 	public function __construct( $events, $args = [] ) {
 		$this->events = $events;
-		$this->locations = calendarp_get_locations( array( 'posts_per_page' => -1 ) );
+		$this->locations = calendarp_get_locations(
+			array(
+				'posts_per_page' => -1,
+				'unique'         => true,
+			)
+		);
 
 		$args = wp_parse_args( $args, [
 			'author'   => 0,

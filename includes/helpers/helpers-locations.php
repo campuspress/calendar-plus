@@ -42,17 +42,32 @@ function calendarp_get_locations( $args = array() ) {
 
 	$defaults = array(
 		's' => false,
+		'unique' => false,
 	);
 	$args = wp_parse_args( $args, $defaults );
 
-	$args['post_type'] = 'calendar_location';
+	$args['post_type']           = 'calendar_location';
 	$args['ignore_sticky_posts'] = true;
 
-	$locations = get_posts( $args );
+	if ( $args['unique'] ) {
+		$args['suppress_filters']    = false;
+
+		add_filter( 'posts_groupby_request', 'calendarp_group_queried_locations', 10, 2 );
+
+		$locations = get_posts( $args );
+
+		remove_filter( 'posts_groupby_request', 'calendarp_group_queried_locations' );
+	} else {
+		$locations = get_posts( $args );
+	}
 
 	$locations = array_map( 'calendarp_get_location', $locations );
 
 	return $locations;
+}
+
+function calendarp_group_queried_locations( $groupby, $wp_query ) {
+	return 'post_title';
 }
 
 /**
