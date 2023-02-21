@@ -196,7 +196,18 @@ function calendarp_get_human_read_dates( $event_id, $format = 'string' ) {
 
 						$format_string .= $format_array['recurrence'];
 						break;
+					case 'dow':
+						$dow_every = array_map( function ( $day_index ) {
+							global $wp_locale;
 
+							return $wp_locale->get_weekday_abbrev( $wp_locale->get_weekday( 7 === $day_index ? 0 : $day_index ) );
+						}, $every );
+
+						$format_array['recurrence'] = sprintf(
+							__( 'Every %s', 'calendar-plus' ), implode( ', ', $dow_every ) );
+
+						$format_string .= $format_array['recurrence'];
+						break;
 					case 'week':
 						$format_array['recurrence'] = sprintf(
 							__( 'Every %s', 'calendar-plus' ),
