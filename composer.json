@@ -12,7 +12,7 @@
     "require": {
         "ext-calendar": "*",
         "composer/installers": "~1.0",
-        "johngrogg/ics-parser": "2.1.5",
+        "johngrogg/ics-parser": "^3",
         "mexitek/phpcolors": "dev-master"
     },
     "require-dev": {
@@ -22,5 +22,10 @@
     },
     "autoload": {
         "classmap": ["admin", "includes", "modules", "public"]
+    },
+    "config": {
+        "allow-plugins": {
+            "composer/installers": true
+        }
     }
 }

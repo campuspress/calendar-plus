@@ -1,4 +1,4 @@
-# Copyright (C) 2022 calendar-plus
+# Copyright (C) 2023 calendar-plus
 # This file is distributed under the same license as the calendar-plus package.
 msgid ""
 msgstr ""
@@ -6,13 +6,32 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2022-05-07 23:29+0000\n"
 "X-Poedit-Basepath: ..\n"
 "X-Poedit-KeywordsList: __;_e;_ex:1,2c;_n:1,2;_n_noop:1,2;_nx:1,2,4c;_nx_noop:1,2,3c;_x:1,2c;esc_attr__;esc_attr_e;esc_attr_x:1,2c;esc_html__;esc_html_e;esc_html_x:1,2c\n"
 "X-Poedit-SearchPath-0: .\n"
 "X-Poedit-SearchPathExcluded-0: *.js\n"
 "X-Poedit-SourceCharset: UTF-8\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: calendar-plus.php:6
+msgid "Calendar+ (An Accessible Events Calendar)"
+msgstr ""
+
+#: calendar-plus.php:7
+msgid "https://campuspress.com/accessible-wordpress-calendar-plugin/"
+msgstr ""
+
+#: calendar-plus.php:8
+msgid "Accessibility-ready complete calendar and events plugin. Import from Google Calendar, subscribe to events, and more."
+msgstr ""
+
+#: calendar-plus.php:10
+msgid "CampusPress"
+msgstr ""
+
+#: calendar-plus.php:11
+msgid "https://campuspress.com"
+msgstr ""
 
 #: admin/class-calendar-plus-admin-importers.php:14
 msgid "The Events Calendar (Calendar+)"
@@ -22,582 +41,56 @@ msgstr ""
 msgid "Import Events from The Events Calendar Plugin to Calendar+"
 msgstr ""
 
-#: admin/class-calendar-plus-admin.php:105
+#: admin/class-calendar-plus-admin.php:110
 msgid "Stick this event to the top of the list"
 msgstr ""
 
-#: admin/class-calendar-plus-admin.php:175
+#: admin/class-calendar-plus-admin.php:180
 msgid "Copy of %s"
 msgstr ""
 
-#: admin/class-calendar-plus-admin.php:241
+#: admin/class-calendar-plus-admin.php:246
 msgid "Duplicate this event"
 msgstr ""
 
-#: admin/class-calendar-plus-admin.php:242, admin/class-calendar-plus-admin.php:266
+#: admin/class-calendar-plus-admin.php:247, admin/class-calendar-plus-admin.php:271
 msgid "Duplicate"
 msgstr ""
 
-#: admin/class-calendar-plus-admin.php:298
+#: admin/class-calendar-plus-admin.php:303
 msgid "Title"
 msgstr ""
 
-#: admin/class-calendar-plus-admin.php:299
+#: admin/class-calendar-plus-admin.php:304
 msgid "Details"
 msgstr ""
 
-#: admin/class-calendar-plus-admin.php:301, includes/class-calendar-plus-taxonomies.php:185
+#: admin/class-calendar-plus-admin.php:306, includes/class-calendar-plus-taxonomies.php:185
 msgid "Location"
 msgstr ""
 
-#: admin/class-calendar-plus-admin.php:302, admin/settings-fields.php:301
+#: admin/class-calendar-plus-admin.php:307, admin/settings-fields.php:301
 msgid "Categories"
 msgstr ""
 
-#: admin/class-calendar-plus-admin.php:303, admin/views/event-details-meta-box.php:103, admin/views/event-details-meta-box.php:110, admin/views/event-details-meta-box.php:142, admin/views/event-details-meta-box.php:151
+#: admin/class-calendar-plus-admin.php:308, admin/views/event-details-meta-box.php:103, admin/views/event-details-meta-box.php:110, admin/views/event-details-meta-box.php:142, admin/views/event-details-meta-box.php:151
 msgid "Date"
 msgstr ""
 
-#: admin/class-calendar-plus-admin.php:318, includes/class-calendar-plus-taxonomies.php:188
+#: admin/class-calendar-plus-admin.php:323, includes/class-calendar-plus-taxonomies.php:188
 msgid "Edit Location"
 msgstr ""
 
-#: admin/class-calendar-plus-admin.php:413, admin/pages/ical-import-view.php:294, includes/calendar/class-calendar-plus-calendar-renderer.php:284, public/templates/content-event.php:99
+#: admin/class-calendar-plus-admin.php:453, admin/pages/ical-import-view.php:294, includes/calendar/class-calendar-plus-calendar-renderer.php:284, public/templates/content-event.php:99
 msgid "Edit"
 msgstr ""
 
-#: admin/class-calendar-plus-admin.php:414
+#: admin/class-calendar-plus-admin.php:454
 msgid "Are you sure that you want to delete this recurrence for this event?"
 msgstr ""
 
-#: admin/class-calendar-plus-admin.php:415
+#: admin/class-calendar-plus-admin.php:455
 msgid "There was an error loading Google Maps. Please, check that <a href=\"%s\">your API Key is valid</a>"
-msgstr ""
-
-#: admin/importers/class-the-events-calendar-importer.php:49
-msgid "Import data from The Events Calendar Plugin to Calendar+"
-msgstr ""
-
-#: admin/importers/class-the-events-calendar-importer.php:61
-msgid "Howdy! Upload your WordPress eXtended RSS (WXR) file and we&#8217;ll import the events into this site."
-msgstr ""
-
-#: admin/importers/class-the-events-calendar-importer.php:62
-msgid "Choose a WXR (.xml) file to upload, then click Upload file and import."
-msgstr ""
-
-#: admin/importers/class-the-events-calendar-importer.php:76, admin/importers/class-the-events-calendar-importer.php:71, admin/importers/class-the-events-calendar-importer.php:86, admin/importers/class-the-events-calendar-importer.php:311, admin/importers/class-the-events-calendar-importer.php:320
-msgid "Sorry, there has been an error."
-msgstr ""
-
-#: admin/importers/class-the-events-calendar-importer.php:77
-msgid "The export file could not be found at <code>%s</code>. It is likely that this was caused by a permissions problem."
-msgstr ""
-
-#: admin/importers/class-the-events-calendar-importer.php:95
-msgid "This WXR file (version %s) may not be supported by this version of the importer. Please consider updating."
-msgstr ""
-
-#: admin/importers/class-the-events-calendar-importer.php:185
-msgid "Failed to import author %s. Their posts will be attributed to the current user."
-msgstr ""
-
-#: admin/importers/class-the-events-calendar-importer.php:207
-msgid "Assign Authors"
-msgstr ""
-
-#: admin/importers/class-the-events-calendar-importer.php:208
-msgid "To make it easier for you to edit and save the imported content, you may want to reassign the author of the imported item to an existing user of this site. For example, you may want to import all the entries as <code>admin</code>s entries."
-msgstr ""
-
-#: admin/importers/class-the-events-calendar-importer.php:210
-msgid "If a new user is created by WordPress, a new password will be randomly generated and the new user&#8217;s role will be set as %s. Manually changing the new user&#8217;s details will be necessary."
-msgstr ""
-
-#: admin/importers/class-the-events-calendar-importer.php:220
-msgid "Import Attachments"
-msgstr ""
-
-#: admin/importers/class-the-events-calendar-importer.php:223
-msgid "Download and import file attachments"
-msgstr ""
-
-#: admin/importers/class-the-events-calendar-importer.php:227
-msgid "Submit"
-msgstr ""
-
-#: admin/importers/class-the-events-calendar-importer.php:242
-msgid "Import author:"
-msgstr ""
-
-#: admin/importers/class-the-events-calendar-importer.php:259
-msgid "as a new user:"
-msgstr ""
-
-#: admin/importers/class-the-events-calendar-importer.php:256
-msgid "or create new user with login name:"
-msgstr ""
-
-#: admin/importers/class-the-events-calendar-importer.php:269
-msgid "or assign posts to an existing user:"
-msgstr ""
-
-#: admin/importers/class-the-events-calendar-importer.php:267
-msgid "assign posts to an existing user:"
-msgstr ""
-
-#: admin/importers/class-the-events-calendar-importer.php:275
-msgid "- Select -"
-msgstr ""
-
-#: admin/importers/class-the-events-calendar-importer.php:312
-msgid "The file does not exist, please try again."
-msgstr ""
-
-#: admin/importers/class-the-events-calendar-importer.php:349
-msgid "All done."
-msgstr ""
-
-#: admin/importers/class-the-events-calendar-importer.php:349
-msgid "Have fun!"
-msgstr ""
-
-#: admin/importers/class-the-events-calendar-importer.php:350
-msgid "Remember to update the passwords and roles of imported users."
-msgstr ""
-
-#: admin/importers/class-the-events-calendar-importer.php:368
-msgid "Failed to import &#8220;%1$s&#8221;: Invalid post type %2$s"
-msgstr ""
-
-#: admin/importers/class-the-events-calendar-importer.php:457
-msgid "Failed to import %1$s &#8220;%2$s&#8221;"
-msgstr ""
-
-#: admin/importers/class-the-events-calendar-importer.php:388
-msgid "%1$s &#8220;%2$s&#8221; already exists."
-msgstr ""
-
-#: admin/importers/class-the-events-calendar-importer.php:493, admin/importers/class-the-events-calendar-importer.php:894
-msgid "Failed to import %1$s %2$s"
-msgstr ""
-
-#: admin/importers/class-the-events-calendar-importer.php:678
-msgid "Fetching attachments is not enabled"
-msgstr ""
-
-#: admin/importers/class-the-events-calendar-importer.php:695
-msgid "Invalid file type"
-msgstr ""
-
-#: admin/importers/class-the-events-calendar-importer.php:743
-msgid "Remote server did not respond"
-msgstr ""
-
-#: admin/importers/class-the-events-calendar-importer.php:750
-msgid "Remote server returned error response %1$d %2$s"
-msgstr ""
-
-#: admin/importers/class-the-events-calendar-importer.php:758
-msgid "Remote file is incorrect size"
-msgstr ""
-
-#: admin/importers/class-the-events-calendar-importer.php:764
-msgid "Zero size file downloaded"
-msgstr ""
-
-#: admin/importers/class-the-events-calendar-importer.php:771
-msgid "Remote file is too large, limit is %s"
-msgstr ""
-
-#: admin/importers/class-the-events-calendar-importer.php:831
-msgid "Failed to create new user for %s. Their posts will be attributed to the current user."
-msgstr ""
-
-#: admin/meta-boxes/event/class-event-color-meta-box.php:7
-msgid "Event Color"
-msgstr ""
-
-#: admin/meta-boxes/event/class-event-details-meta-box.php:7
-msgid "Event Details"
-msgstr ""
-
-#: admin/meta-boxes/event/class-event-location-meta-box.php:7, admin/settings-fields.php:300
-msgid "Event Location"
-msgstr ""
-
-#: admin/meta-boxes/event/class-event-status-meta-box.php:7
-msgid "Event Status"
-msgstr ""
-
-#: admin/meta-boxes/location/class-location-location-meta-box.php:7
-msgid "Select a Location"
-msgstr ""
-
-#: admin/pages/class-calendar-page.php:11, admin/pages/class-calendar-page.php:11
-msgid "Calendar"
-msgstr ""
-
-#: admin/pages/class-calendar-page.php:17, admin/tinymce-shortcodes-i18n.php:6, includes/calendar/class-calendar-plus-calendar-renderer.php:325, includes/shortcodes/class-calendar-plus-accessible-calendar.php:99
-msgid "Month"
-msgstr ""
-
-#: admin/pages/class-importer-page.php:11, admin/pages/class-importer-page.php:11, admin/pages/class-settings-page.php:105
-msgid "Import"
-msgstr ""
-
-#: admin/pages/class-importer-page.php:28
-msgid "Import data"
-msgstr ""
-
-#: admin/pages/class-importer-page.php:31
-msgid "Import data from The Events Calendar"
-msgstr ""
-
-#: admin/pages/class-settings-page.php:17
-msgid "Calendar+ Settings"
-msgstr ""
-
-#: admin/pages/class-settings-page.php:17
-msgid "Settings"
-msgstr ""
-
-#: admin/pages/class-settings-page.php:49
-msgid "Remote feed deleted."
-msgstr ""
-
-#. translators: %s: user display name
-#: admin/pages/class-settings-page.php:79, includes/ajax.php:158
-msgid "Edit %s user"
-msgstr ""
-
-#: admin/pages/class-settings-page.php:89
-msgid "Are you sure?"
-msgstr ""
-
-#: admin/pages/class-settings-page.php:90
-msgid "Remove user from list"
-msgstr ""
-
-#: admin/pages/class-settings-page.php:102
-msgid "General"
-msgstr ""
-
-#: admin/pages/class-settings-page.php:103
-msgid "Media"
-msgstr ""
-
-#: admin/pages/class-settings-page.php:104
-msgid "Permissions"
-msgstr ""
-
-#: admin/pages/class-settings-page.php:106
-msgid "Export"
-msgstr ""
-
-#: admin/pages/class-settings-page.php:137
-msgid "Default Country"
-msgstr ""
-
-#: admin/pages/class-settings-page.php:141
-msgid "Display country in locations address"
-msgstr ""
-
-#: admin/pages/class-settings-page.php:146
-msgid "Time format selector"
-msgstr ""
-
-#: admin/pages/class-settings-page.php:150
-msgid "Events Page"
-msgstr ""
-
-#: admin/pages/class-settings-page.php:155
-msgid "Replace Calendar Plus sidebar for"
-msgstr ""
-
-#: admin/pages/class-settings-page.php:161
-msgid "Google Maps"
-msgstr ""
-
-#: admin/pages/class-settings-page.php:164
-msgid "Google Maps API Key"
-msgstr ""
-
-#: admin/pages/class-settings-page.php:176
-msgid "Events images"
-msgstr ""
-
-#: admin/pages/class-settings-page.php:185
-msgid "Single Events maps height"
-msgstr ""
-
-#: admin/pages/class-settings-page.php:195
-msgid "Users"
-msgstr ""
-
-#: admin/pages/class-settings-page.php:200
-msgid "Roles and Capabilities"
-msgstr ""
-
-#: admin/pages/class-settings-page.php:206
-msgid "Export events in CSV format"
-msgstr ""
-
-#: admin/pages/class-settings-page.php:209
-msgid "Fields"
-msgstr ""
-
-#: admin/pages/class-settings-page.php:466
-msgid "Added remote feed."
-msgstr ""
-
-#: admin/pages/class-settings-page.php:456
-msgid "Updated remote feed."
-msgstr ""
-
-#: admin/pages/class-settings-page.php:425
-msgid "Updated feed sync interval."
-msgstr ""
-
-#: admin/pages/class-settings-page.php:414
-msgid "Events imported successfully."
-msgstr ""
-
-#: admin/pages/ical-import-view.php:10
-msgid "Import iCal File"
-msgstr ""
-
-#: admin/pages/ical-import-view.php:12
-msgid "Import events from an iCal (.ics) file."
-msgstr ""
-
-#: admin/pages/ical-import-view.php:19
-msgid "File (.ics)"
-msgstr ""
-
-#: admin/pages/ical-import-view.php:28
-msgid "Options"
-msgstr ""
-
-#: admin/pages/ical-import-view.php:35
-msgid "Import recurring events?"
-msgstr ""
-
-#: admin/pages/ical-import-view.php:42
-msgid "Upload file and import"
-msgstr ""
-
-#: admin/pages/ical-import-view.php:45
-msgid "Synchronise Remote Feeds"
-msgstr ""
-
-#: admin/pages/ical-import-view.php:47
-msgid "Monitor one or more iCal or RSS feeds, adding new events to the calendar and updating existing events when the feeds are updated."
-msgstr ""
-
-#: admin/pages/ical-import-view.php:95
-msgid "Add New Feed"
-msgstr ""
-
-#: admin/pages/ical-import-view.php:88
-msgid "Edit Feed"
-msgstr ""
-
-#: admin/pages/ical-import-view.php:92
-msgid "Cancel"
-msgstr ""
-
-#: admin/pages/ical-import-view.php:114, admin/settings-fields.php:298
-msgid "Name"
-msgstr ""
-
-#: admin/pages/ical-import-view.php:120
-msgid "Enter a memorable label for this feed."
-msgstr ""
-
-#: admin/pages/ical-import-view.php:127
-msgid "Source"
-msgstr ""
-
-#: admin/pages/ical-import-view.php:134
-msgid "Enter the full URL to the remote feed."
-msgstr ""
-
-#: admin/pages/ical-import-view.php:141
-msgid "Type"
-msgstr ""
-
-#: admin/pages/ical-import-view.php:147
-msgid "iCal (.ics)"
-msgstr ""
-
-#: admin/pages/ical-import-view.php:150
-msgid "RSS (.rss)"
-msgstr ""
-
-#: admin/pages/ical-import-view.php:154
-msgid "Choose whether the source is an iCal or RSS feed."
-msgstr ""
-
-#: admin/pages/ical-import-view.php:160
-msgid "Author"
-msgstr ""
-
-#: admin/pages/ical-import-view.php:179
-msgid "Assign all imported events to this user."
-msgstr ""
-
-#: admin/pages/ical-import-view.php:186
-msgid "Category"
-msgstr ""
-
-#: admin/pages/ical-import-view.php:191
-msgid "none"
-msgstr ""
-
-#: admin/pages/ical-import-view.php:207
-msgid "Assign all imported events to this category."
-msgstr ""
-
-#: admin/pages/ical-import-view.php:214, includes/helpers/helpers-general.php:714
-msgid "Publish Events"
-msgstr ""
-
-#: admin/pages/ical-import-view.php:221
-msgid "Publish Immediately"
-msgstr ""
-
-#: admin/pages/ical-import-view.php:222
-msgid "Save as Draft"
-msgstr ""
-
-#: admin/pages/ical-import-view.php:223
-msgid "Pending Review"
-msgstr ""
-
-#: admin/pages/ical-import-view.php:236
-msgid "Decide what publication status newly-created events should have."
-msgstr ""
-
-#: admin/pages/ical-import-view.php:244
-msgid "Update"
-msgstr ""
-
-#: admin/pages/ical-import-view.php:244
-msgid "Add new feed"
-msgstr ""
-
-#: admin/pages/ical-import-view.php:253
-msgid "Active Feeds"
-msgstr ""
-
-#: admin/pages/ical-import-view.php:261
-msgid "Feed Information"
-msgstr ""
-
-#: admin/pages/ical-import-view.php:262
-msgid "Last Synchronised"
-msgstr ""
-
-#: admin/pages/ical-import-view.php:263
-msgid "Feed Source"
-msgstr ""
-
-#: admin/pages/ical-import-view.php:300, includes/calendar/class-calendar-plus-calendar-renderer.php:287
-msgid "Delete"
-msgstr ""
-
-#: admin/pages/ical-import-view.php:331
-msgid "Publish events <span>immediately</span>."
-msgstr ""
-
-#. translators: %s: author display name
-#: admin/pages/ical-import-view.php:333
-msgid "Publish events <span>immediately</span> on behalf of <span>%s</span>."
-msgstr ""
-
-#. translators: 1: author display name, 2: category name
-#: admin/pages/ical-import-view.php:335
-msgid "Publish events <span>immediately</span> in the <span>%1$s</span> category on behalf of <span>%2$s</span>."
-msgstr ""
-
-#: admin/pages/ical-import-view.php:322
-msgid "Save events as <span>pending review</span>."
-msgstr ""
-
-#: admin/pages/ical-import-view.php:324
-msgid "Save events as <span>pending review</span> on behalf of <span>%s</span>."
-msgstr ""
-
-#: admin/pages/ical-import-view.php:326
-msgid "Save events as <span>pending review</span> in the <span>%1$s</span> category on behalf of <span>%2$s</span>."
-msgstr ""
-
-#: admin/pages/ical-import-view.php:313
-msgid "Save events as <span>drafts</span>."
-msgstr ""
-
-#: admin/pages/ical-import-view.php:315
-msgid "Save events as <span>drafts</span> on behalf of <span>%s</span>."
-msgstr ""
-
-#: admin/pages/ical-import-view.php:317
-msgid "Save events as <span>drafts</span> in the <span>%1$s</span> category on behalf of <span>%2$s</span>."
-msgstr ""
-
-#: admin/pages/ical-import-view.php:378
-msgid "There was an error retrieving the feed from the source"
-msgstr ""
-
-#: admin/pages/ical-import-view.php:381
-msgid "There was an error parsing the feed"
-msgstr ""
-
-#: admin/pages/ical-import-view.php:386
-msgid "There was an error fetching and parsing the feed"
-msgstr ""
-
-#: admin/pages/ical-import-view.php:389
-msgid "The feed contained no events"
-msgstr ""
-
-#. translators: amount of events
-#: admin/pages/ical-import-view.php:393
-msgid "Successfully imported %d events"
-msgstr ""
-
-#. translators: 1: formatted time, 2: formatted date
-#: admin/pages/ical-import-view.php:401
-msgctxt "time and date sep"
-msgid "at %1$s on %2$s."
-msgstr ""
-
-#: admin/pages/ical-import-view.php:373
-msgid "This feed has not been synchronised yet."
-msgstr ""
-
-#: admin/pages/ical-import-view.php:279
-msgid "There are no active feeds."
-msgstr ""
-
-#: admin/pages/ical-import-view.php:433
-msgid "every hour"
-msgstr ""
-
-#: admin/pages/ical-import-view.php:434
-msgid "twice every day"
-msgstr ""
-
-#: admin/pages/ical-import-view.php:435
-msgid "once every day"
-msgstr ""
-
-#: admin/pages/ical-import-view.php:442
-msgid "Check for new events"
-msgstr ""
-
-#: admin/pages/ical-import-view.php:455
-msgid "Update interval settings"
 msgstr ""
 
 #: admin/settings-fields.php:15
@@ -648,7 +141,7 @@ msgstr ""
 msgid "None"
 msgstr ""
 
-#: admin/settings-fields.php:213, admin/settings-fields.php:240, includes/rest-api/endpoints/class-calendar-plus-rest-endpoints-event.php:564, public/helpers-templates.php:366
+#: admin/settings-fields.php:213, admin/settings-fields.php:240, public/helpers-templates.php:366, includes/rest-api/endpoints/class-calendar-plus-rest-endpoints-event.php:564
 msgid "Google Calendar"
 msgstr ""
 
@@ -668,8 +161,16 @@ msgstr ""
 msgid "How to get an API Key"
 msgstr ""
 
+#: admin/settings-fields.php:298, admin/pages/ical-import-view.php:114
+msgid "Name"
+msgstr ""
+
 #: admin/settings-fields.php:299
 msgid "Description"
+msgstr ""
+
+#: admin/settings-fields.php:300, admin/meta-boxes/event/class-event-location-meta-box.php:7
+msgid "Event Location"
 msgstr ""
 
 #: admin/settings-fields.php:302
@@ -690,6 +191,10 @@ msgstr ""
 
 #: admin/settings-fields.php:320
 msgid "Choose which fields to include in the export file"
+msgstr ""
+
+#: admin/tinymce-shortcodes-i18n.php:6, admin/pages/class-calendar-page.php:17, includes/calendar/class-calendar-plus-calendar-renderer.php:325, includes/shortcodes/class-calendar-plus-accessible-calendar.php:99
+msgid "Month"
 msgstr ""
 
 #: admin/tinymce-shortcodes-i18n.php:7, includes/calendar/class-calendar-plus-calendar-renderer.php:326
@@ -764,265 +269,9 @@ msgstr ""
 msgid "Search By Title…"
 msgstr ""
 
-#: admin/views/event-details-meta-box.php:14
-msgid "Regular event"
-msgstr ""
-
-#: admin/views/event-details-meta-box.php:15
-msgid "Recurring event"
-msgstr ""
-
-#: admin/views/event-details-meta-box.php:16
-msgid "Multi-day event"
-msgstr ""
-
-#: admin/views/event-details-meta-box.php:20, admin/views/event-details-meta-box.php:22, includes/calendar/class-calendar-plus-calendar-renderer.php:278
-msgid "Starts at"
-msgstr ""
-
-#: admin/views/event-details-meta-box.php:20
-msgid "Ends at"
-msgstr ""
-
-#: admin/views/event-details-meta-box.php:21
-msgid "Starts on"
-msgstr ""
-
-#: admin/views/event-details-meta-box.php:21
-msgid "Ends on"
-msgstr ""
-
-#: admin/views/event-details-meta-box.php:22
-msgctxt "time duration sep"
-msgid "to"
-msgstr ""
-
-#: admin/views/event-details-meta-box.php:25
-msgid "1<sup>st</sup>"
-msgstr ""
-
-#: admin/views/event-details-meta-box.php:26
-msgid "2<sup>nd</sup>"
-msgstr ""
-
-#: admin/views/event-details-meta-box.php:27
-msgid "3<sup>rd</sup>"
-msgstr ""
-
-#: admin/views/event-details-meta-box.php:28
-msgid "4<sup>th</sup>"
-msgstr ""
-
-#: admin/views/event-details-meta-box.php:29
-msgid "5<sup>th</sup>"
-msgstr ""
-
-#: admin/views/event-details-meta-box.php:63
-msgid "Rules"
-msgstr ""
-
-#: admin/views/event-details-meta-box.php:69
-msgid "Edit rules"
-msgstr ""
-
-#. translators: 1: link to calendar admin menu, 2: title text
-#: admin/views/event-details-meta-box.php:75
-msgid "(if you have set custom dates in <a href=\"%1$s\" title=\"%2$s\">Calendar Page</a> these will be deleted)"
-msgstr ""
-
-#: admin/views/event-details-meta-box.php:77
-msgid "Calendar page"
-msgstr ""
-
-#: admin/views/event-details-meta-box.php:94, admin/views/event-details-meta-box.php:305, admin/views/event-details-meta-box.php:337, includes/calendar/class-calendar-plus-calendar-renderer.php:244, includes/widgets/class-calendar-plus-calendar-widget.php:367
-msgid "All day event"
-msgstr ""
-
-#: admin/views/event-details-meta-box.php:105, admin/views/event-details-meta-box.php:145
-msgid "Remove date"
-msgstr ""
-
-#: admin/views/event-details-meta-box.php:137
-msgid "Add new date"
-msgstr ""
-
-#: admin/views/event-details-meta-box.php:179
-msgid "Date range"
-msgstr ""
-
-#: admin/views/event-details-meta-box.php:183
-msgctxt "Details metabox: From date"
-msgid "From"
-msgstr ""
-
-#: admin/views/event-details-meta-box.php:183
-msgctxt "Details metabox: To date"
-msgid "To"
-msgstr ""
-
-#: admin/views/event-details-meta-box.php:205
-msgctxt "Details metabox: Every number of days/weeks"
-msgid "Every"
-msgstr ""
-
-#: admin/views/event-details-meta-box.php:265
-msgid "Day(s)"
-msgstr ""
-
-#: admin/views/event-details-meta-box.php:266
-msgid "Week(s)"
-msgstr ""
-
-#: admin/views/event-details-meta-box.php:267
-msgid "Year(s)"
-msgstr ""
-
-#: admin/views/event-details-meta-box.php:268
-msgid "Days of the week"
-msgstr ""
-
-#: admin/views/event-details-meta-box.php:269
-msgid "Days of the month"
-msgstr ""
-
-#: admin/views/event-details-meta-box.php:282
-msgid "Time"
-msgstr ""
-
-#: admin/views/event-details-meta-box.php:312
-msgid "Excluded dates"
-msgstr ""
-
-#: admin/views/event-details-meta-box.php:329
-msgid "Add excluded date"
-msgstr ""
-
-#: admin/views/location-location-meta-box.php:4, admin/views/location-location-meta-box.php:57
-msgid "Address"
-msgstr ""
-
-#: admin/views/location-location-meta-box.php:8, admin/views/location-location-meta-box.php:61
-msgid "City"
-msgstr ""
-
-#: admin/views/location-location-meta-box.php:12, admin/views/location-location-meta-box.php:65
-msgid "State/Province"
-msgstr ""
-
-#: admin/views/location-location-meta-box.php:16, admin/views/location-location-meta-box.php:69
-msgid "Postcode"
-msgstr ""
-
-#: admin/views/location-location-meta-box.php:20, admin/views/location-location-meta-box.php:73
-msgid "Country"
-msgstr ""
-
-#: admin/views/location-location-meta-box.php:33
-msgid "Add my own location"
-msgstr ""
-
-#: admin/views/location-location-meta-box.php:35
-msgid "Google Map"
-msgstr ""
-
-#: calendar-plus.php:6
-msgid "Calendar+ (An Accessible Events Calendar)"
-msgstr ""
-
-#: calendar-plus.php:7
-msgid "https://campuspress.com/accessible-wordpress-calendar-plugin/"
-msgstr ""
-
-#: calendar-plus.php:8
-msgid "Accessibility-ready complete calendar and events plugin. Import from Google Calendar, subscribe to events, and more."
-msgstr ""
-
-#: calendar-plus.php:10
-msgid "CampusPress"
-msgstr ""
-
-#: calendar-plus.php:11
-msgid "https://campuspress.com"
-msgstr ""
-
-#: includes/calendar-buttons/abstract-calendar-plus-calendar-button.php:30
-msgid "The event does not exist"
-msgstr ""
-
-#: includes/calendar/class-calendar-plus-calendar-renderer.php:224, includes/calendar/class-calendar-plus-calendar-renderer.php:224, includes/class-calendar-plus-taxonomies.php:30
-msgid "View Event"
-msgstr ""
-
-#: includes/calendar/class-calendar-plus-calendar-renderer.php:278
-msgid "Finishes at"
-msgstr ""
-
-#: includes/calendar/class-calendar-plus-calendar-renderer.php:293, includes/class-calendar-plus-taxonomies.php:28
-msgid "Edit Event"
-msgstr ""
-
-#: includes/calendar/class-calendar-plus-calendar-renderer.php:302
-msgid "Save"
-msgstr ""
-
-#: includes/calendar/class-calendar-plus-calendar-renderer.php:323
-msgid "View"
-msgstr ""
-
-#: includes/calendar/class-calendar-plus-calendar-renderer.php:492
-msgid "Previous day"
-msgstr ""
-
-#: includes/calendar/class-calendar-plus-calendar-renderer.php:492
-msgid "&laquo; Prev day "
-msgstr ""
-
-#: includes/calendar/class-calendar-plus-calendar-renderer.php:493
-msgid "Next day"
-msgstr ""
-
-#: includes/calendar/class-calendar-plus-calendar-renderer.php:493
-msgid "Next day &raquo;"
-msgstr ""
-
-#: includes/calendar/class-calendar-plus-calendar-renderer.php:459
-msgid "Previous week"
-msgstr ""
-
-#: includes/calendar/class-calendar-plus-calendar-renderer.php:459
-msgid "&laquo; Prev week "
-msgstr ""
-
-#: includes/calendar/class-calendar-plus-calendar-renderer.php:460
-msgid "Next week"
-msgstr ""
-
-#: includes/calendar/class-calendar-plus-calendar-renderer.php:460
-msgid "Next week &raquo;"
-msgstr ""
-
-#: includes/calendar/class-calendar-plus-calendar-renderer.php:419
-msgid "Previous page"
-msgstr ""
-
-#: includes/calendar/class-calendar-plus-calendar-renderer.php:419
-msgid "&laquo; Previous page "
-msgstr ""
-
-#: includes/calendar/class-calendar-plus-calendar-renderer.php:423
-msgid "Next page"
-msgstr ""
-
-#: includes/calendar/class-calendar-plus-calendar-renderer.php:423
-msgid "Next page &raquo;"
-msgstr ""
-
-#: includes/calendar/class-calendar-plus-calendar-renderer.php:369
-msgid "View month"
-msgstr ""
-
-#: includes/calendar/class-calendar-plus-calendar-renderer.php:683
-msgid "%1$s to %2$s"
+#. translators: %s: user display name
+#: includes/ajax.php:158, admin/pages/class-settings-page.php:79
+msgid "Edit %s user"
 msgstr ""
 
 #: includes/class-calendar-plus-activator.php:62
@@ -1092,8 +341,16 @@ msgstr ""
 msgid "Add New Event"
 msgstr ""
 
+#: includes/class-calendar-plus-taxonomies.php:28, includes/calendar/class-calendar-plus-calendar-renderer.php:293
+msgid "Edit Event"
+msgstr ""
+
 #: includes/class-calendar-plus-taxonomies.php:29
 msgid "New Event"
+msgstr ""
+
+#: includes/class-calendar-plus-taxonomies.php:30, includes/calendar/class-calendar-plus-calendar-renderer.php:224, includes/calendar/class-calendar-plus-calendar-renderer.php:224
+msgid "View Event"
 msgstr ""
 
 #: includes/class-calendar-plus-taxonomies.php:31
@@ -1261,6 +518,792 @@ msgstr ""
 msgid "Event Locations"
 msgstr ""
 
+#: public/helpers-templates.php:153
+msgid "Search Results"
+msgstr ""
+
+#: public/helpers-templates.php:156
+msgid "Search Results: %s"
+msgstr ""
+
+#: public/helpers-templates.php:158
+msgid "Event Category: %s"
+msgstr ""
+
+#: public/helpers-templates.php:192
+msgid "<strong>Searching for</strong> %s"
+msgstr ""
+
+#: public/helpers-templates.php:196
+msgid "<strong>Category</strong> %s"
+msgstr ""
+
+#: public/helpers-templates.php:202
+msgid "<strong>Location</strong> %s"
+msgstr ""
+
+#: public/helpers-templates.php:208
+msgid "<strong>From</strong> %s"
+msgstr ""
+
+#: public/helpers-templates.php:213
+msgid "<strong>To</strong> %s"
+msgstr ""
+
+#: public/helpers-templates.php:217
+msgid "<span>Displaying past events</span>"
+msgstr ""
+
+#: public/helpers-templates.php:247, public/helpers-templates.php:256, public/helpers-templates.php:269
+msgid "Download iCal file for search results"
+msgstr ""
+
+#: public/helpers-templates.php:247, public/helpers-templates.php:256, public/helpers-templates.php:269
+msgid "iCal file"
+msgstr ""
+
+#: public/helpers-templates.php:370, includes/rest-api/endpoints/class-calendar-plus-rest-endpoints-event.php:568
+msgid "Outlook"
+msgstr ""
+
+#: public/helpers-templates.php:374, includes/rest-api/endpoints/class-calendar-plus-rest-endpoints-event.php:572
+msgid "iCal File"
+msgstr ""
+
+#: public/helpers-templates.php:395, public/helpers-templates.php:395
+msgid "Download iCal file for this event"
+msgstr ""
+
+#: admin/importers/class-the-events-calendar-importer.php:49
+msgid "Import data from The Events Calendar Plugin to Calendar+"
+msgstr ""
+
+#: admin/importers/class-the-events-calendar-importer.php:61
+msgid "Howdy! Upload your WordPress eXtended RSS (WXR) file and we&#8217;ll import the events into this site."
+msgstr ""
+
+#: admin/importers/class-the-events-calendar-importer.php:62
+msgid "Choose a WXR (.xml) file to upload, then click Upload file and import."
+msgstr ""
+
+#: admin/importers/class-the-events-calendar-importer.php:71, admin/importers/class-the-events-calendar-importer.php:76, admin/importers/class-the-events-calendar-importer.php:86, admin/importers/class-the-events-calendar-importer.php:311, admin/importers/class-the-events-calendar-importer.php:320
+msgid "Sorry, there has been an error."
+msgstr ""
+
+#: admin/importers/class-the-events-calendar-importer.php:77
+msgid "The export file could not be found at <code>%s</code>. It is likely that this was caused by a permissions problem."
+msgstr ""
+
+#: admin/importers/class-the-events-calendar-importer.php:95
+msgid "This WXR file (version %s) may not be supported by this version of the importer. Please consider updating."
+msgstr ""
+
+#: admin/importers/class-the-events-calendar-importer.php:185
+msgid "Failed to import author %s. Their posts will be attributed to the current user."
+msgstr ""
+
+#: admin/importers/class-the-events-calendar-importer.php:207
+msgid "Assign Authors"
+msgstr ""
+
+#: admin/importers/class-the-events-calendar-importer.php:208
+msgid "To make it easier for you to edit and save the imported content, you may want to reassign the author of the imported item to an existing user of this site. For example, you may want to import all the entries as <code>admin</code>s entries."
+msgstr ""
+
+#: admin/importers/class-the-events-calendar-importer.php:210
+msgid "If a new user is created by WordPress, a new password will be randomly generated and the new user&#8217;s role will be set as %s. Manually changing the new user&#8217;s details will be necessary."
+msgstr ""
+
+#: admin/importers/class-the-events-calendar-importer.php:220
+msgid "Import Attachments"
+msgstr ""
+
+#: admin/importers/class-the-events-calendar-importer.php:223
+msgid "Download and import file attachments"
+msgstr ""
+
+#: admin/importers/class-the-events-calendar-importer.php:227
+msgid "Submit"
+msgstr ""
+
+#: admin/importers/class-the-events-calendar-importer.php:242
+msgid "Import author:"
+msgstr ""
+
+#: admin/importers/class-the-events-calendar-importer.php:256
+msgid "or create new user with login name:"
+msgstr ""
+
+#: admin/importers/class-the-events-calendar-importer.php:259
+msgid "as a new user:"
+msgstr ""
+
+#: admin/importers/class-the-events-calendar-importer.php:267
+msgid "assign posts to an existing user:"
+msgstr ""
+
+#: admin/importers/class-the-events-calendar-importer.php:269
+msgid "or assign posts to an existing user:"
+msgstr ""
+
+#: admin/importers/class-the-events-calendar-importer.php:275
+msgid "- Select -"
+msgstr ""
+
+#: admin/importers/class-the-events-calendar-importer.php:312
+msgid "The file does not exist, please try again."
+msgstr ""
+
+#: admin/importers/class-the-events-calendar-importer.php:349
+msgid "All done."
+msgstr ""
+
+#: admin/importers/class-the-events-calendar-importer.php:349
+msgid "Have fun!"
+msgstr ""
+
+#: admin/importers/class-the-events-calendar-importer.php:350
+msgid "Remember to update the passwords and roles of imported users."
+msgstr ""
+
+#: admin/importers/class-the-events-calendar-importer.php:368
+msgid "Failed to import &#8220;%1$s&#8221;: Invalid post type %2$s"
+msgstr ""
+
+#: admin/importers/class-the-events-calendar-importer.php:388
+msgid "%1$s &#8220;%2$s&#8221; already exists."
+msgstr ""
+
+#: admin/importers/class-the-events-calendar-importer.php:457
+msgid "Failed to import %1$s &#8220;%2$s&#8221;"
+msgstr ""
+
+#: admin/importers/class-the-events-calendar-importer.php:493, admin/importers/class-the-events-calendar-importer.php:894
+msgid "Failed to import %1$s %2$s"
+msgstr ""
+
+#: admin/importers/class-the-events-calendar-importer.php:678
+msgid "Fetching attachments is not enabled"
+msgstr ""
+
+#: admin/importers/class-the-events-calendar-importer.php:695
+msgid "Invalid file type"
+msgstr ""
+
+#: admin/importers/class-the-events-calendar-importer.php:743
+msgid "Remote server did not respond"
+msgstr ""
+
+#: admin/importers/class-the-events-calendar-importer.php:750
+msgid "Remote server returned error response %1$d %2$s"
+msgstr ""
+
+#: admin/importers/class-the-events-calendar-importer.php:758
+msgid "Remote file is incorrect size"
+msgstr ""
+
+#: admin/importers/class-the-events-calendar-importer.php:764
+msgid "Zero size file downloaded"
+msgstr ""
+
+#: admin/importers/class-the-events-calendar-importer.php:771
+msgid "Remote file is too large, limit is %s"
+msgstr ""
+
+#: admin/importers/class-the-events-calendar-importer.php:831
+msgid "Failed to create new user for %s. Their posts will be attributed to the current user."
+msgstr ""
+
+#: admin/pages/class-calendar-page.php:11, admin/pages/class-calendar-page.php:11
+msgid "Calendar"
+msgstr ""
+
+#: admin/pages/class-importer-page.php:11, admin/pages/class-importer-page.php:11, admin/pages/class-settings-page.php:105
+msgid "Import"
+msgstr ""
+
+#: admin/pages/class-importer-page.php:28
+msgid "Import data"
+msgstr ""
+
+#: admin/pages/class-importer-page.php:31
+msgid "Import data from The Events Calendar"
+msgstr ""
+
+#: admin/pages/class-settings-page.php:17
+msgid "Calendar+ Settings"
+msgstr ""
+
+#: admin/pages/class-settings-page.php:17
+msgid "Settings"
+msgstr ""
+
+#: admin/pages/class-settings-page.php:49
+msgid "Remote feed deleted."
+msgstr ""
+
+#: admin/pages/class-settings-page.php:89
+msgid "Are you sure?"
+msgstr ""
+
+#: admin/pages/class-settings-page.php:90
+msgid "Remove user from list"
+msgstr ""
+
+#: admin/pages/class-settings-page.php:102
+msgid "General"
+msgstr ""
+
+#: admin/pages/class-settings-page.php:103
+msgid "Media"
+msgstr ""
+
+#: admin/pages/class-settings-page.php:104
+msgid "Permissions"
+msgstr ""
+
+#: admin/pages/class-settings-page.php:106
+msgid "Export"
+msgstr ""
+
+#: admin/pages/class-settings-page.php:137
+msgid "Default Country"
+msgstr ""
+
+#: admin/pages/class-settings-page.php:141
+msgid "Display country in locations address"
+msgstr ""
+
+#: admin/pages/class-settings-page.php:146
+msgid "Time format selector"
+msgstr ""
+
+#: admin/pages/class-settings-page.php:150
+msgid "Events Page"
+msgstr ""
+
+#: admin/pages/class-settings-page.php:155
+msgid "Replace Calendar Plus sidebar for"
+msgstr ""
+
+#: admin/pages/class-settings-page.php:161
+msgid "Google Maps"
+msgstr ""
+
+#: admin/pages/class-settings-page.php:164
+msgid "Google Maps API Key"
+msgstr ""
+
+#: admin/pages/class-settings-page.php:176
+msgid "Events images"
+msgstr ""
+
+#: admin/pages/class-settings-page.php:185
+msgid "Single Events maps height"
+msgstr ""
+
+#: admin/pages/class-settings-page.php:195
+msgid "Users"
+msgstr ""
+
+#: admin/pages/class-settings-page.php:200
+msgid "Roles and Capabilities"
+msgstr ""
+
+#: admin/pages/class-settings-page.php:206
+msgid "Export events in CSV format"
+msgstr ""
+
+#: admin/pages/class-settings-page.php:209
+msgid "Fields"
+msgstr ""
+
+#: admin/pages/class-settings-page.php:414
+msgid "Events imported successfully."
+msgstr ""
+
+#: admin/pages/class-settings-page.php:425
+msgid "Updated feed sync interval."
+msgstr ""
+
+#: admin/pages/class-settings-page.php:456
+msgid "Updated remote feed."
+msgstr ""
+
+#: admin/pages/class-settings-page.php:466
+msgid "Added remote feed."
+msgstr ""
+
+#: admin/pages/ical-import-view.php:10
+msgid "Import iCal File"
+msgstr ""
+
+#: admin/pages/ical-import-view.php:12
+msgid "Import events from an iCal (.ics) file."
+msgstr ""
+
+#: admin/pages/ical-import-view.php:19
+msgid "File (.ics)"
+msgstr ""
+
+#: admin/pages/ical-import-view.php:28
+msgid "Options"
+msgstr ""
+
+#: admin/pages/ical-import-view.php:35
+msgid "Import recurring events?"
+msgstr ""
+
+#: admin/pages/ical-import-view.php:42
+msgid "Upload file and import"
+msgstr ""
+
+#: admin/pages/ical-import-view.php:45
+msgid "Synchronise Remote Feeds"
+msgstr ""
+
+#: admin/pages/ical-import-view.php:47
+msgid "Monitor one or more iCal or RSS feeds, adding new events to the calendar and updating existing events when the feeds are updated."
+msgstr ""
+
+#: admin/pages/ical-import-view.php:88
+msgid "Edit Feed"
+msgstr ""
+
+#: admin/pages/ical-import-view.php:92
+msgid "Cancel"
+msgstr ""
+
+#: admin/pages/ical-import-view.php:95
+msgid "Add New Feed"
+msgstr ""
+
+#: admin/pages/ical-import-view.php:120
+msgid "Enter a memorable label for this feed."
+msgstr ""
+
+#: admin/pages/ical-import-view.php:127
+msgid "Source"
+msgstr ""
+
+#: admin/pages/ical-import-view.php:134
+msgid "Enter the full URL to the remote feed."
+msgstr ""
+
+#: admin/pages/ical-import-view.php:141
+msgid "Type"
+msgstr ""
+
+#: admin/pages/ical-import-view.php:147
+msgid "iCal (.ics)"
+msgstr ""
+
+#: admin/pages/ical-import-view.php:150
+msgid "RSS (.rss)"
+msgstr ""
+
+#: admin/pages/ical-import-view.php:154
+msgid "Choose whether the source is an iCal or RSS feed."
+msgstr ""
+
+#: admin/pages/ical-import-view.php:160
+msgid "Author"
+msgstr ""
+
+#: admin/pages/ical-import-view.php:179
+msgid "Assign all imported events to this user."
+msgstr ""
+
+#: admin/pages/ical-import-view.php:186
+msgid "Category"
+msgstr ""
+
+#: admin/pages/ical-import-view.php:191
+msgid "none"
+msgstr ""
+
+#: admin/pages/ical-import-view.php:207
+msgid "Assign all imported events to this category."
+msgstr ""
+
+#: admin/pages/ical-import-view.php:214, includes/helpers/helpers-general.php:714
+msgid "Publish Events"
+msgstr ""
+
+#: admin/pages/ical-import-view.php:221
+msgid "Publish Immediately"
+msgstr ""
+
+#: admin/pages/ical-import-view.php:222
+msgid "Save as Draft"
+msgstr ""
+
+#: admin/pages/ical-import-view.php:223
+msgid "Pending Review"
+msgstr ""
+
+#: admin/pages/ical-import-view.php:236
+msgid "Decide what publication status newly-created events should have."
+msgstr ""
+
+#: admin/pages/ical-import-view.php:244
+msgid "Update"
+msgstr ""
+
+#: admin/pages/ical-import-view.php:244
+msgid "Add new feed"
+msgstr ""
+
+#: admin/pages/ical-import-view.php:253
+msgid "Active Feeds"
+msgstr ""
+
+#: admin/pages/ical-import-view.php:261
+msgid "Feed Information"
+msgstr ""
+
+#: admin/pages/ical-import-view.php:262
+msgid "Last Synchronised"
+msgstr ""
+
+#: admin/pages/ical-import-view.php:263
+msgid "Feed Source"
+msgstr ""
+
+#: admin/pages/ical-import-view.php:279
+msgid "There are no active feeds."
+msgstr ""
+
+#: admin/pages/ical-import-view.php:300, includes/calendar/class-calendar-plus-calendar-renderer.php:287
+msgid "Delete"
+msgstr ""
+
+#: admin/pages/ical-import-view.php:313
+msgid "Save events as <span>drafts</span>."
+msgstr ""
+
+#. translators: %s: author display name
+#: admin/pages/ical-import-view.php:315
+msgid "Save events as <span>drafts</span> on behalf of <span>%s</span>."
+msgstr ""
+
+#. translators: 1: category name, 2: author display name
+#: admin/pages/ical-import-view.php:317
+msgid "Save events as <span>drafts</span> in the <span>%1$s</span> category on behalf of <span>%2$s</span>."
+msgstr ""
+
+#: admin/pages/ical-import-view.php:322
+msgid "Save events as <span>pending review</span>."
+msgstr ""
+
+#. translators: %s: author display name
+#: admin/pages/ical-import-view.php:324
+msgid "Save events as <span>pending review</span> on behalf of <span>%s</span>."
+msgstr ""
+
+#. translators: 1: author display name, 2: category name
+#: admin/pages/ical-import-view.php:326
+msgid "Save events as <span>pending review</span> in the <span>%1$s</span> category on behalf of <span>%2$s</span>."
+msgstr ""
+
+#: admin/pages/ical-import-view.php:331
+msgid "Publish events <span>immediately</span>."
+msgstr ""
+
+#. translators: %s: author display name
+#: admin/pages/ical-import-view.php:333
+msgid "Publish events <span>immediately</span> on behalf of <span>%s</span>."
+msgstr ""
+
+#. translators: 1: author display name, 2: category name
+#: admin/pages/ical-import-view.php:335
+msgid "Publish events <span>immediately</span> in the <span>%1$s</span> category on behalf of <span>%2$s</span>."
+msgstr ""
+
+#: admin/pages/ical-import-view.php:373
+msgid "This feed has not been synchronised yet."
+msgstr ""
+
+#: admin/pages/ical-import-view.php:378
+msgid "There was an error retrieving the feed from the source"
+msgstr ""
+
+#: admin/pages/ical-import-view.php:381
+msgid "There was an error parsing the feed"
+msgstr ""
+
+#: admin/pages/ical-import-view.php:386
+msgid "There was an error fetching and parsing the feed"
+msgstr ""
+
+#: admin/pages/ical-import-view.php:389
+msgid "The feed contained no events"
+msgstr ""
+
+#. translators: amount of events
+#: admin/pages/ical-import-view.php:393
+msgid "Successfully imported %d events"
+msgstr ""
+
+#. translators: 1: formatted time, 2: formatted date
+#: admin/pages/ical-import-view.php:401
+msgctxt "time and date sep"
+msgid "at %1$s on %2$s."
+msgstr ""
+
+#: admin/pages/ical-import-view.php:433
+msgid "every hour"
+msgstr ""
+
+#: admin/pages/ical-import-view.php:434
+msgid "twice every day"
+msgstr ""
+
+#: admin/pages/ical-import-view.php:435
+msgid "once every day"
+msgstr ""
+
+#: admin/pages/ical-import-view.php:442
+msgid "Check for new events"
+msgstr ""
+
+#: admin/pages/ical-import-view.php:455
+msgid "Update interval settings"
+msgstr ""
+
+#: admin/views/event-details-meta-box.php:14
+msgid "Regular event"
+msgstr ""
+
+#: admin/views/event-details-meta-box.php:15
+msgid "Recurring event"
+msgstr ""
+
+#: admin/views/event-details-meta-box.php:16
+msgid "Multi-day event"
+msgstr ""
+
+#: admin/views/event-details-meta-box.php:20, admin/views/event-details-meta-box.php:22, includes/calendar/class-calendar-plus-calendar-renderer.php:278
+msgid "Starts at"
+msgstr ""
+
+#: admin/views/event-details-meta-box.php:20
+msgid "Ends at"
+msgstr ""
+
+#: admin/views/event-details-meta-box.php:21
+msgid "Starts on"
+msgstr ""
+
+#: admin/views/event-details-meta-box.php:21
+msgid "Ends on"
+msgstr ""
+
+#: admin/views/event-details-meta-box.php:22
+msgctxt "time duration sep"
+msgid "to"
+msgstr ""
+
+#: admin/views/event-details-meta-box.php:25
+msgid "1<sup>st</sup>"
+msgstr ""
+
+#: admin/views/event-details-meta-box.php:26
+msgid "2<sup>nd</sup>"
+msgstr ""
+
+#: admin/views/event-details-meta-box.php:27
+msgid "3<sup>rd</sup>"
+msgstr ""
+
+#: admin/views/event-details-meta-box.php:28
+msgid "4<sup>th</sup>"
+msgstr ""
+
+#: admin/views/event-details-meta-box.php:29
+msgid "5<sup>th</sup>"
+msgstr ""
+
+#: admin/views/event-details-meta-box.php:63
+msgid "Rules"
+msgstr ""
+
+#: admin/views/event-details-meta-box.php:69
+msgid "Edit rules"
+msgstr ""
+
+#. translators: 1: link to calendar admin menu, 2: title text
+#: admin/views/event-details-meta-box.php:75
+msgid "(if you have set custom dates in <a href=\"%1$s\" title=\"%2$s\">Calendar Page</a> these will be deleted)"
+msgstr ""
+
+#: admin/views/event-details-meta-box.php:77
+msgid "Calendar page"
+msgstr ""
+
+#: admin/views/event-details-meta-box.php:94, admin/views/event-details-meta-box.php:305, admin/views/event-details-meta-box.php:337, includes/calendar/class-calendar-plus-calendar-renderer.php:244, includes/widgets/class-calendar-plus-calendar-widget.php:379
+msgid "All day event"
+msgstr ""
+
+#: admin/views/event-details-meta-box.php:105, admin/views/event-details-meta-box.php:145
+msgid "Remove date"
+msgstr ""
+
+#: admin/views/event-details-meta-box.php:137
+msgid "Add new date"
+msgstr ""
+
+#: admin/views/event-details-meta-box.php:179
+msgid "Date range"
+msgstr ""
+
+#: admin/views/event-details-meta-box.php:183
+msgctxt "Details metabox: From date"
+msgid "From"
+msgstr ""
+
+#: admin/views/event-details-meta-box.php:183
+msgctxt "Details metabox: To date"
+msgid "To"
+msgstr ""
+
+#: admin/views/event-details-meta-box.php:205
+msgctxt "Details metabox: Every number of days/weeks"
+msgid "Every"
+msgstr ""
+
+#: admin/views/event-details-meta-box.php:265
+msgid "Day(s)"
+msgstr ""
+
+#: admin/views/event-details-meta-box.php:266
+msgid "Week(s)"
+msgstr ""
+
+#: admin/views/event-details-meta-box.php:267
+msgid "Year(s)"
+msgstr ""
+
+#: admin/views/event-details-meta-box.php:268
+msgid "Days of the week"
+msgstr ""
+
+#: admin/views/event-details-meta-box.php:269
+msgid "Days of the month"
+msgstr ""
+
+#: admin/views/event-details-meta-box.php:282
+msgid "Time"
+msgstr ""
+
+#: admin/views/event-details-meta-box.php:312
+msgid "Excluded dates"
+msgstr ""
+
+#: admin/views/event-details-meta-box.php:329
+msgid "Add excluded date"
+msgstr ""
+
+#: admin/views/location-location-meta-box.php:4, admin/views/location-location-meta-box.php:57
+msgid "Address"
+msgstr ""
+
+#: admin/views/location-location-meta-box.php:8, admin/views/location-location-meta-box.php:61
+msgid "City"
+msgstr ""
+
+#: admin/views/location-location-meta-box.php:12, admin/views/location-location-meta-box.php:65
+msgid "State/Province"
+msgstr ""
+
+#: admin/views/location-location-meta-box.php:16, admin/views/location-location-meta-box.php:69
+msgid "Postcode"
+msgstr ""
+
+#: admin/views/location-location-meta-box.php:20, admin/views/location-location-meta-box.php:73
+msgid "Country"
+msgstr ""
+
+#: admin/views/location-location-meta-box.php:33
+msgid "Add my own location"
+msgstr ""
+
+#: admin/views/location-location-meta-box.php:35
+msgid "Google Map"
+msgstr ""
+
+#: includes/calendar/class-calendar-plus-calendar-renderer.php:278
+msgid "Finishes at"
+msgstr ""
+
+#: includes/calendar/class-calendar-plus-calendar-renderer.php:302
+msgid "Save"
+msgstr ""
+
+#: includes/calendar/class-calendar-plus-calendar-renderer.php:323
+msgid "View"
+msgstr ""
+
+#: includes/calendar/class-calendar-plus-calendar-renderer.php:369
+msgid "View month"
+msgstr ""
+
+#: includes/calendar/class-calendar-plus-calendar-renderer.php:419
+msgid "Previous page"
+msgstr ""
+
+#: includes/calendar/class-calendar-plus-calendar-renderer.php:419
+msgid "&laquo; Previous page "
+msgstr ""
+
+#: includes/calendar/class-calendar-plus-calendar-renderer.php:423
+msgid "Next page"
+msgstr ""
+
+#: includes/calendar/class-calendar-plus-calendar-renderer.php:423
+msgid "Next page &raquo;"
+msgstr ""
+
+#: includes/calendar/class-calendar-plus-calendar-renderer.php:459
+msgid "Previous week"
+msgstr ""
+
+#: includes/calendar/class-calendar-plus-calendar-renderer.php:459
+msgid "&laquo; Prev week "
+msgstr ""
+
+#: includes/calendar/class-calendar-plus-calendar-renderer.php:460
+msgid "Next week"
+msgstr ""
+
+#: includes/calendar/class-calendar-plus-calendar-renderer.php:460
+msgid "Next week &raquo;"
+msgstr ""
+
+#: includes/calendar/class-calendar-plus-calendar-renderer.php:492
+msgid "Previous day"
+msgstr ""
+
+#: includes/calendar/class-calendar-plus-calendar-renderer.php:492
+msgid "&laquo; Prev day "
+msgstr ""
+
+#: includes/calendar/class-calendar-plus-calendar-renderer.php:493
+msgid "Next day"
+msgstr ""
+
+#: includes/calendar/class-calendar-plus-calendar-renderer.php:493
+msgid "Next day &raquo;"
+msgstr ""
+
+#: includes/calendar/class-calendar-plus-calendar-renderer.php:683
+msgid "%1$s to %2$s"
+msgstr ""
+
+#: includes/calendar-buttons/abstract-calendar-plus-calendar-button.php:30
+msgid "The event does not exist"
+msgstr ""
+
 #: includes/helpers/helpers-events.php:23
 msgctxt "Order status"
 msgid "Open"
@@ -1279,6 +1322,40 @@ msgstr ""
 #: includes/helpers/helpers-events.php:26
 msgctxt "Order status"
 msgid "Archived"
+msgstr ""
+
+#: includes/helpers/helpers-events.php:133, includes/helpers/helpers-events.php:134
+msgid "No dates for this event"
+msgstr ""
+
+#: includes/helpers/helpers-events.php:139, includes/helpers/helpers-events.php:140, includes/helpers/helpers-events.php:146, includes/helpers/helpers-events.php:147
+msgctxt "Human read date for an all day datespan event"
+msgid "From %1$s to %2$s"
+msgstr ""
+
+#: includes/helpers/helpers-events.php:152
+msgctxt "Human read date for an event with only one date"
+msgid "On %s"
+msgstr ""
+
+#: includes/helpers/helpers-events.php:158
+msgctxt "Human read time for an event with only one date"
+msgid "at %s"
+msgstr ""
+
+#: includes/helpers/helpers-events.php:165
+msgctxt "Human read date for an event with two dates"
+msgid "On %1$s and %2$s"
+msgstr ""
+
+#: includes/helpers/helpers-events.php:166
+msgctxt "Human read date for an event with two dates"
+msgid "%1$s and %2$s"
+msgstr ""
+
+#: includes/helpers/helpers-events.php:170
+msgctxt "Human read time for an event with two dates"
+msgid "at %s"
 msgstr ""
 
 #: includes/helpers/helpers-events.php:180
@@ -1322,40 +1399,6 @@ msgstr[1] ""
 #: includes/helpers/helpers-events.php:235
 msgctxt "Human read time for an event with more than 2 dates"
 msgid "at %s"
-msgstr ""
-
-#: includes/helpers/helpers-events.php:165
-msgctxt "Human read date for an event with two dates"
-msgid "On %1$s and %2$s"
-msgstr ""
-
-#: includes/helpers/helpers-events.php:166
-msgctxt "Human read date for an event with two dates"
-msgid "%1$s and %2$s"
-msgstr ""
-
-#: includes/helpers/helpers-events.php:170
-msgctxt "Human read time for an event with two dates"
-msgid "at %s"
-msgstr ""
-
-#: includes/helpers/helpers-events.php:152
-msgctxt "Human read date for an event with only one date"
-msgid "On %s"
-msgstr ""
-
-#: includes/helpers/helpers-events.php:158
-msgctxt "Human read time for an event with only one date"
-msgid "at %s"
-msgstr ""
-
-#: includes/helpers/helpers-events.php:146, includes/helpers/helpers-events.php:147, includes/helpers/helpers-events.php:139, includes/helpers/helpers-events.php:140
-msgctxt "Human read date for an all day datespan event"
-msgid "From %1$s to %2$s"
-msgstr ""
-
-#: includes/helpers/helpers-events.php:133, includes/helpers/helpers-events.php:134
-msgid "No dates for this event"
 msgstr ""
 
 #: includes/helpers/helpers-general.php:40
@@ -2538,98 +2581,6 @@ msgstr ""
 msgid "Not an event object"
 msgstr ""
 
-#: includes/rest-api/endpoints/class-calendar-plus-rest-endpoints-event.php:52
-msgid "Edit all recurrences for this date"
-msgstr ""
-
-#: includes/rest-api/endpoints/class-calendar-plus-rest-endpoints-event.php:59
-msgid "New \"from time\" for this date"
-msgstr ""
-
-#: includes/rest-api/endpoints/class-calendar-plus-rest-endpoints-event.php:67
-msgid "New \"to time\" for this date"
-msgstr ""
-
-#: includes/rest-api/endpoints/class-calendar-plus-rest-endpoints-event.php:94
-msgid "Sorry, you are not allowed to edit events."
-msgstr ""
-
-#: includes/rest-api/endpoints/class-calendar-plus-rest-endpoints-event.php:214
-msgid "The date does not exist for that event."
-msgstr ""
-
-#: includes/rest-api/endpoints/class-calendar-plus-rest-endpoints-event.php:220
-msgid "The event does not exist."
-msgstr ""
-
-#: includes/rest-api/endpoints/class-calendar-plus-rest-endpoints-event.php:246
-msgid "Please, use correct dates."
-msgstr ""
-
-#: includes/rest-api/endpoints/class-calendar-plus-rest-endpoints-event.php:297
-msgid "The month from when retrieve the list of the events."
-msgstr ""
-
-#: includes/rest-api/endpoints/class-calendar-plus-rest-endpoints-event.php:308
-msgid "The year from when retrieve the list of the events."
-msgstr ""
-
-#: includes/rest-api/endpoints/class-calendar-plus-rest-endpoints-event.php:318
-msgid "Limit result set to products assigned to specific category IDs separated by commas."
-msgstr ""
-
-#: includes/rest-api/endpoints/class-calendar-plus-rest-endpoints-event.php:327
-msgid "Search events."
-msgstr ""
-
-#: includes/rest-api/endpoints/class-calendar-plus-rest-endpoints-event.php:361
-msgid "Unique identifier for the event."
-msgstr ""
-
-#: includes/rest-api/endpoints/class-calendar-plus-rest-endpoints-event.php:367
-msgid "The title of the event."
-msgstr ""
-
-#: includes/rest-api/endpoints/class-calendar-plus-rest-endpoints-event.php:371
-msgid "The event description."
-msgstr ""
-
-#: includes/rest-api/endpoints/class-calendar-plus-rest-endpoints-event.php:375
-msgid "The event permalink."
-msgstr ""
-
-#: includes/rest-api/endpoints/class-calendar-plus-rest-endpoints-event.php:380
-msgid "The event start date."
-msgstr ""
-
-#: includes/rest-api/endpoints/class-calendar-plus-rest-endpoints-event.php:384
-msgid "The event end date."
-msgstr ""
-
-#: includes/rest-api/endpoints/class-calendar-plus-rest-endpoints-event.php:388
-msgid "If the event is all day or not."
-msgstr ""
-
-#: includes/rest-api/endpoints/class-calendar-plus-rest-endpoints-event.php:392
-msgid "Location attributes. False if there is no location attached to the event."
-msgstr ""
-
-#: includes/rest-api/endpoints/class-calendar-plus-rest-endpoints-event.php:396
-msgid "Dates string adapted to human read."
-msgstr ""
-
-#: includes/rest-api/endpoints/class-calendar-plus-rest-endpoints-event.php:400
-msgid "URLs to import to external calendars"
-msgstr ""
-
-#: includes/rest-api/endpoints/class-calendar-plus-rest-endpoints-event.php:568, public/helpers-templates.php:370
-msgid "Outlook"
-msgstr ""
-
-#: includes/rest-api/endpoints/class-calendar-plus-rest-endpoints-event.php:572, public/helpers-templates.php:374
-msgid "iCal File"
-msgstr ""
-
 #: includes/shortcodes/class-calendar-plus-accessible-calendar.php:94
 msgid "Search Calendar Events"
 msgstr ""
@@ -2678,31 +2629,31 @@ msgstr ""
 msgid "Continue Reading %s"
 msgstr ""
 
-#: includes/shortcodes/class-calendar-plus-accessible-calendar.php:247
+#: includes/shortcodes/class-calendar-plus-accessible-calendar.php:248
 msgid "Show Details for %s"
 msgstr ""
 
-#: includes/shortcodes/class-calendar-plus-accessible-calendar.php:266
+#: includes/shortcodes/class-calendar-plus-accessible-calendar.php:267
 msgid "View Full Details for %s"
 msgstr ""
 
-#: includes/shortcodes/class-calendar-plus-accessible-calendar.php:319
+#: includes/shortcodes/class-calendar-plus-accessible-calendar.php:320
 msgid "this event"
 msgstr ""
 
-#: includes/shortcodes/class-calendar-plus-accessible-calendar.php:320
+#: includes/shortcodes/class-calendar-plus-accessible-calendar.php:321
 msgid "Show Details for %EVENT%"
 msgstr ""
 
-#: includes/shortcodes/class-calendar-plus-accessible-calendar.php:321
+#: includes/shortcodes/class-calendar-plus-accessible-calendar.php:322
 msgid "Hide Details for %EVENT%"
 msgstr ""
 
-#: includes/shortcodes/class-calendar-plus-accessible-calendar.php:323, includes/shortcodes/class-calendar-plus-accessible-calendar.php:334
+#: includes/shortcodes/class-calendar-plus-accessible-calendar.php:324, includes/shortcodes/class-calendar-plus-accessible-calendar.php:335
 msgid "Calendar Navigation"
 msgstr ""
 
-#: includes/shortcodes/class-calendar-plus-accessible-calendar.php:328
+#: includes/shortcodes/class-calendar-plus-accessible-calendar.php:329
 msgid "Showing events from %1$s %2$d."
 msgstr ""
 
@@ -2714,7 +2665,7 @@ msgstr ""
 msgid "Events for %1$s %2$d"
 msgstr ""
 
-#: includes/shortcodes/class-calendar-plus-accessible-calendar.php:413
+#: includes/shortcodes/class-calendar-plus-accessible-calendar.php:414
 msgid "View Interactive Version"
 msgstr ""
 
@@ -2754,7 +2705,7 @@ msgstr ""
 msgid "Please, enter the event ID in Event Settings"
 msgstr ""
 
-#: includes/shortcodes/class-calendar-plus-events-by-cat-shortcode.php:87
+#: includes/shortcodes/class-calendar-plus-events-by-cat-shortcode.php:122
 msgid "There are no events matching your query to show."
 msgstr ""
 
@@ -2766,7 +2717,7 @@ msgstr ""
 msgid "Events page has not been set. Links in calendar will not work property. Please set an Events page <a href=\"%s\">here</a>"
 msgstr ""
 
-#: includes/widgets/class-calendar-plus-calendar-widget.php:369
+#: includes/widgets/class-calendar-plus-calendar-widget.php:381
 msgctxt "Event times"
 msgid "From %1$s to %2$s"
 msgstr ""
@@ -2882,12 +2833,12 @@ msgstr ""
 msgid "Calendar+ This Month Events"
 msgstr ""
 
-#: includes/widgets/class-calendar-plus-this-month-events-widget.php:67
-msgid "There are no events for this month."
-msgstr ""
-
 #: includes/widgets/class-calendar-plus-this-month-events-widget.php:60, includes/widgets/class-calendar-plus-this-week-events-widget.php:60, public/templates/content-event.php:29, public/templates/content-event.php:41, public/templates/shortcodes/event-single.php:6
 msgid "Permalink to %s"
+msgstr ""
+
+#: includes/widgets/class-calendar-plus-this-month-events-widget.php:67
+msgid "There are no events for this month."
 msgstr ""
 
 #: includes/widgets/class-calendar-plus-this-week-events-widget.php:16
@@ -2902,54 +2853,6 @@ msgstr ""
 msgid "There are no events for this week."
 msgstr ""
 
-#: public/helpers-templates.php:158
-msgid "Event Category: %s"
-msgstr ""
-
-#: public/helpers-templates.php:156
-msgid "Search Results: %s"
-msgstr ""
-
-#: public/helpers-templates.php:153
-msgid "Search Results"
-msgstr ""
-
-#: public/helpers-templates.php:269, public/helpers-templates.php:256, public/helpers-templates.php:247
-msgid "Download iCal file for search results"
-msgstr ""
-
-#: public/helpers-templates.php:269, public/helpers-templates.php:256, public/helpers-templates.php:247
-msgid "iCal file"
-msgstr ""
-
-#: public/helpers-templates.php:192
-msgid "<strong>Searching for</strong> %s"
-msgstr ""
-
-#: public/helpers-templates.php:196
-msgid "<strong>Category</strong> %s"
-msgstr ""
-
-#: public/helpers-templates.php:202
-msgid "<strong>Location</strong> %s"
-msgstr ""
-
-#: public/helpers-templates.php:208
-msgid "<strong>From</strong> %s"
-msgstr ""
-
-#: public/helpers-templates.php:213
-msgid "<strong>To</strong> %s"
-msgstr ""
-
-#: public/helpers-templates.php:217
-msgid "<span>Displaying past events</span>"
-msgstr ""
-
-#: public/helpers-templates.php:395, public/helpers-templates.php:395
-msgid "Download iCal file for this event"
-msgstr ""
-
 #: public/templates/archive-event.php:38
 msgid "No events were found."
 msgstr ""
@@ -2960,4 +2863,104 @@ msgstr ""
 
 #: public/templates/content-event.php:66
 msgid "Add to"
+msgstr ""
+
+#: admin/meta-boxes/event/class-event-color-meta-box.php:7
+msgid "Event Color"
+msgstr ""
+
+#: admin/meta-boxes/event/class-event-details-meta-box.php:7
+msgid "Event Details"
+msgstr ""
+
+#: admin/meta-boxes/event/class-event-status-meta-box.php:7
+msgid "Event Status"
+msgstr ""
+
+#: admin/meta-boxes/location/class-location-location-meta-box.php:7
+msgid "Select a Location"
+msgstr ""
+
+#: includes/rest-api/endpoints/class-calendar-plus-rest-endpoints-event.php:52
+msgid "Edit all recurrences for this date"
+msgstr ""
+
+#: includes/rest-api/endpoints/class-calendar-plus-rest-endpoints-event.php:59
+msgid "New \"from time\" for this date"
+msgstr ""
+
+#: includes/rest-api/endpoints/class-calendar-plus-rest-endpoints-event.php:67
+msgid "New \"to time\" for this date"
+msgstr ""
+
+#: includes/rest-api/endpoints/class-calendar-plus-rest-endpoints-event.php:94
+msgid "Sorry, you are not allowed to edit events."
+msgstr ""
+
+#: includes/rest-api/endpoints/class-calendar-plus-rest-endpoints-event.php:214
+msgid "The date does not exist for that event."
+msgstr ""
+
+#: includes/rest-api/endpoints/class-calendar-plus-rest-endpoints-event.php:220
+msgid "The event does not exist."
+msgstr ""
+
+#: includes/rest-api/endpoints/class-calendar-plus-rest-endpoints-event.php:246
+msgid "Please, use correct dates."
+msgstr ""
+
+#: includes/rest-api/endpoints/class-calendar-plus-rest-endpoints-event.php:297
+msgid "The month from when retrieve the list of the events."
+msgstr ""
+
+#: includes/rest-api/endpoints/class-calendar-plus-rest-endpoints-event.php:308
+msgid "The year from when retrieve the list of the events."
+msgstr ""
+
+#: includes/rest-api/endpoints/class-calendar-plus-rest-endpoints-event.php:318
+msgid "Limit result set to products assigned to specific category IDs separated by commas."
+msgstr ""
+
+#: includes/rest-api/endpoints/class-calendar-plus-rest-endpoints-event.php:327
+msgid "Search events."
+msgstr ""
+
+#: includes/rest-api/endpoints/class-calendar-plus-rest-endpoints-event.php:361
+msgid "Unique identifier for the event."
+msgstr ""
+
+#: includes/rest-api/endpoints/class-calendar-plus-rest-endpoints-event.php:367
+msgid "The title of the event."
+msgstr ""
+
+#: includes/rest-api/endpoints/class-calendar-plus-rest-endpoints-event.php:371
+msgid "The event description."
+msgstr ""
+
+#: includes/rest-api/endpoints/class-calendar-plus-rest-endpoints-event.php:375
+msgid "The event permalink."
+msgstr ""
+
+#: includes/rest-api/endpoints/class-calendar-plus-rest-endpoints-event.php:380
+msgid "The event start date."
+msgstr ""
+
+#: includes/rest-api/endpoints/class-calendar-plus-rest-endpoints-event.php:384
+msgid "The event end date."
+msgstr ""
+
+#: includes/rest-api/endpoints/class-calendar-plus-rest-endpoints-event.php:388
+msgid "If the event is all day or not."
+msgstr ""
+
+#: includes/rest-api/endpoints/class-calendar-plus-rest-endpoints-event.php:392
+msgid "Location attributes. False if there is no location attached to the event."
+msgstr ""
+
+#: includes/rest-api/endpoints/class-calendar-plus-rest-endpoints-event.php:396
+msgid "Dates string adapted to human read."
+msgstr ""
+
+#: includes/rest-api/endpoints/class-calendar-plus-rest-endpoints-event.php:400
+msgid "URLs to import to external calendars"
 msgstr ""
