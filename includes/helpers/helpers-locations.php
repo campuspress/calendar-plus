@@ -16,6 +16,27 @@ function calendarp_get_location( $location ) {
 }
 
 /**
+ * Search events locations by name
+ *
+ * @param $location_name
+ *
+ * @return bool|Calendar_Plus_Location|null
+ */
+function calendarp_find_location( $location_name ) {
+	$location_post = get_page_by_title(
+		esc_sql( $location_name ),
+		OBJECT,
+		'calendar_location'
+	);
+
+	if ( $location_post ) {
+		return calendarp_get_location( $location_post );
+	}
+
+	return null;
+}
+
+/**
  * Determine whether an object is a valid location
  *
  * @param int|Calendar_Plus_Location|WP_Post $location
