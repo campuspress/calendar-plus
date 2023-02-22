@@ -117,6 +117,7 @@ class Calendar_Plus_Dates_Generator {
 			'ignore_sticky_events' => true,
 		);
 		$args = wp_parse_args( $args, $defaults );
+		$args = apply_filters( 'calendarp_get_month_dates_args', $args );
 
 		$month = str_pad( $month, 2, '0', STR_PAD_LEFT );
 		$year = str_pad( $year, 4, '0', STR_PAD_LEFT );
