@@ -12,11 +12,6 @@ class Calendar_Plus_iCal_Sync {
 	 */
 	protected $events;
 
-	/**
-	 * List of event locations
-	 * @var array
-	 */
-	protected $locations;
 
 	/**
 	 * User ID of author to use when creating or updating posts
@@ -44,7 +39,6 @@ class Calendar_Plus_iCal_Sync {
 	 */
 	public function __construct( $events, $args = [] ) {
 		$this->events = $events;
-		$this->locations = calendarp_get_locations();
 
 		$args = wp_parse_args( $args, [
 			'author'   => 0,
@@ -184,11 +178,9 @@ class Calendar_Plus_iCal_Sync {
 			return null;
 		}
 
-		/** @var Calendar_Plus_Location $location */
-		foreach ( $this->locations as $location ) {
-			if ( $location->get_post()->post_title === $location_name ) {
-				return $location;
-			}
+		$location = calendarp_find_location( $location_name );
+		if ( $location ) {
+			return $location;
 		}
 
 		$location_id = wp_insert_post( [
@@ -203,7 +195,6 @@ class Calendar_Plus_iCal_Sync {
 		}
 
 		$location = calendarp_get_location( $location_id );
-		$this->locations[] = $location;
 		return $location;
 	}
 }
