@@ -405,14 +405,22 @@ class Calendar_Plus_Admin_Settings_Page {
 			$id = wp_insert_attachment( $object, $upload['file'] );
 
 			$import_recurring = ! empty( $input['import-recurring'] );
-			calendarp_import_events( $content, $import_recurring );
+			$result = calendarp_import_events( $content, $import_recurring );
 
-			wp_delete_attachment( $id, true );
+			if ( is_wp_error( $result ) ):
+				add_settings_error(
+					calendarp_get_settings_slug(), $result->get_error_code(),
+					$result->get_error_message(), 'error'
+				);
+			else:
+				unset( $settings['import-recurring'], $settings['submit-ical-import'] );
+				wp_delete_attachment( $id, true );
 
-			add_settings_error(
-				calendarp_get_settings_slug(), 'ical-imported',
-				__( 'Events imported successfully.', 'calendar-plus' ), 'updated'
-			);
+				add_settings_error(
+					calendarp_get_settings_slug(), 'ical-imported',
+					__( 'Events imported successfully.', 'calendar-plus' ), 'updated'
+				);
+			endif;
 
 		} elseif ( isset( $input['submit-feed-sync-interval'] ) ) {
 

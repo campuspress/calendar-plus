@@ -197,7 +197,7 @@ function calendarp_import_events( $file_content, $import_recurring = false ) {
 		$events = $ical_parser->parse();
 
 	} catch ( Exception $e ) {
-		return new WP_Error( $e->getCode(), $e->getMessage() );
+		return new WP_Error( 'ical_import_failed', $e->getMessage() );
 	}
 
 	if ( empty( $events ) ) {
