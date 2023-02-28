@@ -72,14 +72,17 @@ class Calendar_Plus_Events_By_Category_Shortcode {
 
 		$from_date = false;
 		$to_date   = false;
-		if( isset( $atts['past_events'] ) ) {
-			if( $atts['past_events'] !== false ) {
-				$to_date = $current_time;
-			} else {
-				$from_date = $current_time;
-			}
+		if (
+			isset( $atts['past_events'] ) &&
+			(
+				is_string( $atts['past_events'] ) &&
+				strtolower( $atts['past_events'] ) === 'true' ||
+				$atts['past_events'] === true
+			)
+		) {
+			$args['order'] = 'DESC';
+			$to_date       = $current_time;
 		} else {
-
 			$from_date = $current_time;
 		}
 
