@@ -21,6 +21,7 @@
         "dealerdirect/phpcodesniffer-composer-installer": "^0.5.0"
     },
     "autoload": {
-        "classmap": ["admin", "includes", "modules", "public"]
+        "classmap": ["admin", "includes", "modules", "public"],
+        "exclude-from-classmap": ["/includes/plugin-update-checker/"]
     }
 }
