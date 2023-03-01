@@ -133,11 +133,15 @@ class Calendar_Plus_iCal_Sync {
 				return false;
 			}
 			// Skip if there are no changes
+			$old_event_hash = $event->get_meta( 'ical_hash' );
 			if ( $event_data['hash'] === $event->get_meta( 'ical_hash' ) ) {
 				return false;
 			}
 
-			if ( $event_post->post_modified !== $event_post->post_date ) {
+			if (
+				empty( $old_event_hash ) &&
+				$event_post->post_modified !== $event_post->post_date
+			) {
 				return false;
 			}
 
