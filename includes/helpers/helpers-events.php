@@ -659,6 +659,7 @@ function calendarp_get_event_type_term_ids() {
 
 		$term = get_term( $term_id );
 		if (
+			is_wp_error( $term ) ||
 			! $term ||
 			'calendar_event_type' !== $term->taxonomy &&
 			$term_name !== $term->slug
