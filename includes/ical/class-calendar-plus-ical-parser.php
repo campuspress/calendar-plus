@@ -177,12 +177,21 @@ class Calendar_Plus_iCal_Parser {
 				? $mod_calendar_tz
 				: $calendar_tz;
 
+            //dtstart has to be set but, dtend not always.
+            $from = self::cast_date_timezones( $_event->dtstart, $event_tz, $local_tz );
+            if( isset( $_event->dtend ) && $_event->dtend ) {
+                $to = self::cast_date_timezones( $_event->dtend, $event_tz, $local_tz );
+            }
+            else {
+                $to = $from;
+            }
+
 			$events[] = array(
 				'post_status'   => strtoupper( $_event->status ) === 'CANCELLED' ? 'trash' : 'publish',
 				'post_content'  => $content,
 				'post_title'    => wp_kses( $_event->summary, wp_kses_allowed_html( 'post' ) ),
-				'from'          => self::cast_date_timezones( $_event->dtstart, $event_tz, $local_tz ),
-				'to'            => self::cast_date_timezones( $_event->dtend, $event_tz, $local_tz ),
+				'from'          => $from,
+				'to'            => $to,
 				'last_updated' => self::cast_date_timezones( $_event->lastmodified, $event_tz, $local_tz ),
 				'uid'           => $this->get_event_uid( $_event ),
 				'location'      => $_event->location,
