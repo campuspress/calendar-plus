@@ -1,13 +1,14 @@
 ( function( $ ) {
 
-    function fetchCalendar( year, month, cb ) {
+    function fetchCalendar( year, month, category, cb ) {
         $.ajax({
             url: CalendarPlusWidgeti18n.ajaxurl,
             type: 'GET',
             data: {
                 action: 'calendarp_widget_fetch_calendar',
                 calendar_year: year,
-                calendar_month: month
+                calendar_month: month,
+                category: category
             }
         })
             .always( function( response ) {
@@ -29,7 +30,7 @@
                 e.preventDefault();
                 var $link = $( this );
                 $backdrop.show();
-                fetchCalendar( $link.data( 'year' ), $link.data( 'month' ), function( data ) {
+                fetchCalendar( $link.data( 'year' ), $link.data( 'month' ), $link.data( 'category' ), function( data ) {
                     $backdrop.hide();
                     if ( data.response ) {
                         $el.html( data.response );

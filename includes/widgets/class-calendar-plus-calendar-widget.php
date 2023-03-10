@@ -25,7 +25,10 @@ class Calendar_Plus_Calendar_Widget extends WP_Widget {
 			echo $args['before_title'] . $title . $args['after_title'];
 		}
 		echo '<div id="calendar_wrap" class="calendar_wrap calendarp_calendar_wrap">';
-		calendarp_get_calendar_widget();
+
+		$category = ! empty( $args['category'] ) ? $args['category'] : array();
+		calendarp_get_calendar_widget( true, true, false, array( 'category' => $category ) );
+
 		echo '</div>';
 
 		$gif_url = includes_url( 'images/spinner.gif', is_ssl() ? 'https' : 'http' );
@@ -109,15 +112,25 @@ function calendarp_register_calendar_widget() {
 	register_widget( 'Calendar_Plus_Calendar_Widget' );
 }
 
-function calendarp_get_calendar_widget( $initial = true, $echo = true, $event_id = false ) {
+function calendarp_get_calendar_widget( $initial = true, $echo = true, $event_id = false, $args = array() ) {
 	global $wpdb, $m, $monthnum, $year, $wp_locale, $posts;
 
 	$event_archives = get_permalink( calendarp_get_setting( 'events_page_id' ) );
+	$event_archives = apply_filters( 'calendarp_widget_event_archive_link', $event_archives );
+
 	$event = calendarp_get_event( $event_id );
 	$monthnum = isset( $_GET['calendar_month'] ) ? absint( $_GET['calendar_month'] ) : $monthnum;
 	$year = isset( $_GET['calendar_year'] ) ? absint( $_GET['calendar_year'] ) : $year;
+	$category = ! empty( $args['category'] ) ? $args['category'] : '';
 
-	$key = $monthnum . $year;
+	if ( empty( $category ) && isset( $_GET['category'] ) ) {
+		$category = sanitize_text_field( $_GET['category'] );
+		$category = explode( ',', $category );
+	}
+
+    $category_str = is_array( $category ) ? implode(',', $category) : $category;
+
+	$key = $monthnum . $year . $category_str;
 	if ( $event ) {
 		$key .= $event_id;
 	}
@@ -284,9 +297,13 @@ function calendarp_get_calendar_widget( $initial = true, $echo = true, $event_id
 
 	if ( $previous ) {
 		$month_link = add_query_arg(
-			array( 'calendar_month' => $previous->month, 'calendar_year' => $previous->year )
+			array(
+				'calendar_month' => $previous->month,
+				'calendar_year'  => $previous->year,
+				'category'       => $category_str
+			)
 		);
-		$calendar_output .= "\n\t\t" . '<td colspan="3" class="calendar-plus-prev calendar-plus-nav" id="prev"><a data-month="' . esc_attr( $previous->month ) . '" data-year="' . esc_attr( $previous->year ) . '" href="' . esc_url( $month_link ) . '">&laquo; ' . $wp_locale->get_month_abbrev( $wp_locale->get_month( $previous->month ) ) . '</a></td>';
+		$calendar_output .= "\n\t\t" . '<td colspan="3" class="calendar-plus-prev calendar-plus-nav" id="prev"><a data-month="' . esc_attr( $previous->month ) . '" data-year="' . esc_attr( $previous->year ) . '" data-category ="'. esc_attr( $category_str ) .'" href="' . esc_url( $month_link ) . '">&laquo; ' . $wp_locale->get_month_abbrev( $wp_locale->get_month( $previous->month ) ) . '</a></td>';
 	} else {
 		$calendar_output .= "\n\t\t" . '<td colspan="3" class="calendar-plus-prev calendar-plus-nav" id="prev" class="pad">&nbsp;</td>';
 	}
@@ -295,9 +312,13 @@ function calendarp_get_calendar_widget( $initial = true, $echo = true, $event_id
 
 	if ( $next ) {
 		$month_link = add_query_arg(
-			array( 'calendar_month' => $next->month, 'calendar_year' => $next->year )
+			array(
+				'calendar_month' => $next->month,
+				'calendar_year'  => $next->year,
+				'category'       => $category_str
+			)
 		);
-		$calendar_output .= "\n\t\t" . '<td colspan="3" class="calendar-plus-next calendar-plus-nav" id="next"><a data-month="' . esc_attr( $next->month ) . '" data-year="' . esc_attr( $next->year ) . '" href="' . esc_url( $month_link ) . '">' . $wp_locale->get_month_abbrev( $wp_locale->get_month( $next->month ) ) . ' &raquo;</a></td>';
+		$calendar_output .= "\n\t\t" . '<td colspan="3" class="calendar-plus-next calendar-plus-nav" id="next"><a data-month="' . esc_attr( $next->month ) . '" data-year="' . esc_attr( $next->year ) . '" data-category ="'. esc_attr( $category_str ) . '" href="' . esc_url( $month_link ) . '">' . $wp_locale->get_month_abbrev( $wp_locale->get_month( $next->month ) ) . ' &raquo;</a></td>';
 	} else {
 		$calendar_output .= "\n\t\t" . '<td colspan="3" class="calendar-plus-next calendar-plus-nav" id="next" class="pad">&nbsp;</td>';
 	}
@@ -309,7 +330,7 @@ function calendarp_get_calendar_widget( $initial = true, $echo = true, $event_id
 	<tbody>
 	<tr>';
 
-	$events_for_month = calendarp_get_events_in_month( $thismonth, $thisyear );
+	$events_for_month = calendarp_get_events_in_month( $thismonth, $thisyear, array( 'category' => $category ) );
 	$daywithpost = array();
 	$ak_post_titles = array();
 	foreach ( $events_for_month as $event ) {
@@ -431,6 +452,7 @@ function calendarp_get_calendar_widget( $initial = true, $echo = true, $event_id
 					'to'             => "$thisyear-$thismonth-$day",
 					'calendar_month' => $thismonth,
 					'calendar_year'  => $thisyear,
+					'catgeory'       => $category_str
 				),
 				$event_archives
 			);
