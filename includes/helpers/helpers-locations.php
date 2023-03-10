@@ -24,7 +24,7 @@ function calendarp_get_location( $location ) {
  */
 function calendarp_find_location( $location_name ) {
 	$location_post = get_page_by_title(
-		esc_sql( $location_name ),
+		$location_name,
 		OBJECT,
 		'calendar_location'
 	);
