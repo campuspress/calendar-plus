@@ -131,7 +131,7 @@ function calendarp_get_calendar_widget( $initial = true, $echo = true, $event_id
 	$year = isset( $_GET['calendar_year'] ) ? absint( $_GET['calendar_year'] ) : $year;
 	$category = ! empty( $args['category'] ) ? $args['category'] : '';
 
-	if ( empty( $category ) && isset( $_GET['category'] ) ) {
+	if ( empty( $category ) && ! empty( $_GET['category'] ) ) {
 		$category = sanitize_text_field( $_GET['category'] );
 		$category = explode( ',', $category );
 	}
