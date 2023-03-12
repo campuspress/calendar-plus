@@ -116,6 +116,14 @@ function calendarp_get_calendar_widget( $initial = true, $echo = true, $event_id
 	global $wpdb, $m, $monthnum, $year, $wp_locale, $posts;
 
 	$event_archives = get_permalink( calendarp_get_setting( 'events_page_id' ) );
+
+	/**
+	 * Filters the event archive URL
+     *
+     * @since 2.2.7.1
+	 *
+	 * @param string $event_archives Existing archive page link.
+	 */
 	$event_archives = apply_filters( 'calendarp_widget_event_archive_link', $event_archives );
 
 	$event = calendarp_get_event( $event_id );
@@ -280,6 +288,13 @@ function calendarp_get_calendar_widget( $initial = true, $echo = true, $event_id
 		$myweek[] = $wp_locale->get_weekday( ( $wdcount + $week_begins ) % 7 );
 	}
 
+	/**
+	 * Enable/Disable week initial in Calendar widget
+	 *
+	 * @since 2.2.7
+	 *
+	 * @param bool $initial True|False.
+	 */
 	$initial = apply_filters( 'calendarp_widget_week_initial', $initial );
 
 	foreach ( $myweek as $wd ) {
