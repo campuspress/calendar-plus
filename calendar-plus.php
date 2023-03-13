@@ -27,7 +27,7 @@ require_once plugin_dir_path( __FILE__ ) . 'vendor/autoload.php';
  * @return string Plugin version
  */
 function calendarp_get_version() {
-	return '2.2.6.10';
+	return '2.2.7';
 }
 
 /**
