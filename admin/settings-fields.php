@@ -190,7 +190,7 @@ class Calendar_Plus_Settings_Fields {
 
 	function render_general_main_display_country_field( $args ) {
 		?>
-		<input name="<?php echo calendarp_get_settings_slug(); ?>[display_location_country]" type="checkbox" id="display_location_country" value="1" <?php checked( $args[0] ); ?>>
+		<input name="<?php echo calendarp_get_settings_slug(); ?>[display_location_country]" type="checkbox" id="display_location_country" value="1" <?php checked( $args ); ?>>
 		<?php
 	}
 
