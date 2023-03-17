@@ -32,6 +32,12 @@ class Calendar_Plus_iCal_Sync {
 	protected $default_status;
 
 	/**
+	 * Time of previous synchronization to check if post was modified
+	 * @var int
+	 */
+	protected $prev_sync_time;
+
+	/**
 	 * Calendar_Plus_iCal_Sync constructor.
 	 *
 	 * @param array $events List of parsed events
@@ -41,14 +47,16 @@ class Calendar_Plus_iCal_Sync {
 		$this->events = $events;
 
 		$args = wp_parse_args( $args, [
-			'author'   => 0,
-			'category' => 0,
-			'status'   => 'publish',
+			'author'         => 0,
+			'category'       => 0,
+			'status'         => 'publish',
+			'prev_sync_time' => time(),
 		] );
 
 		$this->event_author = $args['author'] ? $args['author'] : get_current_user_id();
 		$this->event_category = $args['category'];
 		$this->default_status = $args['status'];
+		$this->prev_sync_time = $args['prev_sync_time'];
 	}
 
 	/**
@@ -88,6 +96,7 @@ class Calendar_Plus_iCal_Sync {
 			'last_updated' => '',
 			'categories'   => [],
 		] );
+		$event_data['hash'] = md5( serialize( $event_data ) );
 
 		if ( 'publish' === $event_data['post_status'] ) {
 			$event_data['post_status'] = $this->default_status;
@@ -109,7 +118,24 @@ class Calendar_Plus_iCal_Sync {
 				return $event->ID;
 			}
 
-			if ( ! $event_data['last_updated'] || $event_data['last_updated'] === $event->get_meta( 'ical_last_updated' ) ) {
+			$event_post  = $event->get_post();
+			// Skip if there are no changes
+			if (
+				! empty( $event_data['last_updated'] ) &&
+				$event_data['last_updated'] === $event->get_meta( 'ical_last_updated' )
+			) {
+				return false;
+			}
+			// Skip if there are no changes
+			$old_event_hash = $event->get_meta( 'ical_hash' );
+			if ( $event_data['hash'] === $event->get_meta( 'ical_hash' ) ) {
+				return false;
+			}
+
+			if (
+				empty( $old_event_hash ) &&
+				$event_post->post_modified !== $event_post->post_date
+			) {
 				return false;
 			}
 
@@ -161,6 +187,8 @@ class Calendar_Plus_iCal_Sync {
 		if ( $event_data['last_updated'] ) {
 			update_post_meta( $post_id, '_ical_last_updated', $event_data['last_updated'] );
 		}
+
+		update_post_meta( $post_id, '_ical_hash', $event_data['hash'] );
 
 		return $post_id;
 	}
