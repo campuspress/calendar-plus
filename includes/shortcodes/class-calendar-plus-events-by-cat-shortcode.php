@@ -102,7 +102,7 @@ class Calendar_Plus_Events_By_Category_Shortcode {
 			'display_excerpt' => isset( $atts['display_excerpt'] ) && $atts['display_excerpt']
 		);
 
-		if( $atts['layout'] === 'grid' ){
+		if( isset( $atts['layout'] ) && $atts['layout'] === 'grid' ){
 			$layout = 'grid';
 			$template_data['columns'] = (int) $atts['columns'];
 			$template_data['column_size'] = 12 / $template_data['columns'];
@@ -135,7 +135,7 @@ class Calendar_Plus_Events_By_Category_Shortcode {
 			if ( isset( $atts['className'] ) ) {
 				$class =  !empty( $class ) ? $class . ' ' . $atts['className'] :  $atts['className'];
 			}
-			if( $atts['layout'] === 'grid' ){
+			if( isset( $atts['layout'] ) && $atts['layout'] === 'grid' ){
 				$class  .= ' calendarp-events--grid columns';
 			}
 
