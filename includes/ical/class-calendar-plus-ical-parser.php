@@ -40,14 +40,23 @@ class Calendar_Plus_iCal_Parser {
 	private $_import_recurring = false;
 
 	/**
+	 * Whether or not to exclude past events. 
+	 * For now only -1 is supported = exclude all events. 
+	 *
+	 * @var int
+	 */
+	private $_exlude_past = false;
+
+	/**
 	 * Calendar_Plus_iCal_Sync constructor.
 	 *
 	 * @param string $ical_contents content of an iCal file
 	 * @param bool $import_recurring Whether or not to import recurring event instances.
 	 */
-	public function __construct( $ical_contents, $import_recurring = false ) {
+	public function __construct( $ical_contents, $import_recurring = false, $exlude_past = false ) {
 		$this->contents = $ical_contents;
 		$this->_import_recurring = ( bool ) $import_recurring;
+		$this->_exlude_past = intval( $exlude_past );
 	}
 
 	/**
@@ -184,6 +193,12 @@ class Calendar_Plus_iCal_Parser {
 			}
 			else {
 				$to = $from;
+			}
+			if( $this->_exlude_past === -1 ) {
+				
+				if( $to < time() ) {
+					continue;
+				}
 			}
 
 			$events[] = array(

@@ -441,13 +441,14 @@ class Calendar_Plus_Admin_Settings_Page {
 				$feeds = get_option( 'calendar_plus_remote_feeds', [] );
 
 				$feed = [
-					'name'      => sanitize_text_field( $feed_info['name'] ),
-					'source'    => $feed_info['source'],
-					'type'      => sanitize_text_field( $feed_info['type'] ),
-					'author'    => intval( $feed_info['author'] ),
-					'category'  => intval( $feed_info['category'] ),
-					'status'    => in_array( $feed_info['status'], [ 'publish', 'draft', 'pending' ] ) ? $feed_info['status'] : 'publish',
-					'last_sync' => [],
+					'name'         => sanitize_text_field( $feed_info['name'] ),
+					'source'       => $feed_info['source'],
+					'type'         => sanitize_text_field( $feed_info['type'] ),
+					'author'       => intval( $feed_info['author'] ),
+					'category'     => intval( $feed_info['category'] ),
+					'status'       => in_array( $feed_info['status'], [ 'publish', 'draft', 'pending' ] ) ? $feed_info['status'] : 'publish',
+					'exclude_past' => intval( $feed_info['exclude_past'] ),
+					'last_sync'    => [],
 				];
 
 				if ( isset( $_POST['remote_feed_id'] ) && isset( $feeds[ $_POST['remote_feed_id'] ] ) ) {

@@ -101,8 +101,11 @@ function calendarp_ical_sync_events() {
 			// parse the file contents into event fields
 			$content = $file['body'];
 
+			// check if past events should be excluded
+			$exclude_past = isset( $feed['exclude_past'] ) ? $feed['exclude_past'] : 0;
+
 			try {
-				$ical_parser = new Calendar_Plus_iCal_Parser( $content );
+				$ical_parser = new Calendar_Plus_iCal_Parser( $content, false, $exclude_past );
 				$events = $ical_parser->parse();
 			} catch ( Exception $e ) {
 				$feeds[ $i ]['last_sync']['status'] = 'parse_error';
@@ -156,6 +159,17 @@ function calendarp_ical_sync_events() {
 				else {
 					if ( $to = $item->get_item_tags( $ns_event, 'enddate' ) ) {
 						$event_data['to'] = strtotime( $to[0]['data'] );
+					}
+				}
+
+				if( isset( $feeds[ $i ]['exclude_past'] ) && $feeds[ $i ]['exclude_past'] === -1 ) {
+					if( isset( $event_data['to'] ) && $event_data['to'] < time() ) {
+						continue;
+					}
+					else {
+						if( isset( $event_data['from'] ) && $event_data['from'] < time() + DAY_IN_SECONDS ) {
+							continue;
+						}
 					}
 				}
 

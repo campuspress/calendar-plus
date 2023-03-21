@@ -63,12 +63,13 @@ $settings = calendarp_get_settings();
 			$feeds = get_option( 'calendar_plus_remote_feeds', array() );
 
 			$current_feed = array(
-				'name'     => '',
-				'source'   => '',
-				'type'     => '',
-				'author'   => 0,
-				'category' => 0,
-				'status'   => '',
+				'name'           => '',
+				'source'         => '',
+				'type'           => '',
+				'author'         => 0,
+				'category'       => 0,
+				'status'         => '',
+				'exclude_past'   => '',
 			);
 
 			if ( isset( $_GET['edit_remote_feed'] ) && is_numeric( $_GET['edit_remote_feed'] ) ) {
@@ -234,6 +235,34 @@ $settings = calendarp_get_settings();
 							</select>
 							<p class="description">
 								<?php esc_html_e( 'Decide what publication status newly-created events should have.', 'calendar-plus' ); ?>
+							</p>
+						</td>
+					</tr>
+					<tr>
+						<th>
+							<label for="remote-feed-exclude-past">
+								<?php esc_html_e( 'Exclude Past Events', 'calendar-plus' ); ?>
+							</label>
+						<td>
+							<select id="remote-feed-exclude-past" name="remote_feed[exclude_past]">
+								<?php
+
+								$options = array(
+									''   => __( 'No', 'calendar-plus' ),
+									'-1' => __( 'Yes', 'calendar-plus' ),
+								);
+
+								foreach ( $options as $option => $label ) {
+									printf( '<option value="%s"%s>%s</option>',
+										esc_attr( $option ),
+										selected( $option, $current_feed['exclude_past'], false ),
+										esc_html( $label )
+									);
+								}
+								?>
+							</select>
+							<p class="description">
+								<?php esc_html_e( 'Decide if past events should be excluded from import.', 'calendar-plus' ); ?>
 							</p>
 						</td>
 					</tr>
