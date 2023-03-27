@@ -147,29 +147,29 @@ function calendarp_ical_sync_events() {
 				if ( $from = $item->get_item_tags( $ns_cal_rss, 'localstartdate' ) ) {
 					$event_data['from'] = strtotime( $from[0]['data'] );
 				}
-				else {
-					if ( $from = $item->get_item_tags( $ns_event, 'startdate' ) ) {
-						$event_data['from'] = strtotime( $from[0]['data'] );
-					}
+				elseif ( $from = $item->get_item_tags( $ns_event, 'startdate' ) ) {
+					$event_data['from'] = strtotime( $from[0]['data'] );
+				}
+				elseif ( $from = $item->get_item_tags( SIMPLEPIE_NAMESPACE_RSS_20, 'pubDate' ) ) {
+					$event_data['from'] = strtotime( $from[0]['data'] );
 				}
 
 				if ( $to = $item->get_item_tags( $ns_cal_rss, 'localenddate' ) ) {
 					$event_data['to'] = strtotime( $to[0]['data'] );
 				}
+				elseif ( $to = $item->get_item_tags( $ns_event, 'enddate' ) ) {
+					$event_data['to'] = strtotime( $to[0]['data'] );
+				}
 				else {
-					if ( $to = $item->get_item_tags( $ns_event, 'enddate' ) ) {
-						$event_data['to'] = strtotime( $to[0]['data'] );
-					}
+					$event_data['to'] = $event_data['from'];
 				}
 
 				if( isset( $feeds[ $i ]['exclude_past'] ) && $feeds[ $i ]['exclude_past'] === -1 ) {
 					if( isset( $event_data['to'] ) && $event_data['to'] < time() ) {
 						continue;
 					}
-					else {
-						if( isset( $event_data['from'] ) && $event_data['from'] < time() + DAY_IN_SECONDS ) {
-							continue;
-						}
+					elseif( isset( $event_data['from'] ) && $event_data['from'] < time() + DAY_IN_SECONDS ) {
+						continue;
 					}
 				}
 
