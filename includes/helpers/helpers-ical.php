@@ -172,8 +172,8 @@ function calendarp_ical_sync_events() {
 						continue;
 					}
 				}
-
-				$events[] = $event_data;
+				
+				$events[] = apply_filters( 'calendarp_rss_import_event_data', $event_data, $item );
 			}
 
 		} else {

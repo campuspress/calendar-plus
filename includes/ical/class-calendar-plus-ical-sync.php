@@ -162,6 +162,8 @@ class Calendar_Plus_iCal_Sync {
 			update_post_meta( $post_id, '_ical_last_updated', $event_data['last_updated'] );
 		}
 
+		do_action('calendarp_ical_sync_update_insert', $post_id, $post_args, $event_data );
+
 		return $post_id;
 	}
 
