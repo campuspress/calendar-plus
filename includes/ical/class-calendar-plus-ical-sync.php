@@ -32,6 +32,11 @@ class Calendar_Plus_iCal_Sync {
 	protected $default_status;
 
 	/**
+	 * Update events or keep them original
+	 */
+	protected $update_events;
+
+	/**
 	 * Calendar_Plus_iCal_Sync constructor.
 	 *
 	 * @param array $events List of parsed events
@@ -41,14 +46,16 @@ class Calendar_Plus_iCal_Sync {
 		$this->events = $events;
 
 		$args = wp_parse_args( $args, [
-			'author'   => 0,
-			'category' => 0,
-			'status'   => 'publish',
+			'author'        => 0,
+			'category'      => 0,
+			'status'        => 'publish',
+			'update_events' => false,
 		] );
 
 		$this->event_author = $args['author'] ? $args['author'] : get_current_user_id();
 		$this->event_category = $args['category'];
 		$this->default_status = $args['status'];
+		$this->update_events  = $args['update_events'];
 	}
 
 	/**
@@ -89,6 +96,8 @@ class Calendar_Plus_iCal_Sync {
 			'categories'   => [],
 		] );
 
+		$event_data_hash = md5( serialize( $event_data ) );
+
 		if ( 'publish' === $event_data['post_status'] ) {
 			$event_data['post_status'] = $this->default_status;
 		}
@@ -109,7 +118,12 @@ class Calendar_Plus_iCal_Sync {
 				return $event->ID;
 			}
 
-			if ( ! $event_data['last_updated'] || $event_data['last_updated'] === $event->get_meta( 'ical_last_updated' ) ) {
+			if ( ! $this->update_events ) {
+				return false;
+			}
+
+			$old_event_hash = $event->get_meta( 'ical_hash' );
+			if ( $old_event_hash === $event_data_hash ) {
 				return false;
 			}
 
@@ -161,6 +175,8 @@ class Calendar_Plus_iCal_Sync {
 		if ( $event_data['last_updated'] ) {
 			update_post_meta( $post_id, '_ical_last_updated', $event_data['last_updated'] );
 		}
+
+		update_post_meta( $post_id, '_ical_hash', $event_data_hash );
 
 		do_action('calendarp_ical_sync_update_insert', $post_id, $post_args, $event_data );
 
