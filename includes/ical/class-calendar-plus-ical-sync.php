@@ -33,8 +33,15 @@ class Calendar_Plus_iCal_Sync {
 
 	/**
 	 * Update events or keep them original
+	 * @var bool
 	 */
 	protected $update_events;
+
+	/**
+	 * Parent feed url
+	 * @var string
+	 */
+	protected $feed_url;
 
 	/**
 	 * Calendar_Plus_iCal_Sync constructor.
@@ -50,12 +57,14 @@ class Calendar_Plus_iCal_Sync {
 			'category'      => 0,
 			'status'        => 'publish',
 			'update_events' => false,
+			'source'        => '',
 		] );
 
 		$this->event_author = $args['author'] ? $args['author'] : get_current_user_id();
 		$this->event_category = $args['category'];
 		$this->default_status = $args['status'];
 		$this->update_events  = $args['update_events'];
+		$this->feed_url       = $args['source'];
 	}
 
 	/**
@@ -118,6 +127,8 @@ class Calendar_Plus_iCal_Sync {
 				return $event->ID;
 			}
 
+			update_post_meta( $event->ID, '_event_feed_url', $this->feed_url );
+
 			if ( ! $this->update_events ) {
 				return false;
 			}
@@ -142,6 +153,8 @@ class Calendar_Plus_iCal_Sync {
 			}
 
 			$post_id = wp_insert_post( $post_args );
+
+			update_post_meta( $post_id, '_event_feed_url', $this->feed_url );
 		}
 
 		update_post_meta( $post_id, '_event_uid', $event_data['uid'] );
