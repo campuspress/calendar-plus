@@ -133,27 +133,35 @@ class Calendar_Plus_Admin_Settings_Page {
 				'general' => array(
 					'title'  => null,
 					'fields' => array(
-						'general-main-country'         => array(
+						'general-main-country'                => array(
 							'title' => __( 'Default Country', 'calendar-plus' ),
 							'args'  => $settings['country'],
 						),
-						'general-main-display-country' => array(
+						'general-main-display-country'        => array(
 							'title'    => __( 'Display country in locations address', 'calendar-plus' ),
 							'args'     => $settings['display_location_country'],
 							'sanitize' => 'isset',
 						),
-						'general-main-time-format'     => array(
+						'general-main-time-format'            => array(
 							'title' => __( 'Time format selector', 'calendar-plus' ),
 							'args'  => $settings['time_format'],
 						),
-						'general-main-events-page'     => array(
+						'general-main-events-page'            => array(
 							'title'    => __( 'Events Page', 'calendar-plus' ),
 							'args'     => absint( $settings['events_page_id'] ),
 							'sanitize' => 'absint',
 						),
-						'general-main-replace-sidebar' => array(
+						'general-main-replace-sidebar'        => array(
 							'title' => __( 'Replace Calendar Plus sidebar for', 'calendar-plus' ),
 							'args'  => $settings['replace_sidebar'],
+						),
+						'general-main-update-rss-imported-events' => array(
+							'title' => __( 'Keep RSS imported events updated', 'calendar-plus' ),
+							'args'  => $settings['update_rss_imported_events'],
+						),
+						'general-main-update-ical-imported-events' => array(
+							'title' => __( 'Keep iCal imported events updated', 'calendar-plus' ),
+							'args'  => $settings['update_ical_imported_events'],
 						),
 					),
 				),

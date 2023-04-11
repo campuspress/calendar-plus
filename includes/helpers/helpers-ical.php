@@ -186,6 +186,16 @@ function calendarp_ical_sync_events() {
 			continue;
 		}
 
+		if ( $feed['type'] === 'rss') {
+			$update_events_setting = calendarp_get_setting( 'update_rss_imported_events' );
+		} else {
+			$update_events_setting = calendarp_get_setting( 'update_ical_imported_events' );
+			if ( false === $update_events_setting ) {
+				$update_events_setting = '1';
+			}
+		}
+		$feed['update_events'] = $update_events_setting === '1';
+
 		$syncer = new Calendar_Plus_iCal_Sync( $events, $feed );
 		$synced_events = $syncer->sync();
 
