@@ -155,10 +155,6 @@ class Calendar_Plus_Admin_Settings_Page {
 							'title' => __( 'Replace Calendar Plus sidebar for', 'calendar-plus' ),
 							'args'  => $settings['replace_sidebar'],
 						),
-                        'general-main-update-imported-events' => array(
-                            'title' => __( 'Keep imported events updated', 'calendar-plus' ),
-                            'args'  => $settings['update_imported_events'],
-                        ),
 					),
 				),
 				'gmaps'   => array(

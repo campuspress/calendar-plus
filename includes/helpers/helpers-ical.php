@@ -75,6 +75,10 @@ function calendarp_ical_sync_events() {
 			$feed['type'] = $feeds[ $i ]['type'] = 'ical';
 		}
 
+		if ( ! isset( $feed['keep_updated'] ) ) {
+			$feed['keep_updated'] = $feeds[ $i ]['keep_updated'] = $feed['type'] === 'rss' ? '0' : '1';
+		}
+
 		$feeds[ $i ]['last_sync'] = array(
 			'time'   => current_time( 'timestamp' ),
 			'status' => 'incomplete',
@@ -186,11 +190,6 @@ function calendarp_ical_sync_events() {
 			continue;
 		}
 
-		$update_events_setting = calendarp_get_setting( 'update_imported_events' );
-		if ( $update_events_setting === false ) {
-			$update_events_setting = $feed['type'] === 'rss' ? '0' : '1';
-		}
-		$feed['update_events'] = $update_events_setting === '1';
 		$syncer = new Calendar_Plus_iCal_Sync( $events, $feed );
 		$synced_events = $syncer->sync();
 

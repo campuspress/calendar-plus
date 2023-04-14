@@ -69,12 +69,6 @@ class Calendar_Plus_Settings_Fields {
 
 	}
 
-    function render_general_main_update_imported_events_field( $keep_updated ) {
-        ?>
-        <input type="checkbox" name="<?php echo calendarp_get_settings_slug();?>[update_imported_events]" <?php checked( '1', $keep_updated ); ?> value="1"/>
-        <?php
-    }
-
 	function render_media_event_thumbnail_field( $args ) {
 		?>
 
