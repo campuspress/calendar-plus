@@ -70,6 +70,7 @@ $settings = calendarp_get_settings();
 				'category'       => 0,
 				'status'         => '',
 				'exclude_past'   => '',
+				'keep_updated'  => '',
 			);
 
 			if ( isset( $_GET['edit_remote_feed'] ) && is_numeric( $_GET['edit_remote_feed'] ) ) {
@@ -263,6 +264,38 @@ $settings = calendarp_get_settings();
 							</select>
 							<p class="description">
 								<?php esc_html_e( 'Decide if past events should be excluded from import.', 'calendar-plus' ); ?>
+							</p>
+						</td>
+					</tr>
+					<tr>
+						<th>
+							<label for="remote-feed-keep-updated">
+								<?php esc_html_e( 'Keep Events Updated', 'calendar-plus' ); ?>
+							</label>
+						<td>
+							<select id="remote-feed-keep-updated" name="remote_feed[keep_updated]">
+								<?php
+								if( empty( $current_feed['keep_updated'] ) ) {
+									$current_feed['keep_updated'] = $current_feed['type'] === 'rss' ? '0' : '1';
+								}
+								
+
+								$options = array(
+									'0'   => __( 'No', 'calendar-plus' ),
+									'1' => __( 'Yes', 'calendar-plus' ),
+								);
+
+								foreach ( $options as $option => $label ) {
+									printf( '<option value="%s"%s>%s</option>',
+										esc_attr( $option ),
+										selected( $option, $current_feed['keep_updated'], false ),
+										esc_html( $label )
+									);
+								}
+								?>
+							</select>
+							<p class="description">
+								<?php esc_html_e( 'Decide if synced events should be updated after the change in feed.', 'calendar-plus' ); ?>
 							</p>
 						</td>
 					</tr>

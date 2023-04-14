@@ -75,6 +75,10 @@ function calendarp_ical_sync_events() {
 			$feed['type'] = $feeds[ $i ]['type'] = 'ical';
 		}
 
+		if ( ! isset( $feed['keep_updated'] ) ) {
+			$feed['keep_updated'] = $feeds[ $i ]['keep_updated'] = $feed['type'] === 'rss' ? '0' : '1';
+		}
+
 		$feeds[ $i ]['last_sync'] = array(
 			'time'   => current_time( 'timestamp' ),
 			'status' => 'incomplete',
