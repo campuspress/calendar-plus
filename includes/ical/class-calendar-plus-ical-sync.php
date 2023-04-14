@@ -139,8 +139,8 @@ class Calendar_Plus_iCal_Sync {
 					return false;
 				}
 			}
-			else {
-				if ( ! $event_data['last_updated'] || $event_data['last_updated'] === $event->get_meta( 'ical_last_updated' ) ) {
+			elseif( $event_data['last_updated'] ) {
+				if ( $event_data['last_updated'] === $event->get_meta( 'ical_last_updated' ) ) {
 					return false;
 				}
 			}
