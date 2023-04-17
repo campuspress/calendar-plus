@@ -448,6 +448,7 @@ class Calendar_Plus_Admin_Settings_Page {
 					'category'     => intval( $feed_info['category'] ),
 					'status'       => in_array( $feed_info['status'], [ 'publish', 'draft', 'pending' ] ) ? $feed_info['status'] : 'publish',
 					'exclude_past' => intval( $feed_info['exclude_past'] ),
+					'keep_updated' => intval( $feed_info['keep_updated'] ),
 					'last_sync'    => [],
 				];
 

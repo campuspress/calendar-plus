@@ -275,7 +275,7 @@ $settings = calendarp_get_settings();
 						<td>
 							<select id="remote-feed-keep-updated" name="remote_feed[keep_updated]">
 								<?php
-								if( empty( $current_feed['keep_updated'] ) ) {
+								if( $current_feed['keep_updated'] === '' ) {
 									$current_feed['keep_updated'] = $current_feed['type'] === 'rss' ? '0' : '1';
 								}
 								
