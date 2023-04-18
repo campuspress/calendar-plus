@@ -123,7 +123,11 @@ function calendarp_ical_sync_events() {
 				include_once ABSPATH . WPINC . '/feed.php';
 			}
 
+			add_filter( 'wp_feed_cache_transient_lifetime' , '__return_false' );
+
 			$rss = fetch_feed( $feed['source'] );
+
+			remove_filter( 'wp_feed_cache_transient_lifetime' , '__return_false' );
 
 			if ( is_wp_error( $rss ) ) {
 				$feeds[ $i ]['last_sync']['status'] = 'error';

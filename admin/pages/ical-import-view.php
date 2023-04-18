@@ -145,10 +145,10 @@ $settings = calendarp_get_settings();
 						</th>
 						<td>
 							<select id="remote-feed-type" name="remote_feed[type]" required="required">
-								<option value="ical"<?php checked( $current_feed['type'], 'ical' ); ?>>
+								<option value="ical"<?php selected( $current_feed['type'], 'ical' ); ?>>
 									<?php esc_html_e( 'iCal (.ics)', 'calendar-plus' ); ?>
 								</option>
-								<option value="rss"<?php checked( $current_feed['type'], 'rss' ); ?>>
+								<option value="rss"<?php selected( $current_feed['type'], 'rss' ); ?>>
 									<?php esc_html_e( 'RSS (.rss)', 'calendar-plus' ); ?>
 								</option>
 							</select>

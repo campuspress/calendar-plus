@@ -120,8 +120,6 @@ class Calendar_Plus_iCal_Sync {
 			'post_content' => $event_data['post_content'],
 		);
 
-		update_post_meta( $event->ID, '_event_feed_url', $this->feed_url );
-
 		if ( $event ) {
 			if ( ! $this->keep_updated ) {
 				return false;
@@ -161,6 +159,7 @@ class Calendar_Plus_iCal_Sync {
 			$post_id = wp_insert_post( $post_args );
 		}
 
+		update_post_meta( $post_id, '_event_feed_url', $this->feed_url );
 		update_post_meta( $post_id, '_event_uid', $event_data['uid'] );
 
 		if ( $event_location = $this->get_location( $event_data['location'], $event_data['post_status'] ) ) {
