@@ -6,7 +6,6 @@ const {
     TextControl,
     RangeControl,
     SelectControl,
-    ServerSideRender,
     PanelBody,
     __experimentalHeading,
     __experimentalView,
@@ -18,6 +17,7 @@ const {
     ToggleControl
 } = wp.components;
 const {withSelect} = window.wp.data;
+const { serverSideRender: ServerSideRender } = wp;
 
 const CategorySelect = function(props) {
     const [ searchText, setSearchText ] = useState('');
