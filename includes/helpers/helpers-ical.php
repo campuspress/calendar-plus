@@ -109,7 +109,7 @@ function calendarp_ical_sync_events() {
 			$exclude_past = isset( $feed['exclude_past'] ) ? $feed['exclude_past'] : 0;
 
 			try {
-				$ical_parser = new Calendar_Plus_iCal_Parser( $content, false, $exclude_past );
+				$ical_parser = new Calendar_Plus_iCal_Parser( $content, true, $exclude_past );
 				$events = $ical_parser->parse();
 			} catch ( Exception $e ) {
 				$feeds[ $i ]['last_sync']['status'] = 'parse_error';

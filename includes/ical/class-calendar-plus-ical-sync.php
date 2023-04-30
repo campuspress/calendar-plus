@@ -103,6 +103,7 @@ class Calendar_Plus_iCal_Sync {
 			'location'     => '',
 			'last_updated' => '',
 			'categories'   => [],
+			'rrules'       => [],
 		] );
 
 		$event_data_hash = md5( serialize( $event_data ) );
@@ -181,12 +182,18 @@ class Calendar_Plus_iCal_Sync {
 			'until_time' => date( 'H:i', $event_data['to'] ),
 		);
 
-		$type = $rules['from_date'] === $rules['until_date'] ? '' : 'datespan';
-		calendarp_update_event_type( $post_id, $type );
+		if ( empty( $event_data['rrules'] ) ) {
 
-		$rules['rule_type'] = 'datespan' === $type ? 'datespan' : 'standard';
+			$type = $rules['from_date'] === $rules['until_date'] ? '' : 'datespan';
+			calendarp_update_event_type( $post_id, $type );
 
-		calendarp_generate_event_rules_and_dates( $post_id, [ $rules ] );
+			$rules['rule_type'] = 'datespan' === $type ? 'datespan' : 'standard';
+
+			calendarp_generate_event_rules_and_dates( $post_id, [ $rules ] );
+		} else {
+			calendarp_update_event_type( $post_id, 'recurrent' );
+			calendarp_generate_event_rules_and_dates( $post_id, $event_data['rrules'] );
+		}
 
 		if ( $event_data['last_updated'] ) {
 			update_post_meta( $post_id, '_ical_last_updated', $event_data['last_updated'] );
