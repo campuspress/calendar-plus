@@ -56,6 +56,7 @@ export default class CalendarPlus extends Component {
 			category: props.category || '',
 			search: '',
 			prevSize: '',
+			views: props.views || ['day'],
 		};
 
 		this.prevView = this.state.view;
@@ -298,7 +299,7 @@ export default class CalendarPlus extends Component {
 					onSelectEvent={this.handleSelectEvent}
 					messages={getMessages()}
 					rtl={this.props.rtl}
-					views={this.props.views}
+					views={this.state.views}
 					formats={this.props.formats}
 					components={components}
 					popup={true}
