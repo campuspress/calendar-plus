@@ -54,7 +54,9 @@ export default class CalendarPlus extends Component {
 			loading: false,
 			singleEvent: false,
 			category: props.category || '',
-			search: ''
+			search: '',
+			prevSize: '',
+			views: props.views || ['day'],
 		};
 
 		this.prevView = this.state.view;
@@ -75,13 +77,19 @@ export default class CalendarPlus extends Component {
 				params.view = 'day';
 				this.prevView = this.state.view;
 			}
+			params.prevSize = 'mobile';
 			this.setState(params);
 		}
 		else {
 			let params = {views: this.props.views};
-			if (this.prevView !== this.state.view) {
+			if (
+				this.state.prevSize === 'mobile' &&
+				this.prevView !== this.state.view
+			) {
 				params.view = this.prevView;
 			}
+
+			params.prevSize = 'desktop';
 			this.setState(params);
 		}
 	};
@@ -291,7 +299,7 @@ export default class CalendarPlus extends Component {
 					onSelectEvent={this.handleSelectEvent}
 					messages={getMessages()}
 					rtl={this.props.rtl}
-					views={this.props.views}
+					views={this.state.views}
 					formats={this.props.formats}
 					components={components}
 					popup={true}
