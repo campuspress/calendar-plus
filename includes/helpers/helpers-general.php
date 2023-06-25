@@ -622,7 +622,7 @@ function calendarp_enqueue_google_maps_scripts() {
 		return str_replace( ' src', ' async defer src', $tag );
 	}, 10, 2 );
 
-	wp_enqueue_script( 'gmaps-api', $js, [], calendarp_get_version() );
+	wp_enqueue_script( 'gmaps-api', $js, [], calendarp_get_version(), true );
 }
 
 function calendarp_enqueue_public_script_and_styles() {
@@ -640,7 +640,15 @@ function calendarp_enqueue_public_script_and_styles() {
 	wp_enqueue_script( 'jquery-ui-datepicker' );
 	wp_enqueue_script( 'jquery-ui-tooltip' );
 
-	calendarp_enqueue_google_maps_scripts();
+    if ( is_singular( 'calendar_event' ) ) {
+
+        $event    = Calendar_Plus_Event::get_instance( get_the_ID() );
+        $location = $event->get_location();
+
+        if ( $location && $location->has_map() ) {
+            calendarp_enqueue_google_maps_scripts();
+        }
+    }
 
 	wp_localize_script( 'calendar-plus', 'calendar_i18n', [
 		'ajaxurl' => admin_url( 'admin-ajax.php' ),
