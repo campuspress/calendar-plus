@@ -39,7 +39,7 @@
 					if ( $template_data['display_excerpt'] && has_excerpt( $event->get_post() ) ) :
 						?>
 						<div class="calendarp-event-excerpt">
-							<p><?php echo esc_html( get_the_excerpt( $event->get_post() ) ); ?></p>
+							<p><?php echo apply_filters( 'the_excerpt', get_the_excerpt( $event->get_post() ) ); ?></p>
 						</div>
 					<?php
 					endif;
