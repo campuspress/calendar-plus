@@ -86,7 +86,6 @@ class Calendar_Plus_Admin {
 
 		add_action( 'save_post', array( $this, 'save_sticky_status' ), 99 );
 
-		add_action( 'admin_init', array( $this, 'maybe_delete_old_calendar_slots' ) );
 
 		// Register the importers
 		$this->importers = new Calendar_Plus_Admin_Importers();
@@ -272,29 +271,6 @@ class Calendar_Plus_Admin {
 			</a>
 		</div>
 		<?php
-	}
-
-	public function maybe_delete_old_calendar_slots() {
-		global $wpdb;
-
-		if ( ! get_transient( 'calendarp_delete_old_calendar_slots' ) ) {
-			set_transient( 'calendarp_delete_old_calendar_slots', true, 3600 * 48 ); // We clean every 2 days
-
-			$current_datetime = current_time( 'timestamp' );
-			$two_months_ago_date = date( 'Y-m-d', strtotime( '-12 months', $current_datetime ) );
-
-			$event_ids = $wpdb->get_row( $wpdb->prepare( "SELECT DISTINCT(event_id) FROM $wpdb->calendarp_calendar WHERE from_date < %s", $two_months_ago_date ) );
-
-			if ( ! $event_ids ) {
-				return;
-			}
-
-			foreach ( $event_ids as $event_id ) {
-				calendarp_delete_calendar_cache( $event_id );
-			}
-
-			$wpdb->query( $wpdb->prepare( "DELETE FROM $wpdb->calendarp_calendar WHERE from_date < %s", $two_months_ago_date ) );
-		}
 	}
 
 	public function event_columns( $columns ) {
