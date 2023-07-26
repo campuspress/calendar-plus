@@ -268,7 +268,7 @@ class Calendar_Plus_Dates_Generator {
 
 		$wpdb->query( "DELETE FROM $table WHERE until_date < '$delete_from'" );
 		update_option( 'calendarp_first_date_generated', $delete_from );
-		Calendar_Plus_Cache::delete_cache_group( 'calendarp_months_dates' );
+		self::clear_cached_months();
 	}
 
 
