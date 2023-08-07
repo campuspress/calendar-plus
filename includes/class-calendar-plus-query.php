@@ -6,7 +6,7 @@ class Calendar_Plus_Query {
 
 	public function __construct() {
 
-		$this->query_vars = array( 'from', 'to', 'location', 'calendarp_searchw' );
+		$this->query_vars = array( 'from', 'to', 'location', 'calendarp_searchw', 'order' );
 
 		if ( ! is_admin() ) {
 			add_action( 'pre_get_posts', array( $this, 'pre_get_posts' ) );
@@ -44,7 +44,7 @@ class Calendar_Plus_Query {
 
 		if ( ! empty( $query->get( 'cat' ) ) && $term = get_term( $query->get( 'cat' ), 'calendar_event_category' ) ) {
 			// Redirect to taxonomy archive
-			$vars = array( 'from', 'to', 's', 'location', 'post_type', 'calendarp_searchw' );
+			$vars = array( 'from', 'to', 's', 'location', 'post_type', 'calendarp_searchw', 'order' );
 			$redirect_to = get_term_link( $term->term_id, 'calendar_event_category' );
 			foreach ( $vars as $var ) {
 				$value = get_query_var( $var );
@@ -92,7 +92,16 @@ class Calendar_Plus_Query {
 			// Generate all months between the dates
 			$from = explode( '-', $wp_query->get( 'from' ) );
 			$from_is_date = is_array( $from ) && count( $from ) === 3 && checkdate( $from[1], $from[2], $from[0] );
-			$to = explode( '-', $wp_query->get( 'to' ) );
+
+			$to = false;
+			if ( $wp_query->get( 'to' ) ) {
+				if ( 'today' === $wp_query->get( 'to' ) ) {
+					$to = date( 'Y-m-d', current_time( 'timestamp' ) );
+					$to = explode( '-', $to );
+				} else {
+					$to = explode( '-', $wp_query->get( 'to' ) );
+				}
+			}
 			$to_is_date = is_array( $to ) && count( $to ) === 3 && checkdate( $to[1], $to[2], $to[0] );
 
 			$where_not = array();
@@ -113,7 +122,14 @@ class Calendar_Plus_Query {
 			$clauses['where'] .= " AND NOT ( $where_not )";
 		}
 
-		$clauses['orderby'] = 'cal.from_date ASC';
+		if (
+			( $order = $wp_query->get('order') ) &&
+			'desc' === strtolower( $order )
+		) {
+			$clauses['orderby'] = 'cal.from_date DESC';
+		} else {
+			$clauses['orderby'] = 'cal.from_date ASC';
+		}
 		return $clauses;
 	}
 
