@@ -261,14 +261,17 @@ class Calendar_Plus_Dates_Generator {
 		$table = $wpdb->calendarp_calendar;
 
 		if ( ! $delete_from ) {
-			$span = apply_filters( 'calendarp_old_dates_span', 240 * 24 * 3600 ); // 240 days span
+			$span = apply_filters( 'calendarp_old_dates_span', 365 * 24 * 3600 ); // 1 year span
 			$current_time = current_time( 'timestamp' );
 			$delete_from = date( 'Y-m-d', $current_time - $span );
 		}
 
-		$wpdb->query( "DELETE FROM $table WHERE until_date < '$delete_from'" );
-		update_option( 'calendarp_first_date_generated', $delete_from );
-		self::clear_cached_months();
+		$total_old_dates = (int) $wpdb->get_var( "SELECT COUNT(ID) FROM $table WHERE until_date < '$delete_from'" );
+		if ( $total_old_dates >= 100 ) {
+			$wpdb->query( "DELETE FROM $table WHERE until_date < '$delete_from'" );
+			update_option( 'calendarp_first_date_generated', $delete_from );
+			self::clear_cached_months();
+		}
 	}
 
 
