@@ -256,19 +256,28 @@ class Calendar_Plus_Dates_Generator {
 	 * @param string|bool $delete_from Delete from this date. If set to false, a span will be applied automatically based on current time
 	 */
 	public static function delete_old_dates( $delete_from = false ) {
+		$keep_old_dates = apply_filters( 'calendarp_keep_old_dates', false );
+		if ( $keep_old_dates ) {
+			return;
+		}
+
 		global $wpdb;
 
 		$table = $wpdb->calendarp_calendar;
 
 		if ( ! $delete_from ) {
-			$span = apply_filters( 'calendarp_old_dates_span', 240 * 24 * 3600 ); // 240 days span
+			$span = apply_filters( 'calendarp_old_dates_span', 365 * 24 * 3600 ); // 1 year span
 			$current_time = current_time( 'timestamp' );
 			$delete_from = date( 'Y-m-d', $current_time - $span );
 		}
 
-		$wpdb->query( "DELETE FROM $table WHERE until_date < '$delete_from'" );
-		update_option( 'calendarp_first_date_generated', $delete_from );
-		self::clear_cached_months();
+		$total_old_dates = (int) $wpdb->get_var( "SELECT COUNT(ID) FROM $table WHERE until_date < '$delete_from'" );
+		$max_old_dates   = apply_filters( 'calendarp_max_old_dates_count', 100 );
+		if ( $total_old_dates >= $max_old_dates ) {
+			$wpdb->query( "DELETE FROM $table WHERE until_date < '$delete_from'" );
+			update_option( 'calendarp_first_date_generated', $delete_from );
+			self::clear_cached_months();
+		}
 	}
 
 
