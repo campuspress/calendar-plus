@@ -67,7 +67,7 @@ class Calendar_Plus_iCal_Parser {
 			'defaultSpan'           => 2,     // Default value
 			'defaultTimeZone'       => 'UTC',
 			'defaultWeekStart'      => 'MO',  // Default value
-			'skipRecurrence'        => true, // Default value
+			'skipRecurrence'        => false, // Default value
 			'useTimeZoneWithRRules' => false, // Default value
 		) );
 	}
@@ -201,7 +201,7 @@ class Calendar_Plus_iCal_Parser {
 				}
 			}
 
-			$event_data = array(
+			$events[] = array(
 				'post_status'   => strtoupper( $_event->status ) === 'CANCELLED' ? 'trash' : 'publish',
 				'post_content'  => $content,
 				'post_title'    => wp_kses( $_event->summary, wp_kses_allowed_html( 'post' ) ),
@@ -212,134 +212,9 @@ class Calendar_Plus_iCal_Parser {
 				'location'      => $_event->location,
 				'categories'    => isset( $_event->categories ) ? array_map( 'trim', explode( ',', $_event->categories ) ) : array(),
 			);
-			if ( $_event->rrule ) {
-				$rules   = array();
-				$rrule   = $this->parse_rrule( $_event->rrule );
-
-				$start_date = null;
-				if ( ! empty( $_event->dtstart ) ) {
-					$start_date = $this->create_date_from_ical_format( $_event->dtstart );
-				}
-
-				$end_date = null;
-				if ( empty( $rrule['UNTIL'] ) ) {
-					$end_date =  $this->create_date_from_ical_format( $_event->dtend );
-				} else {
-					$end_date = $this->create_date_from_ical_format( $rrule['UNTIL'] );
-				}
-
-				$rules[] = $this->build_dates_rule( $start_date, $end_date );
-				$rules[] = $this->build_times_rule( $start_date, $end_date );
-				$rules[] = $this->build_rrule( $rrule );
-
-				$event_data['rrules'] = $rules;
-			}
-			$events[] = $event_data;
 		}
 
 		return $events;
-	}
-
-	private function parse_rrule( string $rule ) {
-		$options = explode( ';', $rule );
-		foreach ( $options as $key => $option ) {
-			$option_data = mb_split( '=', $option );
-			$options[ $option_data[0] ] = $option_data[1];
-
-			unset( $options[ $key ] );
-		}
-		return $options;
-	}
-
-	private function create_date_from_ical_format( string $date_str ): ?DateTime {
-		if ( ! str_ends_with( $date_str, 'Z' ) ) {
-			$date_str .= 'Z';
-		}
-		$date = date_create_from_format(
-			Calendar_Plus_iCal_Generator::ICAL_DATE_FORMAT,
-			$date_str
-		);
-		if ( ! $date ) {
-			return null;
-		}
-
-		return $date;
-	}
-
-	private function build_dates_rule( $start_date, $end_date ): array {
-		$rule = array( 'rule_type' => 'dates' );
-		if ( $start_date instanceof DateTime ) {
-			$rule['from'] = $start_date->format( 'Y-m-d' );
-		}
-		if ( $end_date instanceof DateTime ) {
-			$rule['until'] = $end_date->format( 'Y-m-d' );
-		}
-
-		return $rule;
-	}
-
-	private function build_times_rule( $start_date, $end_date ): array {
-		$rule = array( 'rule_type' => 'times' );
-
-		if ( $start_date instanceof DateTime ) {
-			$rule['from'] = $start_date->format( 'H:i:s' );
-		}
-		if ( $end_date instanceof DateTime ) {
-			$rule['until'] = $end_date->format( 'H:i:s' );
-		}
-
-		return $rule;
-	}
-
-	private function build_rrule( array $options ) {
-
-		$every = array( 'rule_type' => 'every' );
-
-		if ( isset( $options['BYDAY'] ) ) {
-			if ( $options['FREQ'] === 'WEEKLY' ) {
-				$every['what'] = 'dow';
-				$every['every'] = $this->convert_weekdays( $options['BYDAY'] );
-			} elseif ( $options['FREQ'] === 'MONTHLY' ) {
-				$every['what'] = 'dom';
-				$every['every'] = $this->convert_multiple_weeks_days( $options['BYDAY'] );
-			}
-		} else {
-			$every['what']  = $this->convert_period( $options['FREQ'] );
-			if ( isset( $options['INTERVAL'] ) ) {
-				$every['every'] = (int) $options['INTERVAL'];
-			} else {
-				$every['every'] = 1;
-			}
-		}
-
-		return $every;
-	}
-
-	private function convert_weekdays( $days_str ) {
-		$days_of_week = mb_split( ',', $days_str );
-		return array_map( function ( $day ) {
-			return array_search( $day, Calendar_Plus_iCal_Generator::WEEKDAY_CODES );
-		}, $days_of_week );
-	}
-
-	private function convert_multiple_weeks_days( $weekdays ) {
-		$every    = array();
-		$match  = array();
-		if ( preg_match( '/(\d+)([A-Z]+)/', $weekdays, $match ) ) {
-			$week = (int) $match[1];
-			$every[ $week ] = $this->convert_weekdays( $match[2] );
-		}
-		return $every;
-	}
-
-	private function convert_period( string $period ) {
-		$frequencies = array(
-			'WEEKLY'  => 'week',
-			'DAILY'   => 'day',
-			'MONTHLY' => 'month',
-			'YEARLY'  => 'year',
-		);
-		return $frequencies[ $period ];
 	}
 
 	/**
