@@ -397,16 +397,16 @@ class Calendar_Plus_iCal_Parser {
 			return $uid;
 		}
 
-		if ( empty( $event->rrule ) ) {
+		if ( ! $event->rrule && ! $event->recurrence_id ) {
 			// Not a recurring event, return normal UID.
 			return $uid;
 		}
 
-		$recurrence = $uid . md5( $event->rrule );
+		$recurrence = $uid . $event->sequence;
 		$idx = ! empty( $this->_recurring_increments[ $recurrence ] )
 			? (int) $this->_recurring_increments[ $recurrence ]
 			: 1;
-		$uid .= "-{$idx}";
+		$uid .= '-' . $event->sequence . '-' . $idx;
 
 		$this->_recurring_increments[ $recurrence ] = $idx + 1;
 		return $uid;
