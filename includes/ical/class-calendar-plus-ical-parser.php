@@ -169,6 +169,9 @@ class Calendar_Plus_iCal_Parser {
 
 		$events = array();
 		foreach ( $_events as $_event ) {
+			if ( $_event->rrule && ! $this->_import_recurring ) {
+				continue;
+			}
 			/** @var \ICal\Event $_event */
 			$content = '';
 			if ( ! empty( $_event->x_alt_desc ) ) {
@@ -218,19 +221,31 @@ class Calendar_Plus_iCal_Parser {
 
 				$start_date = null;
 				if ( ! empty( $_event->dtstart ) ) {
-					$start_date = $this->create_date_from_ical_format( $_event->dtstart );
+					$start_date = $this->create_date_from_ical_format( $_event->dtstart, $event_tz, $local_tz );
 				}
 
 				$end_date = null;
-				if ( empty( $rrule['UNTIL'] ) ) {
-					$end_date =  $this->create_date_from_ical_format( $_event->dtend );
+				if ( ! empty( $rrule['UNTIL'] ) ) {
+					$end_date = $this->create_date_from_ical_format( $rrule['UNTIL'], $event_tz, $local_tz );
 				} else {
-					$end_date = $this->create_date_from_ical_format( $rrule['UNTIL'] );
+					$end_date = $start_date;
 				}
+				$rules[] = $this->build_date_rules( $start_date, $end_date );
 
-				$rules[] = $this->build_dates_rule( $start_date, $end_date );
-				$rules[] = $this->build_times_rule( $start_date, $end_date );
-				$rules[] = $this->build_rrule( $rrule );
+				$end_time = null;
+				if ( ! empty( $_event->dtend ) ) {
+					$end_time = $this->create_date_from_ical_format( $_event->dtend, $event_tz, $local_tz );
+				}
+				$rules[] = $this->build_time_rules( $start_date, $end_time );
+
+				// Shift selected day of week when
+				// user time is day ahead of server time or before it
+				$day_offset = 0;
+				if ( isset( $start_date ) ) {
+					$from       = date_create( $_event->dtstart, $event_tz );
+					$day_offset = (int) $start_date->format( 'd' ) - (int) $from->format( 'd' );
+				}
+				$rules[] = $this->build_rrule( $rrule, $day_offset );
 
 				$event_data['rrules'] = $rules;
 			}
@@ -251,22 +266,24 @@ class Calendar_Plus_iCal_Parser {
 		return $options;
 	}
 
-	private function create_date_from_ical_format( string $date_str ): ?DateTime {
+	private function create_date_from_ical_format( string $date_str, DateTimeZone $event_tz, DateTimeZone $local_tz ): ?DateTime {
 		if ( ! str_ends_with( $date_str, 'Z' ) ) {
 			$date_str .= 'Z';
 		}
 		$date = date_create_from_format(
 			Calendar_Plus_iCal_Generator::ICAL_DATE_FORMAT,
-			$date_str
+			$date_str,
+			$event_tz
 		);
 		if ( ! $date ) {
 			return null;
 		}
 
+		$date->setTimezone( $local_tz );
 		return $date;
 	}
 
-	private function build_dates_rule( $start_date, $end_date ): array {
+	private function build_date_rules( $start_date, $end_date ): array {
 		$rule = array( 'rule_type' => 'dates' );
 		if ( $start_date instanceof DateTime ) {
 			$rule['from'] = $start_date->format( 'Y-m-d' );
@@ -278,7 +295,7 @@ class Calendar_Plus_iCal_Parser {
 		return $rule;
 	}
 
-	private function build_times_rule( $start_date, $end_date ): array {
+	private function build_time_rules( $start_date, $end_date ): array {
 		$rule = array( 'rule_type' => 'times' );
 
 		if ( $start_date instanceof DateTime ) {
@@ -291,17 +308,22 @@ class Calendar_Plus_iCal_Parser {
 		return $rule;
 	}
 
-	private function build_rrule( array $options ) {
+	private function build_rrule( array $options, int $day_offset = 0 ) {
 
 		$every = array( 'rule_type' => 'every' );
 
 		if ( isset( $options['BYDAY'] ) ) {
 			if ( $options['FREQ'] === 'WEEKLY' ) {
-				$every['what'] = 'dow';
-				$every['every'] = $this->convert_weekdays( $options['BYDAY'] );
+				if ( isset( $options['INTERVAL'] ) ) {
+					$every['every'] = (int) $options['INTERVAL'];
+					$every['what']  = 'week';
+				} else {
+					$every['what']  = 'dow';
+					$every['every'] = $this->convert_weekdays( $options['BYDAY'], $day_offset );
+				}
 			} elseif ( $options['FREQ'] === 'MONTHLY' ) {
 				$every['what'] = 'dom';
-				$every['every'] = $this->convert_multiple_weeks_days( $options['BYDAY'] );
+				$every['every'] = $this->convert_multiple_weeks_days( $options['BYDAY'], $day_offset );
 			}
 		} else {
 			$every['what']  = $this->convert_period( $options['FREQ'] );
@@ -315,19 +337,27 @@ class Calendar_Plus_iCal_Parser {
 		return $every;
 	}
 
-	private function convert_weekdays( $days_str ) {
+	private function convert_weekdays( $days_str, $day_offset ) {
 		$days_of_week = mb_split( ',', $days_str );
-		return array_map( function ( $day ) {
-			return array_search( $day, Calendar_Plus_iCal_Generator::WEEKDAY_CODES );
+		return array_map( function ( $day ) use ( $day_offset ) {
+			$idx = array_search( $day, Calendar_Plus_iCal_Generator::WEEKDAY_CODES );
+			$idx += $day_offset;
+			if ( $idx > 6 ) {
+				$idx = 0;
+			}
+			if ( $idx < 0 ) {
+				$idx = 6;
+			}
+			return $idx;
 		}, $days_of_week );
 	}
 
-	private function convert_multiple_weeks_days( $weekdays ) {
+	private function convert_multiple_weeks_days( $weekdays, $day_offset ) {
 		$every    = array();
 		$match  = array();
 		if ( preg_match( '/(\d+)([A-Z]+)/', $weekdays, $match ) ) {
 			$week = (int) $match[1];
-			$every[ $week ] = $this->convert_weekdays( $match[2] );
+			$every[ $week ] = $this->convert_weekdays( $match[2], $day_offset );
 		}
 		return $every;
 	}
@@ -367,16 +397,16 @@ class Calendar_Plus_iCal_Parser {
 			return $uid;
 		}
 
-		if ( empty( $event->rrule ) ) {
+		if ( ! $event->rrule && ! $event->recurrence_id ) {
 			// Not a recurring event, return normal UID.
 			return $uid;
 		}
 
-		$recurrence = $uid . md5( $event->rrule );
+		$recurrence = $uid . $event->sequence;
 		$idx = ! empty( $this->_recurring_increments[ $recurrence ] )
 			? (int) $this->_recurring_increments[ $recurrence ]
 			: 1;
-		$uid .= "-{$idx}";
+		$uid .= '-' . $event->sequence . '-' . $idx;
 
 		$this->_recurring_increments[ $recurrence ] = $idx + 1;
 		return $uid;
