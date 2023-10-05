@@ -199,7 +199,7 @@ class Calendar_Plus_iCal_Parser {
 			}
 			if( $this->_exlude_past === -1 ) {
 				
-				if( $to < time() ) {
+				if( $to < time() && ! $_event->rrule ) {
 					continue;
 				}
 			}
@@ -230,6 +230,11 @@ class Calendar_Plus_iCal_Parser {
 				} else {
 					$end_date = $start_date;
 				}
+
+				if ( $this->_exlude_past === -1 && $end_date?->getTimestamp() < time() ) {
+					continue;
+				}
+
 				$rules[] = $this->build_date_rules( $start_date, $end_date );
 
 				$end_time = null;
@@ -342,11 +347,10 @@ class Calendar_Plus_iCal_Parser {
 		return array_map( function ( $day ) use ( $day_offset ) {
 			$idx = array_search( $day, Calendar_Plus_iCal_Generator::WEEKDAY_CODES );
 			$idx += $day_offset;
-			if ( $idx > 6 ) {
-				$idx = 0;
-			}
-			if ( $idx < 0 ) {
-				$idx = 6;
+			if ( $idx === 0 ) {
+				$idx = 7;
+			} else {
+				$idx = $idx % 7;
 			}
 			return $idx;
 		}, $days_of_week );
