@@ -166,6 +166,16 @@ class Calendar_Plus_iCal_Parser {
 		if ( ! $local_tz ) {
 			throw new Exception( __( 'Local timezone cannot be parsed', 'calendarp' ), 'wrong-timezone' );
 		}
+		$recurring_single_events = array();
+		foreach ( $_events as $event ) {
+			if ( $event->recurrence_id ) {
+				if ( ! isset( $recurring_single_events[ $event->uid ] ) ) {
+					$recurring_single_events[ $event->uid ] = array();
+				}
+				$exclude_date = self::cast_date_timezones( $event->dtstart, $calendar_tz, $local_tz );
+				$recurring_single_events[ $event->uid ][] = date( 'Y-m-d', $exclude_date );
+			}
+		}
 
 		$events = array();
 		foreach ( $_events as $_event ) {
@@ -235,13 +245,13 @@ class Calendar_Plus_iCal_Parser {
 					continue;
 				}
 
-				$rules[] = $this->build_date_rules( $start_date, $end_date );
+				$rules[] = $this->build_date_rule( $start_date, $end_date );
 
 				$end_time = null;
 				if ( ! empty( $_event->dtend ) ) {
 					$end_time = $this->create_date_from_ical_format( $_event->dtend, $event_tz, $local_tz );
 				}
-				$rules[] = $this->build_time_rules( $start_date, $end_time );
+				$rules[] = $this->build_time_rule( $start_date, $end_time );
 
 				// Shift selected day of week when
 				// user time is day ahead of server time or before it
@@ -250,8 +260,24 @@ class Calendar_Plus_iCal_Parser {
 					$from       = date_create( $_event->dtstart, $event_tz );
 					$day_offset = (int) $start_date->format( 'd' ) - (int) $from->format( 'd' );
 				}
-				$rules[] = $this->build_rrule( $rrule, $day_offset );
 
+				$rules[] = $this->build_rrule( $rrule, $day_offset );
+				if ( $_event->exdate_array ) {
+					$excluded_dates = $this->parse_excluded_dates( $_event->exdate_array, $local_tz );
+					if ( isset( $recurring_single_events[ $_event->uid ] ) ) {
+						$recurring_single_events[ $_event->uid ] = array_merge( $recurring_single_events[ $_event->uid ], $excluded_dates );
+					} else {
+						$recurring_single_events[ $_event->uid ] = $excluded_dates;
+					}
+				}
+				if ( isset( $recurring_single_events[ $_event->uid ] ) ) {
+					foreach ( $recurring_single_events[ $_event->uid ] as $exclusion ) {
+						$rules[] = array(
+							'rule_type' => 'exclusions',
+							'date'      => $exclusion
+						);
+					}
+				}
 				$event_data['rrules'] = $rules;
 			}
 			$events[] = $event_data;
@@ -260,21 +286,37 @@ class Calendar_Plus_iCal_Parser {
 		return $events;
 	}
 
+
+	/**
+	 * Parse RRULE string
+	 * @param string $rule
+	 *
+	 * @return string[]
+	 */
 	private function parse_rrule( string $rule ) {
 		$options = explode( ';', $rule );
 		foreach ( $options as $key => $option ) {
 			$option_data = mb_split( '=', $option );
-			$options[ $option_data[0] ] = $option_data[1];
+			$options[ $option_data[0] ] = trim( $option_data[1] );
 
 			unset( $options[ $key ] );
 		}
 		return $options;
 	}
 
+	/**
+	 * Create DateTime from ical format and changes timezone from event to local
+	 * @param string $date_str
+	 * @param DateTimeZone $event_tz
+	 * @param DateTimeZone $local_tz
+	 *
+	 * @return DateTime|null
+	 */
 	private function create_date_from_ical_format( string $date_str, DateTimeZone $event_tz, DateTimeZone $local_tz ): ?DateTime {
 		if ( ! str_ends_with( $date_str, 'Z' ) ) {
 			$date_str .= 'Z';
 		}
+
 		$date = date_create_from_format(
 			Calendar_Plus_iCal_Generator::ICAL_DATE_FORMAT,
 			$date_str,
@@ -288,19 +330,33 @@ class Calendar_Plus_iCal_Parser {
 		return $date;
 	}
 
-	private function build_date_rules( $start_date, $end_date ): array {
+	/**
+	 * Build date rule according to Calendar_Plus_Event_Rules_Dates_Formatter format
+	 * @param ?DateTime $start_date
+	 * @param ?DateTime $end_date
+	 *
+	 * @return string[]
+	 */
+	private function build_date_rule( ?DateTime $start_date, ?DateTime $end_date ): array {
 		$rule = array( 'rule_type' => 'dates' );
-		if ( $start_date instanceof DateTime ) {
+		if ( $start_date ) {
 			$rule['from'] = $start_date->format( 'Y-m-d' );
 		}
-		if ( $end_date instanceof DateTime ) {
+		if ( $end_date ) {
 			$rule['until'] = $end_date->format( 'Y-m-d' );
 		}
 
 		return $rule;
 	}
 
-	private function build_time_rules( $start_date, $end_date ): array {
+	/**
+	 * Build time rule according to Calendar_Plus_Event_Rules_Times_Formatter format
+	 * @param ?DateTime $start_date
+	 * @param ?DateTime $end_date
+	 *
+	 * @return string[]
+	 */
+	private function build_time_rule( ?DateTime $start_date, ?DateTime $end_date ): array {
 		$rule = array( 'rule_type' => 'times' );
 
 		if ( $start_date instanceof DateTime ) {
@@ -313,6 +369,14 @@ class Calendar_Plus_iCal_Parser {
 		return $rule;
 	}
 
+	/**
+	 * Build RRULE array according to Calendar_Plus_Event_Rules_Every_Formatter format
+	 * @param array $options - RRULE options
+	 * @param int $day_offset - number of days to shift weekday. That's due to timezone difference.
+	 *                          value can be -1, 0 or 1
+	 *
+	 * @return string[]
+	 */
 	private function build_rrule( array $options, int $day_offset = 0 ) {
 
 		$every = array( 'rule_type' => 'every' );
@@ -342,20 +406,35 @@ class Calendar_Plus_iCal_Parser {
 		return $every;
 	}
 
-	private function convert_weekdays( $days_str, $day_offset ) {
+	/**
+	 * Convert weekdays string into array of numeric representation of days of week
+	 * @param string $days_str
+	 * @param int $day_offset - number of days to shift weekday
+	 *
+	 * @return int[]
+	 */
+	private function convert_weekdays( string $days_str, int $day_offset ) {
 		$days_of_week = mb_split( ',', $days_str );
 		return array_map( function ( $day ) use ( $day_offset ) {
 			$idx = array_search( $day, Calendar_Plus_iCal_Generator::WEEKDAY_CODES );
 			$idx += $day_offset;
+
+			$idx = ( $idx + 7 ) % 7;
 			if ( $idx === 0 ) {
 				$idx = 7;
-			} else {
-				$idx = $idx % 7;
 			}
 			return $idx;
 		}, $days_of_week );
 	}
 
+	/**
+	 * Convert multiple weeks weekdays string into array of numeric
+	 * representation of days of week
+	 * @param $weekdays
+	 * @param $day_offset
+	 *
+	 * @return array
+	 */
 	private function convert_multiple_weeks_days( $weekdays, $day_offset ) {
 		$every    = array();
 		$match  = array();
@@ -366,6 +445,12 @@ class Calendar_Plus_iCal_Parser {
 		return $every;
 	}
 
+	/**
+	 * Convert RRULE period into Calendar_Plus_Event_Rules_Every_Formatter format value
+	 * @param string $period
+	 *
+	 * @return string
+	 */
 	private function convert_period( string $period ) {
 		$frequencies = array(
 			'WEEKLY'  => 'week',
@@ -374,6 +459,27 @@ class Calendar_Plus_iCal_Parser {
 			'YEARLY'  => 'year',
 		);
 		return $frequencies[ $period ];
+	}
+
+	/**
+	 * Parse exdate_array (parsed EXDATE property) values
+	 * @param array $dates
+	 * @param $local_tz
+	 *
+	 * @return array
+	 */
+	private function parse_excluded_dates( array $dates, $local_tz ) {
+		$parsed = array();
+		for( $i = 0; $i < count( $dates ); $i += 2 ) {
+			$event_tz = new DateTimeZone( $dates[ $i ]['TZID'] );
+			$date = self::cast_date_timezones(
+				$dates[ $i + 1 ][0],
+				$event_tz,
+				$local_tz
+			);
+			$parsed[] = date( 'Y-m-d', $date );
+		}
+		return $parsed;
 	}
 
 	/**
