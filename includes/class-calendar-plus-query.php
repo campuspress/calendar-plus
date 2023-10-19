@@ -39,6 +39,7 @@ class Calendar_Plus_Query {
 		if ( ! $query->is_post_type_archive( 'calendar_event' ) && ! $query->is_tax( get_object_taxonomies( 'calendar_event' ) ) ) {
 			return;
 		}
+		$query->set( 'order', 'ASC' );
 
 		$this->parse_query( $query );
 

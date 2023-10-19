@@ -92,14 +92,14 @@ class Calendar_Plus_Event_Rules_Times_Formatter implements Calendar_Plus_Event_R
 			return false;
         }
 
-		if ( count( $time ) != 2 ) {
+		if ( count( $time ) === 1 ) {
 			$time_hour = substr( $time[0], 0, 2 );
 			$time_minutes = substr( $time[0], 2, 2 );
 			$time = array( $time_hour, $time_minutes );
 		}
 
 		$time = array_map( 'absint', $time );
-		if ( count( $time ) != 2 ) {
+		if ( count( $time ) < 2 ) {
 			return false;
         }
 
