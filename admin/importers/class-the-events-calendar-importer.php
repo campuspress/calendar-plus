@@ -409,13 +409,25 @@ class Calendar_Plus_The_Events_Calendar_Importer extends WP_Importer {
 					$author = (int) get_current_user_id();
 				}
 
+				$post_content = '';
+				if ( ! empty( $post['post_content'] ) ) {
+					$post_content = html_entity_decode( $post['post_content'] );
+					$post_content = wp_kses_post( $post_content );
+				}
+
+				$post_excerpt = '';
+				if ( ! empty( $post['post_excerpt'] ) ) {
+					$post_excerpt = html_entity_decode( $post['post_excerpt'] );
+					$post_excerpt = wp_kses_post( $post_excerpt );
+				}
+
 				$postdata = array(
 					'import_id'      => $post['post_id'],
 					'post_author'    => $author,
 					'post_date'      => $post['post_date'],
 					'post_date_gmt'  => $post['post_date_gmt'],
-					'post_content'   => $post['post_content'],
-					'post_excerpt'   => $post['post_excerpt'],
+					'post_content'   => $post_content,
+					'post_excerpt'   => $post_excerpt,
 					'post_title'     => $post['post_title'],
 					'post_status'    => $post['status'],
 					'post_name'      => $post['post_name'],
