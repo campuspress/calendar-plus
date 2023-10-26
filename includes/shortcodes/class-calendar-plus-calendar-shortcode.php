@@ -171,6 +171,11 @@ class Calendar_Plus_Calendar_Shortcode {
 			'dowStart'         => get_option( 'start_of_week' ),
 		);
 
+		$lang = apply_filters( 'calendarp_calendar_language', false );
+		if ( $lang ) {
+			$i18n['lang'] = $lang;
+		}
+
 		wp_localize_script( 'calendar-plus-calendar', 'calendarPlusi18n', $i18n );
 	}
 

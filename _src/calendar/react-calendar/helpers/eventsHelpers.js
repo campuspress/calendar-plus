@@ -29,6 +29,9 @@ export const loadEvents = (year, month, filter) => {
 			_filter[i] = filter[i];
 		}
 	}
+	if ( calendarPlusi18n.hasOwnProperty('lang') ) {
+		_filter.lang = calendarPlusi18n.lang;
+	}
 
 	const filterParams = Object.assign({}, {year, month}, _filter);
 

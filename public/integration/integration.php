@@ -16,3 +16,9 @@ if (
 ) {
 	include_once calendarp_get_plugin_dir() . 'public/integration/plugins/divi-builder.php';
 }
+
+if (
+	is_plugin_active( 'polylang/polylang.php' )
+) {
+	include_once calendarp_get_plugin_dir() . 'public/integration/plugins/polylang.php';
+}
