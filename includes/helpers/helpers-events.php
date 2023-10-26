@@ -415,6 +415,7 @@ function calendarp_get_events_since( $from, $args = array() ) {
 
 	if ( ! isset( $cached_results[ $cache_key ] ) ) {
 		$results = $wpdb->get_results( $query );
+		$results = apply_filters( 'calendarp_events_data', $results );
 		$cached_results[ $cache_key ] = $results;
 		set_transient( 'calendarp_events_since', $cached_results, 86400 ); // Save the data for one day
 	} else {
@@ -569,6 +570,7 @@ function calendarp_get_events_in_date_range( $from, $to = false, $args = array()
 
 	$query = "$select $join $where_not $where $order $limit";
 	$results = $wpdb->get_results( $query );
+	$results = apply_filters( 'calendarp_events_data', $results );
 
 	if ( $args['grouped_by_day'] ) {
 		$data = _calendarp_group_events_by_date( $results );
