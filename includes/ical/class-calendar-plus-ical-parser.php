@@ -139,7 +139,6 @@ class Calendar_Plus_iCal_Parser {
 	 */
 	public function parse_events() {
 		$_events = $this->ical->events();
-
 		// This is the calendar timezone
 		$calendar_tz = new DateTimeZone( $this->ical->calendarTimeZone() );
 		// This is the *actual* calendar timezone
@@ -200,9 +199,42 @@ class Calendar_Plus_iCal_Parser {
 				: $calendar_tz;
 
 			//dtstart has to be set but, dtend not always.
-			$from = self::cast_date_timezones( $_event->dtstart, $event_tz, $local_tz );
+			$start_date_tz = $event_tz;
+			if ( $_event->dtstart_array ) {
+				$start_date_tz = $this->extract_timezone_from_ical_format( $_event->dtstart_array[3] );
+				$start_date_tz = $start_date_tz ?: $event_tz;
+
+				// dtstart can have only date instead of date-time
+				if (
+					isset( $_event->dtstart_array[0]['VALUE'] ) &&
+					$_event->dtstart_array[0]['VALUE'] === 'DATE'
+				) {
+					// Set start time to 12:00AM
+					$_event->dtstart .= 'T000000';
+					$_event->all_day  = true;
+					// We don't need time to be converted
+					$local_tz = $start_date_tz;
+				}
+			}
+			$from = self::cast_date_timezones( $_event->dtstart, $start_date_tz, $local_tz );
+
+			$end_date_tz = $event_tz;
 			if( isset( $_event->dtend ) && $_event->dtend ) {
-				$to = self::cast_date_timezones( $_event->dtend, $event_tz, $local_tz );
+				$end_date_tz = null;
+				if ( $_event->dtend_array ) {
+					$end_date_tz = $this->extract_timezone_from_ical_format( $_event->dtend_array[3] );
+
+					// DTEND property can have date instead of time
+					if (
+						isset( $_event->dtend_array[0]['VALUE'] ) &&
+						$_event->dtend_array[0]['VALUE'] === 'DATE'
+					) {
+						// Set end time to 23:59:59
+						$_event->dtend .= 'T235959';
+					}
+				}
+				$end_date_tz = $end_date_tz ?: $event_tz;
+				$to = self::cast_date_timezones( $_event->dtend, $end_date_tz, $local_tz );
 			}
 			else {
 				$to = $from;
@@ -220,10 +252,11 @@ class Calendar_Plus_iCal_Parser {
 				'post_title'    => wp_kses( $_event->summary, wp_kses_allowed_html( 'post' ) ),
 				'from'          => $from,
 				'to'            => $to,
-				'last_updated' => self::cast_date_timezones( $_event->lastmodified, $event_tz, $local_tz ),
+				'last_updated'  => self::cast_date_timezones( $_event->lastmodified, $event_tz, $local_tz ),
 				'uid'           => $this->get_event_uid( $_event ),
 				'location'      => $_event->location,
 				'categories'    => isset( $_event->categories ) ? array_map( 'trim', explode( ',', $_event->categories ) ) : array(),
+				'all_day'       => ! empty( $_event->all_day ),
 			);
 			if ( $_event->rrule ) {
 				$rules   = array();
@@ -231,12 +264,12 @@ class Calendar_Plus_iCal_Parser {
 
 				$start_date = null;
 				if ( ! empty( $_event->dtstart ) ) {
-					$start_date = $this->create_date_from_ical_format( $_event->dtstart, $event_tz, $local_tz );
+					$start_date = $this->create_date_from_ical_format( $_event->dtstart, $start_date_tz, $local_tz );
 				}
 
 				$end_date = null;
 				if ( ! empty( $rrule['UNTIL'] ) ) {
-					$end_date = $this->create_date_from_ical_format( $rrule['UNTIL'], $event_tz, $local_tz );
+					$end_date = $this->create_date_from_ical_format( $rrule['UNTIL'], $end_date_tz, $local_tz );
 				} else {
 					$end_date = $start_date;
 				}
@@ -249,7 +282,7 @@ class Calendar_Plus_iCal_Parser {
 
 				$end_time = null;
 				if ( ! empty( $_event->dtend ) ) {
-					$end_time = $this->create_date_from_ical_format( $_event->dtend, $event_tz, $local_tz );
+					$end_time = $this->create_date_from_ical_format( $_event->dtend, $end_date_tz, $local_tz );
 				}
 				$rules[] = $this->build_time_rule( $start_date, $end_time );
 
@@ -257,13 +290,13 @@ class Calendar_Plus_iCal_Parser {
 				// user time is day ahead of server time or before it
 				$day_offset = 0;
 				if ( isset( $start_date ) ) {
-					$from       = date_create( $_event->dtstart, $event_tz );
+					$from       = date_create( $_event->dtstart, $start_date_tz );
 					$day_offset = (int) $start_date->format( 'd' ) - (int) $from->format( 'd' );
 				}
 
 				$rules[] = $this->build_rrule( $rrule, $day_offset );
 				if ( $_event->exdate_array ) {
-					$excluded_dates = $this->parse_excluded_dates( $_event->exdate_array, $local_tz );
+					$excluded_dates = $this->parse_excluded_dates( $_event->exdate_array, $start_date_tz, $local_tz );
 					if ( isset( $recurring_single_events[ $_event->uid ] ) ) {
 						$recurring_single_events[ $_event->uid ] = array_merge( $recurring_single_events[ $_event->uid ], $excluded_dates );
 					} else {
@@ -284,6 +317,23 @@ class Calendar_Plus_iCal_Parser {
 		}
 
 		return $events;
+	}
+
+	/**
+	 * Extract timezone from date-time property.
+	 * @param string $date_str Input format: TZID=America/New_York:20230101T000000
+	 *
+	 * @return DateTimeZone|null
+	 */
+	private function extract_timezone_from_ical_format( string $date_str ): ?DateTimeZone {
+		$parts = explode( '=', $date_str );
+		if ( count( $parts ) > 1 ) {
+			$date_parts = explode( ':', $parts[1] );
+			if ( $date_parts ) {
+				return $this->ical->timeZoneStringToDateTimeZone( $date_parts[0] );
+			}
+		}
+		return null;
 	}
 
 
@@ -468,10 +518,9 @@ class Calendar_Plus_iCal_Parser {
 	 *
 	 * @return array
 	 */
-	private function parse_excluded_dates( array $dates, $local_tz ) {
+	private function parse_excluded_dates( array $dates, $event_tz, $local_tz ) {
 		$parsed = array();
 		for( $i = 0; $i < count( $dates ); $i += 2 ) {
-			$event_tz = new DateTimeZone( $dates[ $i ]['TZID'] );
 			$date = self::cast_date_timezones(
 				$dates[ $i + 1 ][0],
 				$event_tz,
