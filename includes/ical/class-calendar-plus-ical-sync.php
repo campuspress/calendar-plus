@@ -104,6 +104,7 @@ class Calendar_Plus_iCal_Sync {
 			'last_updated' => '',
 			'categories'   => [],
 			'rrules'       => [],
+			'all_day'      => false,
 		] );
 
 		$event_data_hash = md5( serialize( $event_data ) );
@@ -197,6 +198,10 @@ class Calendar_Plus_iCal_Sync {
 
 		if ( $event_data['last_updated'] ) {
 			update_post_meta( $post_id, '_ical_last_updated', $event_data['last_updated'] );
+		}
+
+		if ( $event_data['all_day'] ) {
+			update_post_meta( $post_id, '_all_day', 1 );
 		}
 
 		update_post_meta( $post_id, '_ical_hash', $event_data_hash );
