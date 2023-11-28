@@ -663,7 +663,7 @@ function calendarp_get_event_type_term_ids() {
 		if (
 			is_wp_error( $term ) ||
 			! $term ||
-			'calendar_event_type' !== $term->taxonomy &&
+			'calendar_event_type' !== $term->taxonomy ||
 			$term_name !== $term->slug
 		) {
 			$updated = true;
