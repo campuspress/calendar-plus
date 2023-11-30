@@ -296,9 +296,14 @@ class Calendar_Plus_Calendar_Shortcode {
 	 * Render block on frontend
 	 *
 	 * @param array $atts
-	 * @return void
+	 * @return string
 	 */
 	public function blocks_content($atts) {
+		if ( ! wp_script_is( 'calendar-plus-calendar' ) ) {
+			calendarp_enqueue_public_script_and_styles();
+			calendarp_enqueue_public_styles();
+		}
+
 		return $this->render($atts);
 	}
 }
