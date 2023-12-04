@@ -119,6 +119,7 @@ class Calendar_Plus_Calendar_Shortcode {
 	 * Enqueue the necessary scripts to render the calendar
 	 */
 	public function enqueue_public_scripts() {
+		calendarp_enqueue_public_script_and_styles();
 		calendarp_enqueue_public_styles();
 
 		$categories = get_terms( array(
