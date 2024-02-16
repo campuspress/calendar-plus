@@ -666,10 +666,10 @@ function calendarp_get_event_type_term_ids() {
 			'calendar_event_type' !== $term->taxonomy ||
 			$term_name !== $term->slug
 		) {
-			$updated = true;
 			$term = wp_insert_term( $term_name, 'calendar_event_type' );
 			if ( is_array( $term ) ) {
 				$term_ids[ $term_name ] = $term['term_id'];
+				$updated = true;
 			}
 		}
 	}
