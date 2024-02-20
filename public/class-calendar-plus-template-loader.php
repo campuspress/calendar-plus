@@ -12,32 +12,45 @@ class Calendar_Plus_Template_Loader {
 		$file = '';
 
 		if ( is_single() && get_post_type() == 'calendar_event' ) {
+
+			$source = calendarp_get_setting( 'single_event_template_source' );
+			if( $source !== 'calendar_plus' ) {
+				return $template;
+			}
+
 			$file = 'single-event.php';
 			$templates[] = $file;
 			$templates[] = calendarp_get_template_dir() . $file;
-		} elseif ( is_tax( get_object_taxonomies( 'calendar_event' ) ) ) {
+		} else {
 
-			$term = get_queried_object();
+			$source = calendarp_get_setting( 'event_archive_template_source' );
+			if( $source !== 'calendar_plus' ) {
+				return $template;
+			}
 
-			if ( is_tax( 'calendar_event_category' ) ) {
-				$file = 'taxonomy-' . $term->taxonomy . '.php';
-			} else {
-				$file = 'archive-event.php';
-            }
+			if ( is_tax( get_object_taxonomies( 'calendar_event' ) ) ) {
 
-			$templates[] = 'taxonomy-' . $term->taxonomy . '-' . $term->slug . '.php';
-			$templates[] = calendarp_get_template_dir() . 'taxonomy-' . $term->taxonomy . '-' . $term->slug . '.php';
-			$templates[] = 'taxonomy-' . $term->taxonomy . '.php';
-			$templates[] = calendarp_get_template_dir() . 'taxonomy-' . $term->taxonomy . '.php';
-			$templates[] = $file;
-			$templates[] = calendarp_get_template_dir() . $file;
+				$term = get_queried_object();
 
-		} elseif ( is_post_type_archive( 'calendar_event' ) || ( $events_page_id && is_page( $events_page_id ) ) ) {
-			$file   = 'archive-event.php';
-			$templates[] = $file;
-			$templates[] = calendarp_get_template_dir() . $file;
+				if ( is_tax( 'calendar_event_category' ) ) {
+					$file = 'taxonomy-' . $term->taxonomy . '.php';
+				} else {
+					$file = 'archive-event.php';
+				}
+
+				$templates[] = 'taxonomy-' . $term->taxonomy . '-' . $term->slug . '.php';
+				$templates[] = calendarp_get_template_dir() . 'taxonomy-' . $term->taxonomy . '-' . $term->slug . '.php';
+				$templates[] = 'taxonomy-' . $term->taxonomy . '.php';
+				$templates[] = calendarp_get_template_dir() . 'taxonomy-' . $term->taxonomy . '.php';
+				$templates[] = $file;
+				$templates[] = calendarp_get_template_dir() . $file;
+
+			} elseif ( is_post_type_archive( 'calendar_event' ) || ( $events_page_id && is_page( $events_page_id ) ) ) {
+				$file        = 'archive-event.php';
+				$templates[] = $file;
+				$templates[] = calendarp_get_template_dir() . $file;
+			}
 		}
-
 		if ( $file ) {
 			$template = locate_template( array_unique( $templates ) );
 			if ( ! $template ) {

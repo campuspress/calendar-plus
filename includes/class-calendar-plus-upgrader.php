@@ -59,6 +59,9 @@ class Calendar_Plus_Upgrader {
 		if ( version_compare( $current_version, '2.0-alpha-4', '<' ) ) {
 			self::upgrade_2_0_alpha_4();
 		}
+		if( version_compare( $current_version, '2.2.6.8', '<' ) ) {
+			self::upgrade_2_2_6_8();
+		}
 
 		update_option( 'calendar-plus-version', calendarp_get_version() );
 	}
@@ -69,15 +72,15 @@ class Calendar_Plus_Upgrader {
 
 		$recurrent_events = get_posts(
 			array(
-				'post_status'    => array( 'any', 'trash' ),
-				'post_type'      => 'calendar_event',
-				'posts_per_page' => -1,
-				'fields'         => 'ids',
-				'meta_query'     => array(
+                'post_status'    => array( 'any', 'trash' ),
+                'post_type'      => 'calendar_event',
+                'posts_per_page' => -1,
+                'fields'         => 'ids',
+                'meta_query'     => array(
 					array(
-						'key'     => '_recurrence',
-						'value'   => 'recurrent',
-						'compare' => '=',
+                        'key'     => '_recurrence',
+                        'value'   => 'recurrent',
+                        'compare' => '=',
 					),
 				),
 			)
@@ -102,10 +105,10 @@ class Calendar_Plus_Upgrader {
 		// Fill the min/max dates table
 		$events_ids = get_posts(
 			array(
-				'post_status'    => array( 'any' ),
-				'post_type'      => 'calendar_event',
-				'posts_per_page' => -1,
-				'fields'         => 'ids',
+                'post_status'    => array( 'any' ),
+                'post_type'      => 'calendar_event',
+                'posts_per_page' => -1,
+                'fields'         => 'ids',
 			)
 		);
 
@@ -117,5 +120,12 @@ class Calendar_Plus_Upgrader {
 	private static function upgrade_2_0_alpha_4() {
 		$model = Calendar_Plus_Model::get_instance();
 		$model->create_calendar_table();
+	}
+
+	private static function upgrade_2_2_6_8() {
+		calendarp_update_settings( array(
+			'single_event_template_source' => 'calendar_plus',
+			'event_archive_template_source' => 'calendar_plus',
+		) );
 	}
 }
