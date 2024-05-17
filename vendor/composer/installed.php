@@ -1,9 +1,9 @@
 <?php return array(
     'root' => array(
         'name' => 'campuspress/calendar-plus',
-        'pretty_version' => 'dev-master',
-        'version' => 'dev-master',
-        'reference' => '018c54f3d3179aa032f3a3106f13f83e5ab2e183',
+        'pretty_version' => '1.0.0+no-version-set',
+        'version' => '1.0.0.0',
+        'reference' => NULL,
         'type' => 'wordpress-plugin',
         'install_path' => __DIR__ . '/../../',
         'aliases' => array(),
@@ -11,9 +11,9 @@
     ),
     'versions' => array(
         'campuspress/calendar-plus' => array(
-            'pretty_version' => 'dev-master',
-            'version' => 'dev-master',
-            'reference' => '018c54f3d3179aa032f3a3106f13f83e5ab2e183',
+            'pretty_version' => '1.0.0+no-version-set',
+            'version' => '1.0.0.0',
+            'reference' => NULL,
             'type' => 'wordpress-plugin',
             'install_path' => __DIR__ . '/../../',
             'aliases' => array(),
@@ -29,9 +29,9 @@
             'dev_requirement' => false,
         ),
         'johngrogg/ics-parser' => array(
-            'pretty_version' => 'v3.2.1',
-            'version' => '3.2.1.0',
-            'reference' => 'a3a291c51c378cc4a7f3aec6cd2478bdbd110575',
+            'pretty_version' => 'v3.4.0',
+            'version' => '3.4.0.0',
+            'reference' => 'de0c3a426bd5b7d6aae2d9f7367410672e633108',
             'type' => 'library',
             'install_path' => __DIR__ . '/../johngrogg/ics-parser',
             'aliases' => array(),

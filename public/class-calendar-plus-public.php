@@ -64,11 +64,13 @@ class Calendar_Plus_Public {
 
 		$this->load_dependencies();
 
-		$this->template_loader = new Calendar_Plus_Template_Loader();
-
 		add_action( 'wp_enqueue_scripts', array( $this, 'enqueue_scripts' ), 100 );
 
 		do_action( 'calendarp_public_loaded' );
+
+		if( ! wp_is_block_theme() ) {
+			$this->template_loader = new Calendar_Plus_Template_Loader();
+		}
 	}
 
 	private function load_dependencies() {

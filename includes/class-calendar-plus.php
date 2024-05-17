@@ -206,6 +206,10 @@ class Calendar_Plus {
 		$this->shortcodes['calendar-old'] = new Calendar_Plus_Calendar_Shortcode_Old();
 		$this->shortcodes['events-by-cat'] = new Calendar_Plus_Events_By_Category_Shortcode();
 		$this->shortcodes['single-event'] = new Calendar_Plus_Event_Shortcode();
+		$this->shortcodes['date'] = new Calendar_Plus_Date_Shortcode();
+		$this->shortcodes['location'] = new Calendar_Plus_Location_Shortcode();
+
+		new Calendar_Plus_Blocks();
 
 		// Google Calendar
 		//      $this->google_calendar = new Calendar_Plus_Google_Calendar();
