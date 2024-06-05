@@ -35,11 +35,11 @@ class Calendar_Plus_Query {
 				$query->is_archive = true;
 
 			}
-
-			if ( ! $query->is_main_query() ) {
-				$query->set( 'order', 'ASC' );
-			}
 		}
+
+		if ( ! $query->get( 'order' ) ) {
+			$query->set( 'order', 'ASC' );
+		}		
 
 		$this->parse_query( $query );
 
@@ -82,6 +82,8 @@ class Calendar_Plus_Query {
 			return;
 		}
 
+		remove_filter( 'posts_fields', array( $this, 'fields' ) );
+
 		$fields .= ', cal.from_date, cal.until_date, cal.from_time, cal.until_time';
 		return $fields;
 	}
@@ -93,6 +95,8 @@ class Calendar_Plus_Query {
 			return;
 		}
 
+		remove_filter( 'posts_clauses', array( $this, 'clauses' ) );
+
 		$clauses['join'] .= " RIGHT JOIN $wpdb->calendarp_calendar cal ON $wpdb->posts.ID = cal.event_id ";
 		$clauses['groupby'] = ' cal.event_id';
 
@@ -100,16 +104,31 @@ class Calendar_Plus_Query {
 		$from = explode( '-', $query->get( 'from' ) );
 		$from_is_date = is_array( $from ) && count( $from ) === 3 && checkdate( $from[1], $from[2], $from[0] );
 
-		$to = false;
+		// Makes ordering based on event date
+		if (
+			( $order = $query->get('order') ) &&
+			'desc' === strtolower( $order )
+		) {
+			$clauses['orderby'] = 'cal.from_date DESC';
+
+			// For DESC order if no to date is set, set to today.
+			if ( ! $query->get( 'to' ) ) {
+				$to = date( 'Y-m-d', strtotime("yesterday") );
+				$to = explode( '-', $to );
+			}
+		} else {
+			$clauses['orderby'] = 'cal.from_date ASC';
+		}
+		
 		if ( $query->get( 'to' ) ) {
 			if ( 'today' === $query->get( 'to' ) ) {
-				$to = date( 'Y-m-d', current_time( 'timestamp' ) );
+				$to = date( 'Y-m-d', strtotime("yesterday") );
 				$to = explode( '-', $to );
 			} else {
 				$to = explode( '-', $query->get( 'to' ) );
 			}
 		}
-		$to_is_date = is_array( $to ) && count( $to ) === 3 && checkdate( $to[1], $to[2], $to[0] );
+		$to_is_date = !empty( $to ) && is_array( $to ) && count( $to ) === 3 && checkdate( $to[1], $to[2], $to[0] );
 
 		$where_not = array();
 		if ( $from_is_date ) {
@@ -121,25 +140,17 @@ class Calendar_Plus_Query {
 		}
 
 		if ( ! $from_is_date && ! $to_is_date ) {
-			$date = date( 'Y-m-d', current_time( 'timestamp' ) );
+			$date = date( 'Y-m-d', strtotime("yesterday") );
 			$where_not[] = $wpdb->prepare( 'cal.until_date < %s', $date );
 		}
 
 		$where_not = implode( ' OR ', $where_not );
 		$clauses['where'] .= " AND NOT ( $where_not )";
 
-		if (
-			( $order = $query->get('order') ) &&
-			'desc' === strtolower( $order )
-		) {
-			$clauses['orderby'] = 'cal.from_date DESC';
-		} else {
-			$clauses['orderby'] = 'cal.from_date ASC';
-		}
-
 		return $clauses;
 	}
 
+	/*
 	public function remove_clauses_query( $posts ) {
 		if ( has_filter( 'posts_clauses', array( $this, 'clauses' ) ) ) {
 			remove_filter( 'posts_clauses', array( $this, 'clauses' ) );
@@ -150,6 +161,7 @@ class Calendar_Plus_Query {
 
 		return $posts;
 	}
+	*/
 
 	public function parse_query( $query ) {
 		foreach ( $this->query_vars as $key ) {
