@@ -18,10 +18,11 @@ class Calendar_Plus_Query {
 	 * @param WP_Query $query
 	 */
 	public function pre_get_posts( $query ) {
-		if( $query->get( 'post_type' ) != 'calendar_event' || $query->is_single() ) {
+
+		if( $query->get( 'post_type' ) != 'calendar_event' || !empty( $query->get( 'post__in' ) ) || $query->is_single() ) {
 			return;
 		}
-
+		
 		if( ! wp_is_block_theme() ) {
 			$events_page_id = absint( calendarp_get_setting( 'events_page_id' ) );
 			if ( isset( $query->queried_object_id ) && $query->queried_object_id === $events_page_id ) {
@@ -78,10 +79,6 @@ class Calendar_Plus_Query {
 	}
 
 	public function fields( $fields, $query ) {
-		if( $query->get( 'post_type' ) != 'calendar_event' || $query->is_single() ) {
-			return;
-		}
-
 		remove_filter( 'posts_fields', array( $this, 'fields' ) );
 
 		$fields .= ', cal.from_date, cal.until_date, cal.from_time, cal.until_time';
@@ -90,10 +87,6 @@ class Calendar_Plus_Query {
 
 	public function clauses( $clauses, $query ) {
 		global $wpdb;
-
-		if( $query->get( 'post_type' ) != 'calendar_event' || $query->is_single() ) {
-			return;
-		}
 
 		remove_filter( 'posts_clauses', array( $this, 'clauses' ) );
 
