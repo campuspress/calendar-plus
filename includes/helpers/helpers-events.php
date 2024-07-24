@@ -686,3 +686,202 @@ function calendarp_get_event_type_term_id( $type ) {
 
 	return isset( $term_ids[ $type ] ) ? $term_ids[ $type ] : false;
 }
+
+
+/**
+ * @param int $event_id
+ * 
+ * @return array {
+ *   @param int $dates
+ *   @param int $timestamp
+ *   @param string $month
+ *   @param string $month_full
+ *   @param string $day
+ *   @param string $until_day
+ *   @param string $year
+ *   @param string $time
+ *   @param string $time_from
+ * }
+ */
+function calendarp_get_event_date_data( $event_id ) {
+	$result = array(
+		'dates' => 0,
+	);
+	$event  = calendarp_get_event( $event_id );
+	if ( ! $event ) {
+		return $result;
+	}
+
+  	$calendar = $event->get_dates_list();
+	if ( empty( $calendar ) ) {
+		return $result;
+	}
+
+	$result['dates'] = count( $calendar );
+
+	if ( 1 === count( $calendar ) ) {
+		$timestamp       = strtotime( $calendar[0]['from_date'] );
+		$until_timestamp = strtotime( $calendar[0]['until_date'] );
+
+		$result['timestamp'] = $timestamp;
+		if ( ! empty( $timestamp ) ) {
+			$result['month']      = date( 'M', $timestamp );
+			$result['month_full'] = date( 'F', $timestamp );
+			$result['day']        = date( 'd', $timestamp );
+			$result['until_day']  = date( 'd', $until_timestamp );
+			$result['year']       = date( 'Y', $timestamp );
+
+			if ( ! $event->is_all_day_event() ) {
+				$from           = calendarp_get_formatted_time( $calendar[0]['from_time'] );
+				$to             = calendarp_get_formatted_time( $calendar[0]['until_time'] );
+				$result['time'] = $from === $to
+					? $from
+					: sprintf( '%s - %s', $from, $to );
+				$result['time_from'] = $from;
+			}
+		}
+
+		return $result;
+	}
+
+	$from = strtotime( $calendar[0]['from_date'] );
+	$to   = strtotime( end( $calendar )['until_date'] );
+
+	$result['from'] = $from;
+	$result['to']   = $to;
+
+	if ( ! empty( $from ) && ! empty( $to ) ) {
+		$result['datespan'] = sprintf(
+			__( '%1$s to %2$s', 'calendar-plus' ),
+			( date( 'M', $from ) . ' ' . date( 'd', $from ) ),
+			( date( 'M', $to ) . ' ' . date( 'd', $to ) )
+		);
+	}
+
+	if ( ! $event->is_all_day_event() ) {
+		$times = array_unique( wp_list_pluck( $calendar, 'from_time' ) );
+		if ( 1 === count( $times ) ) {
+			$result['time'] = calendarp_get_formatted_time( $times[0] );
+		}
+	}
+
+	return $result;
+}
+
+/**
+ * @param int $event_id
+ * @param string $format - Date format
+ *
+ * @return string
+ */
+function calendarp_get_event_day( $event_id, $format = 'd' ) {
+	$date      = calendarp_get_event_date_data( $event_id );
+	$day_month = '';
+
+	if (
+		! empty( $date ) &&
+		is_array( $date )
+	) {
+		if ( $date['to'] !== $date['from'] ) {
+
+			//Get event type
+			$event      = calendarp_get_event( $event_id );
+			$event_type = $event->get_event_type();
+
+			//if multi-day, output today's date
+			if (
+				'recurrent' === $event_type ||
+				'datespan' === $event_type
+			) {
+				$dates    = $event->get_dates_list();
+				$time_now = strtotime("now");
+
+				foreach ( $dates as $date ) {
+					$from_time  = $date['from_time'] ? $date['from_time'] : '00:00';
+					$until_time = $date['until_time'] ? $date['until_time'] : '23:55';
+					$until_time = ( '00:00' === $until_time ) ? '23:55' : $until_time;
+					
+					if (
+						$time_now <= strtotime( $date['from_date'] . ' ' . $from_time ) ||
+						date( 'd', $time_now ) === date( 'd', strtotime( $date['from_date'] ) ) &&
+						$time_now <= strtotime( $date['until_date'] . ' ' . $until_time )
+					) {
+						$day_month = date( $format, strtotime( $date['from_date'] ) );
+						break;
+					}
+				}
+
+				if ( empty( $day_month ) ) {
+
+					if ( ! empty( $dates ) ) {
+						if ( $time_now >= strtotime( $dates[0]['until_date'] ) ) {
+							$day_month = date(
+								$format,
+								strtotime( $dates[ count( $dates ) - 1 ]['until_date'] )
+							);
+						} else {
+							$day_month = date( $format, $time_now );
+						}
+					} else {
+						$day_month = date( $format, $time_now );
+					}
+				}
+
+			} else {
+				$day_month = date( $format, strtotime( 'now' ) );
+			}
+
+		} else {
+			$day_month = date( $format, $date['from'] );
+		}
+	}
+
+	return $day_month;
+}
+
+
+/**
+ * Get event time
+ *
+ * @param int $event_id - Event id
+ *
+ * @return string
+ */
+function calendarp_get_event_time( $event_id ) {
+	$event = calendarp_get_event( $event_id );
+
+	if ( ! $event ) {
+		return;
+	}
+
+	$calendar   = $event->get_dates_list();
+	$from_time  = calendarp_get_formatted_time( $calendar[0]['from_time'] );
+	$until_time = calendarp_get_formatted_time( $calendar[0]['until_time'] );
+
+	if ( ! empty( $from_time ) || ! empty( $until_time ) ) {
+		return _calendarp_join_event_time( $from_time, $until_time );
+	}
+
+	return $from_time;
+}
+
+/**
+ * Joins event time and appends period based on the time diff
+ *
+ * @param string $start_time
+ * @param string $end_time
+ *
+ * @return string Time interval
+ */
+function _calendarp_join_event_time( $start_time, $end_time ) {
+	$start_time_f = new DateTime( $start_time );
+	$end_time_f   = new DateTime( $end_time );
+	$interval     = $start_time_f->diff( $end_time_f );
+	$diff         = $interval->format( '%H' );
+
+	if ( 12 > $diff ) {
+		return $start_time_f->format( 'g:i' ) . ' - ' . $end_time_f->format( 'g:i a' );
+	} else {
+		return $start_time . ' - ' . $end_time;
+	}
+}
