@@ -56,8 +56,8 @@ class Calendar_Plus_REST_API {
 		);
 
 		foreach ( $controllers as $controller ) {
-			$this->$controller = new $controller();
-			$this->$controller->register_routes();
+			$controller_instance = new $controller();
+			$controller_instance->register_routes();
 		}
 	}
 }
