@@ -1,9 +1,14 @@
 'use strict';
 
+import { fileURLToPath } from 'url';
+import { dirname } from 'path';
 import path from 'path';
 import merge from 'webpack-merge';
-import ExtractTextPlugin from 'extract-text-webpack-plugin';
+import MiniCssExtractPlugin from 'mini-css-extract-plugin';
+import autoprefixer from 'autoprefixer';
 
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 const plugin_path = path.join(__dirname, '..');
 const src_path = path.join(plugin_path, '_src');
 const calendar_path = path.join(src_path, 'calendar');
@@ -11,14 +16,16 @@ const calendar_path = path.join(src_path, 'calendar');
 // Webpack just understands JS, not CSS or Sass.
 // This section, generates a file called foundation.js that contains all CSS styles in a variable
 // But then ExtractTextPlugin will move it to a CSS file
-const extractSass = new ExtractTextPlugin({
+const extractSass = new MiniCssExtractPlugin({
 	filename: getPath => getPath('[name].css').replace('css/js', 'css')
 });
 
 const postcss_options = {
-	plugins: [
-		require('autoprefixer')()
-	]
+	postcssOptions: {
+		plugins: [
+			'autoprefixer'
+		]
+	}
 };
 
 const configs = [
@@ -108,35 +115,32 @@ const configs = [
 			rules: [{
 				test: /\.scss$/,
 				// Extract CSS from foundation.js and move it to a css file
-				use: extractSass.extract({
-					// Last item is first processed
-					use: [
-						// 3. translates CSS into CommonJS
-						{
-							loader: 'css-loader',
-							options: {sourceMap: true}
-						},
-						// 2. runs post-compilation transformations
-						{
-							loader: 'postcss-loader',
-							options: postcss_options,
-						},
-						// 1. compiles Sass to CSS
-						{
-							loader: 'sass-loader',
-							options: {sourceMap: true}
-						},
-					],
-					fallback: 'style-loader'
-				})
+				use: [
+					// 3. translates CSS into CommonJS
+					{
+						loader: 'css-loader',
+						options: {sourceMap: true}
+					},
+					// 2. runs post-compilation transformations
+					{
+						loader: 'postcss-loader',
+						options: postcss_options,
+					},
+					// 1. compiles Sass to CSS
+					{
+						loader: 'sass-loader',
+						options: {sourceMap: true}
+					},
+				]
 			}]
 		},
 		plugins: [extractSass]
 	}
 ];
 
-module.exports = (production) => {
+export default function (production) {
 	return configs.map(c => merge(c, {
-		devtool: production ? 'source-map' : 'eval-source-map'
+		devtool: production ? 'source-map' : 'eval-source-map',
+		mode: production ? 'production' : 'development'
 	}));
 };

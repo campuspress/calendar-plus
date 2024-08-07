@@ -9,7 +9,7 @@ import fs from 'fs';
 import phpcs from 'gulp-phpcs';
 import makepot from 'gulp-wp-pot'
 
-const pkg = require('./package.json');
+import pkg from "./package.json" with {type: "json"};
 
 const php_src = ['*.php', 'admin/**/*.php', 'includes/**/*.php', 'public/**/*.php', 'eb-mods/*.php'];
 

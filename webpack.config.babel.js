@@ -1,11 +1,10 @@
 'use strict';
 
 import merge from 'webpack-merge';
-import calendar_plus from './build/webpack.calendar-plus';
-import SystemBellPlugin from 'system-bell-webpack-plugin';
-import FriendlyErrorsWebpackPlugin from 'friendly-errors-webpack-plugin';
+import calendar_plus from './build/webpack.calendar-plus.js';
+import FriendlyErrorsWebpackPlugin from '@nuxt/friendly-errors-webpack-plugin';
 
-module.exports = (env) => {
+export default function (env) {
 
 	const defaults = {
 		include: [],
@@ -27,7 +26,6 @@ module.exports = (env) => {
 
 	const common_config = {
 		plugins: [
-			new SystemBellPlugin(), // Makes a beep when an error is found
 			new FriendlyErrorsWebpackPlugin() // Better errors display
 		]
 	};
