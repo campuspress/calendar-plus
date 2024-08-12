@@ -4,12 +4,10 @@ import merge from 'webpack-merge';
 import calendar_plus from './build/webpack.calendar-plus.js';
 import FriendlyErrorsWebpackPlugin from '@nuxt/friendly-errors-webpack-plugin';
 
-module.exports = function(env) {
+module.exports = function(env, argv) {
 
 	const defaults = {
-		include: [],
-		production: false,
-		mode: 'production'
+		include: []
 	};
 
 	env = Object.assign({}, defaults, env);
@@ -18,7 +16,8 @@ module.exports = function(env) {
 		env.include = env.include.split(',');
 	}
 
-	let config = calendar_plus(env.production);
+	const mode = argv.mode ?? 'production';
+	let config = calendar_plus(mode);
 
 	if (env.include.length > 0) {
 		config.filter((c) => env.include.includes(c.name));

@@ -51,12 +51,12 @@
     },
     "scripts": {
         "postinstall_disabled": "npm run build && npm run gulp",
-        "watch": "webpack --watch --config ./webpack.config.babel.js --env development",
+        "watch": "webpack --watch --config ./webpack.config.babel.js --mode development",
         "watch:production": "webpack --watch --config ./webpack.config.babel.js",
         "watch:admin": "webpack --watch --config ./webpack.config.babel.js --env include='admin'",
         "watch:front": "webpack --watch --config ./webpack.config.babel.js --env include='front'",
         "watch:public": "webpack --watch --config ./webpack.config.babel.js --env include='public'",
-        "build": "webpack -p --env production --config ./webpack.config.babel.js",
+        "build": "webpack --mode production --config ./webpack.config.babel.js",
         "gulp": "gulp"
     },
     "babel": {
