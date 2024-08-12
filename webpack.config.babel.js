@@ -4,7 +4,7 @@ import merge from 'webpack-merge';
 import calendar_plus from './build/webpack.calendar-plus.js';
 import FriendlyErrorsWebpackPlugin from '@nuxt/friendly-errors-webpack-plugin';
 
-export default function (env) {
+module.exports = function(env) {
 
 	const defaults = {
 		include: [],

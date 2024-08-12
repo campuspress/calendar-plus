@@ -1,14 +1,9 @@
 'use strict';
 
-import { fileURLToPath } from 'url';
-import { dirname } from 'path';
-import path from 'path';
-import merge from 'webpack-merge';
-import MiniCssExtractPlugin from 'mini-css-extract-plugin';
-import autoprefixer from 'autoprefixer';
+const path = require('path');
+const merge = require('webpack-merge');
+const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
 const plugin_path = path.join(__dirname, '..');
 const src_path = path.join(plugin_path, '_src');
 const calendar_path = path.join(src_path, 'calendar');
@@ -94,7 +89,9 @@ const configs = [
 						},
 						{
 							loader: 'sass-loader', // compiles Sass to CSS
-							options: {includePaths: [calendar_path]}
+							options: {
+								sassOptions: {includePaths: [calendar_path]}
+							}
 						}
 					]
 				}
@@ -138,7 +135,7 @@ const configs = [
 	}
 ];
 
-export default function (production) {
+module.exports = function (production) {
 	return configs.map(c => merge(c, {
 		devtool: production ? 'source-map' : 'eval-source-map',
 		mode: production ? 'production' : 'development'
