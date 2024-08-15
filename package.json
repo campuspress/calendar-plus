@@ -57,7 +57,7 @@
         "watch:front": "webpack --watch --config ./webpack.config.babel.js --env include='front'",
         "watch:public": "webpack --watch --config ./webpack.config.babel.js --env include='public'",
         "build": "webpack --mode production --config ./webpack.config.babel.js",
-        "gulp": "gulp"
+        "gulp": "gulp package"
     },
     "babel": {
         "presets": [
