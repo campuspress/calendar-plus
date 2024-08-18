@@ -6,7 +6,13 @@ module.exports = {
         areas: [
             {
                 paths: {
-                    src: ['./**/*', '!./node_modules/**/*'],
+                    src: [
+                        './**/*',
+                        '!./node_modules/**',
+                        '!./vendor/phpunit/**',
+                        '!./vendor/wp-coding-standards/**',
+                        '!./vendor/dealerdirect/**'
+                    ],
                     dest: './calendar-plus',
                 }
             },
