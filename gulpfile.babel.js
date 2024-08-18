@@ -5,11 +5,7 @@ import clean from 'gulp-clean';
 import fs from 'fs';
 import phpcs from 'gulp-phpcs';
 import makepot from 'gulp-wp-pot';
-import { exec } from 'child_process';
 require('@ilabdev/copy')(gulp);
-
-import util from 'node:util';
-const execPromise = util.promisify(exec);
 
 const pkg = require("./package.json");
 
@@ -46,45 +42,13 @@ gulp.task('clean', 	() => {
 				.pipe(clean());
  });
 
- gulp.task('clean-composer', () => {
-	return gulp.src(['vendor'], {read: false, allowEmpty: true})
-				.pipe(clean());
- });
-
-function composer(cb, mode) {
-	let cmdText = 'composer install -q';
-	if (mode) {
-		cmdText += ' --' + mode;
-	}
-	if (cb) {
-		const cmd = exec(cmdText, {}, cb);
-		cmd.on('exit', cb);
-	} else {
-		exec(cmdText);
-	}
- }
-
-
- gulp.task('composer', (cb) => {
-	composer(cb, 'no-dev');
- });
-
- gulp.task('composer-dev', (cb) => {
-	composer(cb, 'dev');
- });
-
-gulp.task('composer-install', gulp.series('clean-composer', 'composer'));
-gulp.task('composer-install-dev', gulp.series('composer-dev'));
-
 gulp.task('package', gulp.series(
 	'default',
 	// remove files from last run
 	"clean",
-	"composer-install",
 	// copy files into a new directory
 	"copy",
 	(done) => {
-		composer(null, 'dev');
 		// rename the distribution directory to its proper name
 		fs.rename(pkg.name, 'dist', err => {
 			if (err) throw err;
