@@ -44,21 +44,6 @@ class Calendar_Plus_Query {
 
 		$this->parse_query( $query );
 
-		if ( ! empty( $query->get( 'cat' ) ) && $term = get_term( $query->get( 'cat' ), 'calendar_event_category' ) ) {
-			// Redirect to taxonomy archive
-			$vars = array( 'from', 'to', 's', 'location', 'post_type', 'calendarp_searchw', 'order' );
-			$redirect_to = get_term_link( $term->term_id, 'calendar_event_category' );
-			foreach ( $vars as $var ) {
-				$value = get_query_var( $var );
-				if ( ! empty( $value ) ) {
-					$redirect_to = add_query_arg( $var, $value, $redirect_to );
-                }
-			}
-
-			wp_redirect( esc_url_raw( $redirect_to ) );
-			die();
-		}
-
 		// Meta query
 		$meta_query = is_array( $query->get( 'meta_query' ) ) ? $query->get( 'meta_query' ) : array();
 
