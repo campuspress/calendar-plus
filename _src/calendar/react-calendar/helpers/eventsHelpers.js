@@ -19,7 +19,7 @@ export const loadEvents = (year, month, filter) => {
 	getParams = {
 		credentials: 'same-origin',
 		//headers: headers
-		...(1 === calendarPlusi18n.includeRestNonce ? headers : {})
+		...('1' === calendarPlusi18n.includeRestNonce ? { headers } : {})
 	};
 
 	let url = calendarPlusi18n.baseurl + '/events?';
