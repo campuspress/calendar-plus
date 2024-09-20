@@ -14,12 +14,13 @@ import 'whatwg-fetch';
  */
 export const loadEvents = (year, month, filter) => {
 	let headers = {
-			'X-WP-Nonce': calendarPlusi18n.apinonce
-		},
-		getParams = {
-			credentials: 'same-origin',
-			//headers: headers
-		};
+		'X-WP-Nonce': calendarPlusi18n.apinonce
+	},
+	getParams = {
+		credentials: 'same-origin',
+		//headers: headers
+		...(1 === calendarPlusi18n.includeRestNonce ? headers : {})
+	};
 
 	let url = calendarPlusi18n.baseurl + '/events?';
 
