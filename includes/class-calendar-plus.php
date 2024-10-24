@@ -211,6 +211,7 @@ class Calendar_Plus {
 
 		new Calendar_Plus_Blocks();
 
+		new Calendar_Plus_Theme_Compat();
 		// Google Calendar
 		//      $this->google_calendar = new Calendar_Plus_Google_Calendar();
 
@@ -258,6 +259,8 @@ class Calendar_Plus {
 		require_once $includes_dir . 'widgets/class-calendar-plus-this-month-events-widget.php';
 		require_once $includes_dir . 'widgets/class-calendar-plus-calendar-widget.php';
 		require_once $includes_dir . 'widgets/class-calendar-plus-events-list-widget.php';
+
+		require_once $includes_dir . 'class-calendar-plus-theme-compat.php';
 	}
 
 	public function init() {

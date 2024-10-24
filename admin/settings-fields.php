@@ -292,6 +292,34 @@ class Calendar_Plus_Settings_Fields {
 
 	}
 
+	function render_single_event_template_source_field( $value ) {
+		?>
+        <select name="<?php echo calendarp_get_settings_slug(); ?>[single_event_template_source]">
+            <option value="calendar_plus_v2" <?php selected( $value, 'calendar_plus' ); ?>>
+				<?php _e( 'Calendar plus theme compat', 'calendar-plus' ); ?>
+            </option>
+            <option value="calendar_plus" <?php selected( $value, 'calendar_plus' ); ?>>
+				<?php _e( 'Calendar plus template', 'calendar-plus' ); ?>
+            </option>
+        </select>
+		<?php
+
+	}
+
+	function render_event_archive_template_source_field( $value ) {
+		?>
+        <select name="<?php echo calendarp_get_settings_slug(); ?>[event_archive_template_source]">
+            <option value="calendar_plus_v2" <?php selected( $value, 'calendar_plus' ); ?>>
+				<?php _e( 'Calendar plus theme compat', 'calendar-plus' ); ?>
+            </option>
+            <option value="calendar_plus" <?php selected( $value, 'calendar_plus' ); ?>>
+				<?php _e( 'Calendar plus template', 'calendar-plus' ); ?>
+            </option>
+        </select>
+		<?php
+
+	}
+
 	function render_export_fields_field() {
 
 		$fields = array(
