@@ -429,7 +429,7 @@ function calendarp_get_events_since( $from, $args = array() ) {
 /**
  * Get events in a date range
  *
- * @param int      $from            Unix Timestamp
+ * @param int|bool $from            Unix Timestamp. Default false
  * @param int|bool $to              Unix Timestamp. Default false
  * @param array    $args            List of arguments {
  *
@@ -441,7 +441,7 @@ function calendarp_get_events_since( $from, $args = array() ) {
  *
  * @return array
  */
-function calendarp_get_events_in_date_range( $from, $to = false, $args = array() ) {
+function calendarp_get_events_in_date_range( $from = false, $to = false, $args = array() ) {
 	global $wpdb;
 
 	$args = wp_parse_args( $args, array(
@@ -456,12 +456,13 @@ function calendarp_get_events_in_date_range( $from, $to = false, $args = array()
 		'order'           => 'ASC',
 	) );
 
-	$timespan = new Calendar_Plus_Timespan( $from, $to );
-
 	if ( $from ) {
-		$from_date = $timespan->get_from_date();
+		$from_date = date( 'Y-m-d', $from );
 	}
-	$to_date = $timespan->get_to_date();
+
+	if ( $to ) {
+		$to_date = date( 'Y-m-d', $to );
+	}
 
 	$select = "SELECT DISTINCT cal.* FROM $wpdb->calendarp_calendar cal";
 
@@ -506,7 +507,7 @@ function calendarp_get_events_in_date_range( $from, $to = false, $args = array()
 		$where_not[] = $wpdb->prepare( 'cal.until_date < %s', $from_date );
 	}
 
-	if ( $to ) {
+	if ( isset( $to_date ) ) {
 		$where_not[] = $wpdb->prepare( 'cal.from_date > %s', $to_date );
 	}
 

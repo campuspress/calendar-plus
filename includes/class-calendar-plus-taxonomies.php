@@ -19,6 +19,12 @@ class Calendar_Plus_Taxonomies {
 	 */
 	public function register_event_post_type() {
 		$events_page_id = calendarp_get_setting( 'events_page_id' );
+		$event_page     = get_post( $events_page_id );
+		if ( $event_page ) {
+			$path = get_page_uri( $events_page_id );
+		} else {
+			$path = false;
+		}
 
 		$labels = array(
 			'name'               => __( 'Events', 'calendar-plus' ),
@@ -47,12 +53,13 @@ class Calendar_Plus_Taxonomies {
 			'show_in_nav_menus'   => true,
 			'publicly_queryable'  => true,
 			'exclude_from_search' => false,
-			'has_archive'         => get_post( $events_page_id ) ? get_page_uri( $events_page_id ) : false,
+			'has_archive'         => $path,
 			'query_var'           => false,
 			'can_export'          => true,
 			'map_meta_cap'        => true,
 			'show_in_rest'        => true,
 			'capability_type'     => 'calendar_event',
+			'show_in_rest'        => true,
 			'supports'            => array(
 				'title',
 				'editor',
@@ -60,6 +67,10 @@ class Calendar_Plus_Taxonomies {
 				'excerpt',
 			),
 		);
+
+		if( wp_is_block_theme() ) {
+			$args['rewrite'] = array( 'slug' => $path );
+		}
 
 		register_post_type( 'calendar_event', $args );
 	}
@@ -96,7 +107,7 @@ class Calendar_Plus_Taxonomies {
 			'show_ui'           => true,
 			'query_var'         => true,
 			'map_meta_cap'      => true,
-			'show_in_rest'     => true,
+			'show_in_rest'      => true,
 			'rewrite'           => array( 'slug' => apply_filters( 'calendarp_event_category_slug', 'event-category' ) ),
 			'capabilities'      => array(
 				'manage_terms' => 'manage_calendar_event_terms',
@@ -107,7 +118,6 @@ class Calendar_Plus_Taxonomies {
 		);
 
 		register_taxonomy( 'calendar_event_category', array( 'calendar_event' ), $args );
-
 	}
 
 	/**
@@ -142,7 +152,7 @@ class Calendar_Plus_Taxonomies {
 			'show_ui'           => true,
 			'query_var'         => true,
 			'map_meta_cap'      => true,
-			'show_in_rest'     => true,
+			'show_in_rest'      => true,
 			'rewrite'           => array( 'slug' => apply_filters( 'calendarp_event_tag_slug', 'event-tag' ) ),
 			'capabilities'      => array(
 				'manage_terms' => 'manage_calendar_event_terms',
@@ -153,7 +163,6 @@ class Calendar_Plus_Taxonomies {
 		);
 
 		register_taxonomy( 'calendar_event_tag', array( 'calendar_event' ), $args );
-
 	}
 
 	/**

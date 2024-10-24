@@ -156,17 +156,17 @@
         },
         {
             "name": "johngrogg/ics-parser",
-            "version": "v3.2.1",
-            "version_normalized": "3.2.1.0",
+            "version": "v3.4.0",
+            "version_normalized": "3.4.0.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/u01jmg3/ics-parser.git",
-                "reference": "a3a291c51c378cc4a7f3aec6cd2478bdbd110575"
+                "reference": "de0c3a426bd5b7d6aae2d9f7367410672e633108"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/u01jmg3/ics-parser/zipball/a3a291c51c378cc4a7f3aec6cd2478bdbd110575",
-                "reference": "a3a291c51c378cc4a7f3aec6cd2478bdbd110575",
+                "url": "https://api.github.com/repos/u01jmg3/ics-parser/zipball/de0c3a426bd5b7d6aae2d9f7367410672e633108",
+                "reference": "de0c3a426bd5b7d6aae2d9f7367410672e633108",
                 "shasum": ""
             },
             "require": {
@@ -176,7 +176,7 @@
             "require-dev": {
                 "phpunit/phpunit": "^5|^9|^10"
             },
-            "time": "2023-02-23T16:50:46+00:00",
+            "time": "2024-03-08T16:01:26+00:00",
             "type": "library",
             "installation-source": "dist",
             "autoload": {
@@ -211,7 +211,7 @@
             ],
             "support": {
                 "issues": "https://github.com/u01jmg3/ics-parser/issues",
-                "source": "https://github.com/u01jmg3/ics-parser/tree/v3.2.1"
+                "source": "https://github.com/u01jmg3/ics-parser/tree/v3.4.0"
             },
             "funding": [
                 {

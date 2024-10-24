@@ -170,6 +170,7 @@ class Calendar_Plus_Calendar_Shortcode {
 			'baseurl'          => get_rest_url( null, '/calendar-plus/v1' ),
 			'apinonce'         => wp_create_nonce( 'wp_rest' ),
 			'dowStart'         => get_option( 'start_of_week' ),
+			'includeRestNonce' => is_user_logged_in(),
 		);
 
 		$lang = apply_filters( 'calendarp_calendar_language', false );

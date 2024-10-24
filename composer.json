@@ -23,5 +23,10 @@
     "autoload": {
         "classmap": ["admin", "includes", "modules", "public"],
         "exclude-from-classmap": ["/includes/plugin-update-checker/"]
+    },
+    "config": {
+        "allow-plugins": {
+            "composer/installers": true
+        }
     }
 }

@@ -3,7 +3,9 @@
 class Calendar_Plus_Template_Loader {
 
 	public function __construct() {
-		add_action( 'template_include', array( $this, 'load_template' ) );
+		if( ! wp_is_block_theme() ) {
+			add_action( 'template_include', array( $this, 'load_template' ) );
+		}
 	}
 
 	public function load_template( $template ) {

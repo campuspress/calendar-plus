@@ -2,6 +2,8 @@
 
 class Calendar_Plus_Admin_Calendar_Page {
 
+	public $slug;
+
 	public function __construct( $plugin_name ) {
 		$this->slug = $plugin_name . '-calendar';
 		add_action( 'admin_menu', array( $this, 'add_menu' ) );
