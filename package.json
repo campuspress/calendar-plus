@@ -13,6 +13,7 @@
         "react-big-calendar": "^0.20.3",
         "react-dom": "^16.8.2",
         "react-scroll": "^1.7.11",
+        "styled-components": "^6.1.13",
         "urijs": "^1.19.1",
         "whatwg-fetch": "^3.0.0"
     },
@@ -21,6 +22,7 @@
         "@babel/preset-env": "^7.3.1",
         "@babel/preset-react": "^7.0.0",
         "@babel/register": "^7.0.0",
+        "@ilabdev/copy": "^1.0.0",
         "@nuxt/friendly-errors-webpack-plugin": "^2.6.0",
         "@webpack-cli/generators": "^3.0.7",
         "autoprefixer": "^10.4.19",
@@ -46,8 +48,7 @@
         "webpack-cli": "^5.1.4",
         "webpack-dev-server": "^5.0.4",
         "webpack-merge": "^4.2.1",
-        "what-input": "^5.1.3",
-        "@ilabdev/copy": "^1.0.0"
+        "what-input": "^5.1.3"
     },
     "scripts": {
         "postinstall_disabled": "npm run build && npm run gulp",
