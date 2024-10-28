@@ -104,6 +104,15 @@ class Calendar_Plus_Theme_Compat {
 
 	public function __construct() {
 		add_filter( 'template_include', array( $this, 'maybe_replace_content' ), 1 );
+		add_action( 'init', function() {
+			register_block_pattern(
+				'calendar-plus/event-single',
+				array(
+					'title'   => __( 'Calendar Event Pattern', 'calendar-plus' ),
+					'content' => '',
+				)
+			);
+		} );
 	}
 
 	function maybe_replace_content( $template ) {
@@ -118,11 +127,46 @@ class Calendar_Plus_Theme_Compat {
 			if( $source === 'calendar_plus' ) {
 				return $template;
 			}
-			$event = calendarp_get_event( get_the_ID() );
-			$event_post  = $event->post;
-			$event_post->post_content = $shortcodes['single-event']->render_compat( array( 'event_id' => get_the_ID() ) );
+// // Solution i am proposing
+// add_filter( 'the_content', function( $content ) use ( $shortcodes ) {
+// 	static $cplus_rendered = false;
 
-			calendar_plus_reset_post( (array) $event_post );
+// 	// If already run, return the content unchanged
+// 	if ( $cplus_rendered ) {
+// 		return $content;
+// 	}
+
+// 	$cplus_rendered = true;
+
+// 	return $shortcodes['single-event']->render_compat( array( 'event_id' => get_the_ID() ) );
+// }, 1, 1 );
+			if ( wp_is_block_theme() ) {
+				add_filter( 'render_block', function( $block_content, $block ) use ( $shortcodes ) {
+					if ( is_singular( 'calendar_event' ) && $block['blockName'] === 'core/post-content' ) {
+						// Get the block patterns registry.
+						$patterns_registry = \WP_Block_Patterns_Registry::get_instance();
+						
+						// Retrieve the block pattern by its name.
+						$block_pattern = $patterns_registry->get_registered( 'calendar-plus/event-single' );
+		
+						// If the block pattern exists, replace the content.
+						if ( $block_pattern ) {
+							$new_content = $shortcodes['single-event']->render_compat( array( 'event_id' => get_the_ID() ) ); // Get the content from the block pattern.
+				
+							// Wrap it inside the post-content wrapper to preserve structure.
+							return '<div class="entry-content wp-block-post-content calendar-event-content">' . $new_content . '</div>';
+						}
+					}
+				
+					return $block_content;
+				}, 10, 2 );
+			} else {
+				$event = calendarp_get_event( get_the_ID() );
+				$event_post  = $event->post;
+				$event_post->post_content = $shortcodes['single-event']->render_compat( array( 'event_id' => get_the_ID() ) );
+	
+				calendar_plus_reset_post( (array) $event_post );
+			}
 
 			// This small hack allows avoiding duplications of meta
 			add_filter( 'cpschool_post_meta_items', function( $meta, $post_id ) {
@@ -178,8 +222,8 @@ class Calendar_Plus_Theme_Compat {
 			}
 		}
 
-		if( is_singular( 'calendar_event' ) || is_archive() ) {
-			return locate_template( array(  'single.php', 'page.php' ) );	
+		if( ! wp_is_block_theme() && ( is_singular( 'calendar_event' ) || is_archive() ) ) {
+			return locate_template( array(  'single.php', 'post.php', 'page.php', 'index.php' ) );	 
 		}
 
 		return $template;

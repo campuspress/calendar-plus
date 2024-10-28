@@ -31,8 +31,9 @@
 				<?php calendarp_event_categories_list( $event->ID ); ?>
 			</div>
 
-			<div class="event-meta-item event-ical">
-				<?php calendarp_event_ical_file_button( $event->ID ); ?>
+			<div class="event-meta-item event-calendars" style="overflow: hidden">
+				<?php _e( 'Add to', 'calendar-plus' ); ?>:
+				<?php calendarp_event_add_to_calendars_links( $event->ID ); ?>
 			</div>
 		</div>
 	</div>
