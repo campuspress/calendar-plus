@@ -3,7 +3,7 @@
         'name' => 'campuspress/calendar-plus',
         'pretty_version' => 'dev-master',
         'version' => 'dev-master',
-        'reference' => '81a2f4e7ed54fcdd4edfca502986a834ec92d534',
+        'reference' => 'ddd86410dacf27760ff6eb53bd5c52d6726b2014',
         'type' => 'wordpress-plugin',
         'install_path' => __DIR__ . '/../../',
         'aliases' => array(),
@@ -13,7 +13,7 @@
         'campuspress/calendar-plus' => array(
             'pretty_version' => 'dev-master',
             'version' => 'dev-master',
-            'reference' => '81a2f4e7ed54fcdd4edfca502986a834ec92d534',
+            'reference' => 'ddd86410dacf27760ff6eb53bd5c52d6726b2014',
             'type' => 'wordpress-plugin',
             'install_path' => __DIR__ . '/../../',
             'aliases' => array(),
