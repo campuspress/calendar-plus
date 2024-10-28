@@ -6,7 +6,6 @@ use PHPUnit\Framework\TestCase;
 class SingleEventsTest extends TestCase
 {
     // phpcs:disable Generic.Arrays.DisallowLongArraySyntax
-    // phpcs:disable PSR1.Methods.CamelCapsMethodName.NotCamelCaps
     // phpcs:disable Squiz.Commenting.FunctionComment
     // phpcs:disable Squiz.Commenting.VariableComment
 
@@ -152,6 +151,9 @@ class SingleEventsTest extends TestCase
             $dtstart,
             $dtend,
             'SUMMARY:test',
+            'DESCRIPTION;LANGUAGE=en-gb:This is a short description\nwith a new line. Some "special" \'s',
+            ' igns\' may be interesting\, too.',
+            '&nbsp; And a non-breaking space.',
             'LAST-MODIFIED:20110429T222101Z',
             'DTSTAMP:20170630T105724Z',
             'SEQUENCE:0',
@@ -471,12 +473,12 @@ class SingleEventsTest extends TestCase
 
         $expectedTimeStamp = strtotime($expectedDateString);
 
-        $this->assertEquals(
+        $this->assertSame(
             $expectedTimeStamp,
             $event->dtstart_array[2],
             $message . 'timestamp mismatch (expected ' . $expectedDateString . ' vs actual ' . $event->dtstart . ')'
         );
-        $this->assertEquals(
+        $this->assertSame(
             $expectedDateString,
             $event->dtstart,
             $message . 'dtstart mismatch (timestamp is okay)'
