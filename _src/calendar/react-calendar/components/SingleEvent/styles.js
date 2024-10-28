@@ -1,6 +1,20 @@
-@import '../../../../public/settings';
+import styled from 'styled-components';
 
-.single_event {
+// @see _utils.scss in foundation-sites
+const remCalc = (size, base = 16) => `${size / base}rem`;
+
+const Backdrop = styled.div`
+  position: absolute;
+  top: 0;
+  background: rgba(0, 0, 0, 0.7);
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 900;
+  padding: 3rem;
+`;
+
+const SingleEventWrapper = styled.div`
   .single_event_inner {
     color:#333 !important;
     position: absolute !important;
@@ -15,14 +29,14 @@
     .close {
       display:inline-block;
       position:absolute;
-      right:rem-calc( 39 );
+      right:${remCalc(39)};
       top:2rem;
       .dashicons {
-        font-size:rem-calc( 36 );
-        color:$dark-gray;
+        font-size:${remCalc(36)};
+        color:#8a8a8a;
         cursor:pointer;
         &:hover {
-          color:$black;
+          color:#0a0a0a;
         }
       }
     }
@@ -36,9 +50,9 @@
     }
 
     h3 {
-      color:$primary-color;
+      color:#1779ba;
       font-weight:bold;
-      padding-right:rem-calc( 15 );
+      padding-right:${remCalc(15)};
     }
 
     @media only screen and (min-width: 49.30769em) {
@@ -46,16 +60,6 @@
       right:3rem;
     }
   }
-}
+`;
 
-
-.backdrop {
-  position: absolute;
-  top: 0;
-  background: rgba( 0,0,0, 0.7);
-  bottom: 0;
-  left: 0;
-  right: 0;
-  z-index:900;
-  padding:3rem;
-}
+export { Backdrop, SingleEventWrapper };

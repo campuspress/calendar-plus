@@ -5,7 +5,7 @@ import formatPHP from '../../helpers/formatPHP';
 import {_e} from '../../helpers/globalHelpers';
 import {getEventUrl} from '../../helpers/eventsHelpers';
 import Scroll from 'react-scroll';
-import styles from './style.scss'
+import { Backdrop, SingleEventWrapper } from './styles';
 
 export default class SingleEvent extends Component {
 	componentDidMount() {
@@ -45,15 +45,15 @@ export default class SingleEvent extends Component {
 		const eventUrl = getEventUrl(this.props.event);
 
 		return <div>
-			<div className={`${styles.backdrop} calendar-plus-single-event-backdrop`} />
-			<div className={`${styles.single_event} calendar-plus-single-event-wrap`}>
-				<div className={`${styles.single_event_inner} calendar-plus-single-event`} id="calendar-plus-single-event">
-					<div className={`${styles.close} calendar-plus-close`}>
-						<span className={`${styles.dashicons} dashicons dashicons-no-alt`} onClick={this.props.onClose} />
+			<Backdrop className={`calendar-plus-single-event-backdrop`} />
+			<SingleEventWrapper className={`calendar-plus-single-event-wrap`}>
+				<div className={`single_event_inner calendar-plus-single-event`} id="calendar-plus-single-event">
+					<div className={`close calendar-plus-close`}>
+						<span className={`dashicons dashicons-no-alt`} onClick={this.props.onClose} />
 						<button onClick={this.props.onClose} className="show-for-sr">{_e('close')}</button>
 					</div>
 					<h3>{this.props.event.title}</h3>
-					<div className={`${styles.event_dates} calendar-plus-single-event-dates`}>
+					<div className={`event_dates calendar-plus-single-event-dates`}>
 						{eventDates}
 					</div>
 					{
@@ -70,7 +70,7 @@ export default class SingleEvent extends Component {
 					</div>
 					<a href={eventUrl}>{_e('readMore')}</a>
 				</div>
-			</div>
+			</SingleEventWrapper>
 		</div>
 	}
 };
