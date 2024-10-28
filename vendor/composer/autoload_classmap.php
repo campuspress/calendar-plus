@@ -71,6 +71,7 @@ return array(
     'Calendar_Plus_Taxonomies' => $baseDir . '/includes/class-calendar-plus-taxonomies.php',
     'Calendar_Plus_Template_Loader' => $baseDir . '/public/class-calendar-plus-template-loader.php',
     'Calendar_Plus_The_Events_Calendar_Importer' => $baseDir . '/admin/importers/class-the-events-calendar-importer.php',
+    'Calendar_Plus_Theme_Compat' => $baseDir . '/includes/class-calendar-plus-theme-compat.php',
     'Calendar_Plus_This_Month_Events_Widget' => $baseDir . '/includes/widgets/class-calendar-plus-this-month-events-widget.php',
     'Calendar_Plus_This_Week_Events_Widget' => $baseDir . '/includes/widgets/class-calendar-plus-this-week-events-widget.php',
     'Calendar_Plus_Timespan' => $baseDir . '/includes/calendar/class-calendar-plus-calendar.php',

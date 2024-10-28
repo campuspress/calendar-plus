@@ -96,6 +96,7 @@ class ComposerStaticInitba8cd9875988ddc0f8426e609db814f8
         'Calendar_Plus_Taxonomies' => __DIR__ . '/../..' . '/includes/class-calendar-plus-taxonomies.php',
         'Calendar_Plus_Template_Loader' => __DIR__ . '/../..' . '/public/class-calendar-plus-template-loader.php',
         'Calendar_Plus_The_Events_Calendar_Importer' => __DIR__ . '/../..' . '/admin/importers/class-the-events-calendar-importer.php',
+        'Calendar_Plus_Theme_Compat' => __DIR__ . '/../..' . '/includes/class-calendar-plus-theme-compat.php',
         'Calendar_Plus_This_Month_Events_Widget' => __DIR__ . '/../..' . '/includes/widgets/class-calendar-plus-this-month-events-widget.php',
         'Calendar_Plus_This_Week_Events_Widget' => __DIR__ . '/../..' . '/includes/widgets/class-calendar-plus-this-week-events-widget.php',
         'Calendar_Plus_Timespan' => __DIR__ . '/../..' . '/includes/calendar/class-calendar-plus-calendar.php',
