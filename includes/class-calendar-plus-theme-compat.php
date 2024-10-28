@@ -177,6 +177,11 @@ class Calendar_Plus_Theme_Compat {
 				}
 			}
 		}
-		return locate_template( array(  'single.php', 'page.php' ) );
+
+		if( is_singular( 'calendar_event' ) || is_archive() ) {
+			return locate_template( array(  'single.php', 'page.php' ) );	
+		}
+
+		return $template;
 	}
 }
