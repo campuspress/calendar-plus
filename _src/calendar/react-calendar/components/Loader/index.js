@@ -1,6 +1,5 @@
 import React, {Component} from 'react';
-import PropTypes from 'prop-types';
-import styles from './style.scss';
+import { StyledLoader } from './styles';
 
 /**
  * Component to indicate that a subcomponent is being loaded
@@ -10,10 +9,10 @@ import styles from './style.scss';
  */
 export default class Loader extends Component {
 	render() {
-		return <div className={`${styles.loader} calendar-plus-loader`}>
+		return <StyledLoader className={`calendar-plus-loader`}>
 			{this.props.loading ?
-				<div className={`${styles.loader_inner} calendar-plus-loader-inner`}>{this.props.label}</div> : null}
+				<div className={`loader_inner calendar-plus-loader-inner`}>{this.props.label}</div> : null}
 			{this.props.children}
-		</div>
+		</StyledLoader>
 	}
 }
