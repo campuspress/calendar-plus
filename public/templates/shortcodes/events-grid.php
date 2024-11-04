@@ -20,11 +20,9 @@ foreach ( $event_groups as $events_by_date ) {
             $events     = array( $event );
             $month_name = mysql2date( 'M', $date, true );
             $day        = mysql2date( 'd', $date, true );
-
-            $row_starts = 0 === $items_in_row % $template_data['columns'];
             $row_ends   = 1 === ( $items_in_row + 1 ) / $template_data['columns']; 
             ?>
-            <?php if( $row_starts ) {
+            <?php if( 0 === $items_in_row ) {
                 ?>
                 <div class="calendarp-grid-row columns">
                 <?php
