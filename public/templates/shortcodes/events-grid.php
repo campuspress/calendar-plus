@@ -10,6 +10,7 @@ $is_inline = false;
 
 foreach ( $event_groups as $events_by_date ) {
 	$items_in_row = 0;
+    $total_events = is_countable( $events_by_date ) ? count( $events_by_date ) : 0;
 
 	foreach ( $events_by_date as $date => $group ) {
 
@@ -30,7 +31,7 @@ foreach ( $event_groups as $events_by_date ) {
                     <div class="calendarp column large-<?php echo $template_data['column_size']; ?>">
                         <?php include( calendarp_locate_template( 'shortcodes/events-list-item.php' ) ); ?>
                     </div>
-            <?php if( $items_in_row === $template_data['columns'] ) {
+            <?php if ( $items_in_row === $template_data['columns'] || $items_in_row === $total_events ) {
                 ?>
                 </div>
                 <?php
