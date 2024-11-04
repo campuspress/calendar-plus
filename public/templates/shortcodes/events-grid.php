@@ -11,7 +11,7 @@ $is_inline = false;
 foreach ( $event_groups as $events_by_date ) {
 	$items_in_row  = 0;
     $items_counter = 0;
-    $total_events  = is_countable( $events_by_date ) ? count( $events_by_date ) : 0;
+    $total_events  = array_sum( array_map( "count", $events_by_date ) );
 
 	foreach ( $events_by_date as $date => $group ) {
 
