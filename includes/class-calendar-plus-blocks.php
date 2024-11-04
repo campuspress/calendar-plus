@@ -25,6 +25,7 @@ class Calendar_Plus_Blocks {
 	public static function register_blocks() {
 		register_block_type( calendarp_get_plugin_dir() . '/includes/blocks/event-date' );
 		register_block_type( calendarp_get_plugin_dir() . '/includes/blocks/event-location' );
+		register_block_type( calendarp_get_plugin_dir() . '/includes/blocks/event-export' );
 	}
 
 }
