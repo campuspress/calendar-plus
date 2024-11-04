@@ -118,11 +118,14 @@ class Calendar_Plus_Theme_Compat {
 			if( $source === 'calendar_plus' ) {
 				return $template;
 			}
-			$event = calendarp_get_event( get_the_ID() );
-			$event_post  = $event->post;
-			$event_post->post_content = $shortcodes['single-event']->render_compat( array( 'event_id' => get_the_ID() ) );
 
-			calendar_plus_reset_post( (array) $event_post );
+			if ( ! wp_is_block_theme() ) {
+				$event = calendarp_get_event( get_the_ID() );
+				$event_post  = $event->post;
+				$event_post->post_content = $shortcodes['single-event']->render_compat( array( 'event_id' => get_the_ID() ) );
+	
+				calendar_plus_reset_post( (array) $event_post );
+			}
 
 			// This small hack allows avoiding duplications of meta
 			add_filter( 'cpschool_post_meta_items', function( $meta, $post_id ) {
@@ -148,7 +151,7 @@ class Calendar_Plus_Theme_Compat {
 				$type          = 'tag';
 			}
 
-			if( isset( $taxonomy_slug ) ) {
+			if( isset( $taxonomy_slug ) && ! wp_is_block_theme() ) {
 
 				$term_slug = get_query_var( $taxonomy_slug );
 				$term = get_term_by( 'slug', $term_slug, $taxonomy_slug );
@@ -158,7 +161,7 @@ class Calendar_Plus_Theme_Compat {
 					$title    = sprintf( esc_html__( '%1$s: %2$s' ), $taxonomy->label, $term->name );
 
 					$content = $shortcodes['events-by-cat']->render( array(
-						$type => $term->term_id . ''
+						$type => $term->term_id
 					) );
 
 					calendar_plus_reset_post( array(
@@ -178,8 +181,8 @@ class Calendar_Plus_Theme_Compat {
 			}
 		}
 
-		if( is_singular( 'calendar_event' ) || is_archive() ) {
-			return locate_template( array(  'single.php', 'page.php' ) );	
+		if( ! wp_is_block_theme() && ( is_singular( 'calendar_event' ) || is_archive() ) ) {
+			return locate_template( array(  'single.php', 'post.php', 'page.php', 'index.php' ) );	 
 		}
 
 		return $template;
