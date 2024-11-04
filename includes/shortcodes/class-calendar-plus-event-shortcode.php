@@ -38,7 +38,7 @@ class Calendar_Plus_Event_Shortcode {
 	 * @return string Shortcode html
 	 */
 	public function render_compat( $atts ) {
-		return $this->render_attributes( $atts, 'shortcodes/event-single.plain.php' );
+		return $this->render_attributes( $atts, 'shortcodes/event-single.compat.php' );
 	}
 
 	/**
@@ -49,9 +49,7 @@ class Calendar_Plus_Event_Shortcode {
 	 * @return string Shortcode output
 	 */
 	private function render_attributes( $atts, $template ) {
-		if( empty( $atts['event_id'] ) ) {
-			$event_id = get_the_ID();
-		}
+		$event_id = $atts['event_id'] ?? get_the_ID();
 
 		if ( ! $event = calendarp_get_event( $event_id ) ) {
 			return calendarp_is_rest_api_request()
