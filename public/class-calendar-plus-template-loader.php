@@ -14,7 +14,6 @@ class Calendar_Plus_Template_Loader {
 		$file = '';
 
 		if ( is_single() && get_post_type() == 'calendar_event' ) {
-
 			$source = calendarp_get_setting( 'single_event_template_source' );
 			if( $source !== 'calendar_plus' ) {
 				return $template;
