@@ -1,10 +1,10 @@
 (function () {
-    wp.blocks.registerBlockType('calendar-plus/event-export', {
+    wp.blocks.registerBlockType('calendar-plus/event-add-to', {
         edit: function (props) {
             return wp.element.createElement(
                 'div',
                 {},
-                '[EVENT EXPORT]'
+                '[EVENT ADD TO]'
             );
         },
     });
