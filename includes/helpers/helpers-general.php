@@ -840,7 +840,7 @@ function calendarp_get_queried_date_cell( $event_id ) {
 	if ( $date_id ) {
 		// There's a date ID specified in URL, let's get it
 		$date = calendarp_get_event_cell( $date_id );
-		if ( absint( $date->event_id ) != absint( $event_id ) ) {
+		if ( ! empty( $date->event_id ) && absint( $date->event_id ) != absint( $event_id ) ) {
 			$date = false;
 		}
 	} else {

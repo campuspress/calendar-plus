@@ -1,13 +1,13 @@
 {
 	"$schema": "https://schemas.wp.org/trunk/block.json",
 	"apiVersion": 3,
-	"name": "calendar-plus/event-date",
-	"title": "Event: Date",
-	"description": "Displays dates of the event.",
+	"name": "calendar-plus/event-add-to",
+	"title": "Event: Add to",
+	"description": "Displays add to links of the event.",
 	"category": "theme",
 	"icon": "calendar",
 	"version": "1",
-	"keywords": [ "calendar", "event", "date", "time" ],
+	"keywords": [ "calendar", "event", "add to links" ],
 	"textdomain": "calendar-plus",
     "editorScript": "file:./editor.js",
 	"render": "file:./render.php"
