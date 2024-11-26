@@ -660,13 +660,14 @@ function calendarp_get_event_type_term_ids() {
 	$updated = false;
 	foreach ( $term_ids as $term_name => $term_id ) {
 
-		$term = get_term( $term_id );
-		if (
-			is_wp_error( $term ) ||
-			! $term ||
-			'calendar_event_type' !== $term->taxonomy ||
-			$term_name !== $term->slug
-		) {
+		$term = get_term_by('slug', $term_name, 'calendar_event_type');
+
+		if ($term && !is_wp_error($term)) {
+            if ($term->term_id !== $term_id) {
+                $term_ids[$term_name] = $term->term_id;
+                $updated = true;
+            }
+        } else {
 			$term = wp_insert_term( $term_name, 'calendar_event_type' );
 			if ( is_array( $term ) ) {
 				$term_ids[ $term_name ] = $term['term_id'];
