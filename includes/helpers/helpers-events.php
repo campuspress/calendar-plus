@@ -663,11 +663,11 @@ function calendarp_get_event_type_term_ids() {
 		$term = get_term_by('slug', $term_name, 'calendar_event_type');
 
 		if ($term && !is_wp_error($term)) {
-            if ($term->term_id !== $term_id) {
-                $term_ids[$term_name] = $term->term_id;
-                $updated = true;
-            }
-        } else {
+			if ($term->term_id !== $term_id) {
+				$term_ids[$term_name] = $term->term_id;
+				$updated = true;
+			}
+		} else {
 			$term = wp_insert_term( $term_name, 'calendar_event_type' );
 			if ( is_array( $term ) ) {
 				$term_ids[ $term_name ] = $term['term_id'];
