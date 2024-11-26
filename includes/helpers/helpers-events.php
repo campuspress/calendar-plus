@@ -145,6 +145,7 @@ function calendarp_get_human_read_dates( $event_id, $format = 'string' ) {
 			$until_time = calendarp_get_formatted_time( $calendar[0]['until_time'] );
 			$format_string = sprintf( _x( 'From %1$s to %2$s', 'Human read date for an all day datespan event', 'calendar-plus' ), $from_date . ' ' . $from_time, $until_date . ' ' . $until_time );
 			$format_array['date'] = sprintf( _x( 'From %1$s to %2$s', 'Human read date for an all day datespan event', 'calendar-plus' ), $from_date, $until_date );
+			$format_array['time'] = $from_time . ' - ' . $until_time;
 		}
 	} elseif ( count( $calendar ) === 1 ) {
 		$date = calendarp_get_formatted_date( $calendar[0]['from_date'] );
