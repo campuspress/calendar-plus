@@ -242,10 +242,26 @@ function calendarp_get_human_read_dates( $event_id, $format = 'string' ) {
 		$times_list = wp_list_pluck( $calendar, 'from_time' );
 		$times_unique = array_unique( $times_list );
 
+		$until_times_list = wp_list_pluck( $calendar, 'until_time' );
+		$until_times_unique = array_unique( $until_times_list );
+
+		$time_val = '';
+
 		if ( ! $event->is_all_day_event() && count( $times_unique ) === 1 ) {
 			// Same time for all events, let's show the time
 			$format_string .= ' ' . sprintf( _x( 'at %s', 'Human read time for an event with more than 2 dates', 'calendar-plus' ), calendarp_get_formatted_time( $times_unique[0] ) );
-			$format_array['time'] = calendarp_get_formatted_time( $times_unique[0] );
+			$time_val       = calendarp_get_formatted_time( $times_unique[0] );
+		}
+
+		if ( ! $event->is_all_day_event() && count( $until_times_unique ) === 1 ) {
+			// Same time for all events, let's show the time
+			$format_string .= ' ' . sprintf( _x( 'at %s', 'Human read time for an event with more than 2 dates', 'calendar-plus' ), calendarp_get_formatted_time( $until_times_unique[0] ) );
+
+			if ( ! empty( $time_val ) ) {
+				$format_array['time'] = $time_val . ' - ';
+			}
+
+			$format_array['time'] .= calendarp_get_formatted_time( $until_times_unique[0] );
 		}
 	}
 
