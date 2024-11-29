@@ -22,3 +22,9 @@ if (
 ) {
 	include_once calendarp_get_plugin_dir() . 'public/integration/plugins/polylang.php';
 }
+
+if (
+	is_plugin_active( 'scriptless-social-sharing/scriptless-social-sharing.php' )
+) {
+	include_once calendarp_get_plugin_dir() . 'public/integration/plugins/scriptless-social-sharing.php';
+}

@@ -529,7 +529,10 @@ if ( ! function_exists( 'calendarp_get_location_description' ) ) {
 
 		$post = $location->get_post();
 
-		return apply_filters( 'the_content', $post->post_content );
+		return apply_filters(
+			'the_calendar_location_content',
+			apply_filters( 'the_content', $post->post_content )
+		);
 	}
 }
 
