@@ -156,7 +156,7 @@ function calendarp_get_human_read_dates( $event_id, $format = 'string' ) {
 			// Not all day event, let's show the time
 			$time = calendarp_get_formatted_time( $calendar[0]['from_time'] );
 			$time_to = calendarp_get_formatted_time( $calendar[0]['until_time'] );
-			$format_string .= ' ' . sprintf( _x( 'at %s', 'Human read time for an event with only one date', 'calendar-plus' ), $time );
+			$format_string .= ' ' . sprintf( _x( 'at %s till %s', 'Human read time for an event with only one date', 'calendar-plus' ), $time, $time_to );
 			$format_array['time'] = $time . ' - ' . $time_to;
 		}
 	} elseif ( count( $calendar ) === 2 ) {
@@ -168,8 +168,9 @@ function calendarp_get_human_read_dates( $event_id, $format = 'string' ) {
 		if ( ! $event->is_all_day_event() && $calendar[0]['from_time'] === $calendar[1]['from_time'] ) {
 			// Not all day event and both dates match, let's show the time
 			$time = calendarp_get_formatted_time( $calendar[0]['from_time'] );
-			$format_string .= ' ' . sprintf( _x( 'at %s', 'Human read time for an event with two dates', 'calendar-plus' ), $time );
-			$format_array['time'] = $time;
+			$time_to = calendarp_get_formatted_time( $calendar[0]['until_time'] );
+			$format_string .= ' ' . sprintf( _x( 'at %s till %s', 'Human read time for an event with two dates', 'calendar-plus' ), $time, $time_to );
+			$format_array['time'] = $time. ' - ' . $time_to;
 		}
 	} elseif ( count( $calendar ) > 2 ) {
 
@@ -255,7 +256,7 @@ function calendarp_get_human_read_dates( $event_id, $format = 'string' ) {
 
 		if ( ! $event->is_all_day_event() && count( $until_times_unique ) === 1 ) {
 			// Same time for all events, let's show the time
-			$format_string .= ' ' . sprintf( _x( 'at %s', 'Human read time for an event with more than 2 dates', 'calendar-plus' ), calendarp_get_formatted_time( $until_times_unique[0] ) );
+			$format_string .= ' ' . sprintf( _x( 'till %s', 'Human read time for an event with more than 2 dates', 'calendar-plus' ), calendarp_get_formatted_time( $until_times_unique[0] ) );
 
 			if ( ! empty( $time_val ) ) {
 				$format_array['time'] = $time_val . ' - ';
