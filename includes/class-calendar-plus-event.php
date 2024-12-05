@@ -35,6 +35,20 @@ class Calendar_Plus_Event {
 	public $rules_formatter = false;
 
 	/**
+	 * Dates and times associated with the event.
+	 *
+	 * @var array
+	 */
+	public $dates_data = array();
+
+	/**
+	 * Used in Calendar_Plus_REST_Endpoints_Events class.
+	 *
+	 * @var object
+	 */
+	public $attributes;
+
+	/**
 	 * Build an instance of this class
 	 *
 	 * @static

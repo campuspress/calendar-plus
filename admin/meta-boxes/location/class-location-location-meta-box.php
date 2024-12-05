@@ -26,7 +26,9 @@ class Calendar_Plus_Location_Location_Metabox extends Calendar_Plus_Meta_Box {
 			return;
 		}
 
-		$type = in_array( $_POST['location-type'], array( 'standard', 'gmaps' ) ) ? $_POST['location-type'] : 'standard';
+		$type = isset( $_POST['location-type'] ) && in_array( $_POST['location-type'], array( 'standard', 'gmaps' ) )
+			? $_POST['location-type']
+			: 'standard';
 		update_post_meta( $location_id, '_location_type', $type );
 
 		$input = $_POST[ $type ];

@@ -288,10 +288,10 @@ function calendarp_update_event_type_recurrence( $event_id, $recurrent ) {
 }
 
 /**
- * Set an event type
+ * Set the event type taxonomy term for a given event.
  *
- * @param        $event_id
- * @param string $type recurrent|timespan
+ * @param int    $event_id The ID of the event to update.
+ * @param string $type     The event type slug to assign.
  */
 function calendarp_update_event_type( $event_id, $type ) {
 	$term_id = calendarp_get_event_type_term_id( $type );
@@ -666,51 +666,47 @@ function _calendarp_group_events_by_date( $results ) {
 	return $grouped_events;
 }
 
+/**
+ * Retrieves term IDs for calendar event types.
+ *
+ * @return array Associative array of event type slugs and their term IDs.
+ */
 function calendarp_get_event_type_term_ids() {
-	$defaults = array(
-		'recurrent' => 0,
-		'datespan'  => 0,
-	);
+	$defaults = array( 'recurrent', 'datespan' );
+	$term_ids = array();
 
-	$term_ids = get_option( 'calendarp_event_type_term_ids', array() );
-	$term_ids = wp_parse_args( $term_ids, $defaults );
+	foreach ( $defaults as $term_name ) {
+		$term = get_term_by( 'slug', $term_name, 'calendar_event_type' );
 
-	$updated = false;
-	foreach ( $term_ids as $term_name => $term_id ) {
-
-		$term = get_term_by('slug', $term_name, 'calendar_event_type');
-
-		if ($term && !is_wp_error($term)) {
-			if ($term->term_id !== $term_id) {
-				$term_ids[$term_name] = $term->term_id;
-				$updated = true;
-			}
+		if ( $term && ! is_wp_error( $term ) ) {
+			$term_ids[ $term_name ] = $term->slug;
 		} else {
 			$term = wp_insert_term( $term_name, 'calendar_event_type' );
-			if ( is_array( $term ) ) {
-				$term_ids[ $term_name ] = $term['term_id'];
-				$updated = true;
+			if ( ! is_wp_error( $term ) && isset( $term['slug'] ) ) {
+				$term_ids[ $term_name ] = $term['slug'];
 			}
 		}
-	}
-
-	if ( $updated ) {
-		update_option( 'calendarp_event_type_term_ids', $term_ids );
 	}
 
 	return $term_ids;
 }
 
+/**
+ * Retrieves the term ID for a specific calendar event type.
+ *
+ * @param string $type Event type slug.
+ *
+ * @return int|false Term ID if found, or false if not.
+ */
 function calendarp_get_event_type_term_id( $type ) {
 	$term_ids = calendarp_get_event_type_term_ids();
 
 	return isset( $term_ids[ $type ] ) ? $term_ids[ $type ] : false;
 }
 
-
 /**
  * @param int $event_id
- * 
+ *
  * @return array {
  *   @param int $dates
  *   @param int $timestamp
@@ -820,7 +816,7 @@ function calendarp_get_event_day( $event_id, $format = 'd' ) {
 					$from_time  = $date['from_time'] ? $date['from_time'] : '00:00';
 					$until_time = $date['until_time'] ? $date['until_time'] : '23:55';
 					$until_time = ( '00:00' === $until_time ) ? '23:55' : $until_time;
-					
+
 					if (
 						$time_now <= strtotime( $date['from_date'] . ' ' . $from_time ) ||
 						date( 'd', $time_now ) === date( 'd', strtotime( $date['from_date'] ) ) &&
