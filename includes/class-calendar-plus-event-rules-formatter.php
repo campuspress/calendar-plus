@@ -5,6 +5,13 @@ interface Calendar_Plus_Event_Rules_Formatter_Interface {
 }
 
 class Calendar_Plus_Event_Rules_Formatter {
+	public $times;
+	public $dates;
+	public $every;
+	public $exclusions;
+	public $standard;
+	public $datespan;
+
 	public function __construct() {
 		$this->times = new Calendar_Plus_Event_Rules_Times_Formatter();
 		$this->dates = new Calendar_Plus_Event_Rules_Dates_Formatter();

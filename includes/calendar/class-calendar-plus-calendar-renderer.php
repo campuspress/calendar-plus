@@ -104,6 +104,27 @@ class Calendar_Plus_Calendar_Renderer {
 	public $cells_with_events = array();
 
 	/**
+	 * Current page number for the calendar.
+	 *
+	 * @var int
+	 */
+	public $page;
+
+	/**
+	 * Number of events to display per page.
+	 *
+	 * @var int
+	 */
+	public $events_per_page;
+
+	/**
+	 * Current calendar view mode (e.g., month).
+	 *
+	 * @var string
+	 */
+	public $mode;
+
+	/**
 	 * class constructor
 	 *
 	 * @return void
