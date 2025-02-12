@@ -5,13 +5,6 @@ interface Calendar_Plus_Event_Rules_Formatter_Interface {
 }
 
 class Calendar_Plus_Event_Rules_Formatter {
-	public $times;
-	public $dates;
-	public $every;
-	public $exclusions;
-	public $standard;
-	public $datespan;
-
 	public function __construct() {
 		$this->times = new Calendar_Plus_Event_Rules_Times_Formatter();
 		$this->dates = new Calendar_Plus_Event_Rules_Dates_Formatter();
@@ -19,6 +12,8 @@ class Calendar_Plus_Event_Rules_Formatter {
 		$this->exclusions = new Calendar_Plus_Event_Rules_Exclusions_Formatter();
 		$this->standard = new Calendar_Plus_Event_Rules_Standard_Formatter();
 		$this->datespan = new Calendar_Plus_Event_Rules_Datespan_Formatter();
+
+		$this->formatted_date = array();
 
 		do_action_ref_array( 'calendarp_event_rules_formatter', array( &$this ) );
 	}
@@ -32,7 +27,14 @@ class Calendar_Plus_Event_Rules_Formatter {
 
 			if ( ! isset( $formatted[ $rule['rule_type'] ] ) ) {
 				$formatted[ $rule['rule_type'] ] = array();
-            }
+			}
+
+			if ( isset( $formatted[ 'dates' ] ) && empty( $this->formatted_date ) ) {
+				if ( isset( $formatted[ 'dates' ][0] ) ) {
+					$this->formatted_date['from'] = new \DateTime( $formatted[ 'dates' ][0]['from'] );
+					$this->formatted_date['until'] = new \DateTime( $formatted[ 'dates' ][0]['until'] );
+				}
+			}
 
 			$formatted[ $rule['rule_type'] ][] = $this->format( $rule );
 		}
@@ -48,8 +50,9 @@ class Calendar_Plus_Event_Rules_Formatter {
 		if ( property_exists( $this, $rule['rule_type'] ) ) {
 			$classname = 'Calendar_Plus_Event_Rules_' . ucfirst( strtolower( $rule['rule_type'] ) ) . '_Formatter';
 			$rule_type = $rule['rule_type'];
+
 			if ( $this->$rule_type instanceof $classname ) {
-				return $this->$rule_type->format( $rule );
+				return 'times' === $rule_type ? $this->$rule_type->format( $rule, $this->formatted_date ) : $this->$rule_type->format( $rule );
 			}
 		}
 
@@ -60,7 +63,7 @@ class Calendar_Plus_Event_Rules_Formatter {
 
 class Calendar_Plus_Event_Rules_Times_Formatter implements Calendar_Plus_Event_Rules_Formatter_Interface {
 
-	public function format( $rule ) {
+	public function format( $rule, $formatted_date = array() ) {
 		if ( ! isset( $rule['from'] ) ) {
 			return false;
         }
@@ -81,9 +84,11 @@ class Calendar_Plus_Event_Rules_Times_Formatter implements Calendar_Plus_Event_R
         }
 
 		if ( $until_time < $from_time ) {
-			$_until_time = $until_time;
-			$until_time = $from_time;
-			$from_time = $_until_time;
+			if ( $formatted_date['from'] === $formatted_date['until'] ) {
+				$_until_time = $until_time;
+				$until_time = $from_time;
+				$from_time = $_until_time;
+			}
 		}
 
 		return array(

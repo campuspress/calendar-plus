@@ -116,6 +116,7 @@ class Calendar_Plus_iCal_Parser {
 		if ( ! $local_tz ) {
 			throw new Exception( __( 'Local timezone cannot be parsed', 'calendarp' ), 'wrong-timezone' );
 		}
+
 		$recurring_single_events = array();
 		foreach ( $_events as $event ) {
 			if ( $event->recurrence_id ) {
@@ -158,10 +159,9 @@ class Calendar_Plus_iCal_Parser {
 					// Set start time to 12:00AM
 					$_event->dtstart .= 'T000000';
 					$_event->all_day  = true;
-					// We don't need time to be converted
-					$local_tz = $start_date_tz;
 				}
 			}
+
 			$from = self::cast_date_timezones( $_event->dtstart, $start_date_tz, $local_tz );
 
 			$end_date_tz = $calendar_tz;
@@ -175,7 +175,15 @@ class Calendar_Plus_iCal_Parser {
 						isset( $_event->dtend_array[0]['VALUE'] ) &&
 						$_event->dtend_array[0]['VALUE'] === 'DATE'
 					) {
-						// Set end time to 23:59:59
+						// Convert to DateTime object.
+						$dateObj = DateTime::createFromFormat( 'Ymd', $_event->dtend );
+
+						// Subtract one day to calculate the proper end date.
+						$dateObj->modify( '-1 day' );
+
+						$_event->dtend = $dateObj->format( 'Ymd' );
+
+						// Set end time to 23:59:59.
 						$_event->dtend .= 'T235959';
 					}
 				}
@@ -185,6 +193,7 @@ class Calendar_Plus_iCal_Parser {
 			else {
 				$to = $from;
 			}
+
 			if( $this->_exlude_past === -1 ) {
 				
 				if( $to < time() && ! $_event->rrule ) {
@@ -204,6 +213,7 @@ class Calendar_Plus_iCal_Parser {
 				'categories'    => isset( $_event->categories ) ? array_map( 'trim', explode( ',', $_event->categories ) ) : array(),
 				'all_day'       => ! empty( $_event->all_day ),
 			);
+
 			if ( $_event->rrule ) {
 				$rules   = array();
 				$rrule   = $this->parse_rrule( $_event->rrule );
@@ -272,14 +282,9 @@ class Calendar_Plus_iCal_Parser {
 	 * @return DateTimeZone|null
 	 */
 	private function extract_timezone_from_ical_format( string $date_str ): ?DateTimeZone {
-		$parts = explode( '=', $date_str );
-		if ( count( $parts ) > 1 ) {
-			$date_parts = explode( ':', $parts[1] );
-			if ( $date_parts ) {
-				return $this->ical->timeZoneStringToDateTimeZone( $date_parts[0] );
-			}
-		}
-		return null;
+		$datetime = $this->ical->iCalDateToDateTime( $date_str );
+
+		return $datetime->getTimezone() ?: new \DateTimeZone('UTC');
 	}
 
 
