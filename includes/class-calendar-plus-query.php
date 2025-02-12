@@ -10,6 +10,7 @@ class Calendar_Plus_Query {
 
 		if ( ! is_admin() ) {
 			add_action( 'pre_get_posts', array( $this, 'pre_get_posts' ) );
+			add_filter( 'the_posts', array( $this, 'remove_clauses_query' ), 2 );
 		}
 	}
 
@@ -18,31 +19,44 @@ class Calendar_Plus_Query {
 	 * @param WP_Query $query
 	 */
 	public function pre_get_posts( $query ) {
-
-		if( $query->get( 'post_type' ) != 'calendar_event' || !empty( $query->get( 'post__in' ) ) || $query->is_single() ) {
+		if ( ! $query->is_main_query() ) {
 			return;
 		}
-		
-		if( ! wp_is_block_theme() ) {
-			$events_page_id = absint( calendarp_get_setting( 'events_page_id' ) );
-			if ( isset( $query->queried_object_id ) && $query->queried_object_id === $events_page_id ) {
-				$query->set( 'post_type', 'calendar_event' );
-				$query->set( 'page', '' );
-				$query->set( 'pagename', '' );
 
-				$query->is_post_type_archive = true;
-				$query->is_singular = false;
-				$query->is_page = false;
-				$query->is_archive = true;
+		$events_page_id = absint( calendarp_get_setting( 'events_page_id' ) );
+		if ( isset( $query->queried_object_id ) && $query->queried_object_id === $events_page_id ) {
+			$query->set( 'post_type', 'calendar_event' );
+			$query->set( 'page', '' );
+			$query->set( 'pagename', '' );
 
-			}
+			$query->is_post_type_archive = true;
+			$query->is_singular = false;
+			$query->is_page = false;
+			$query->is_archive = true;
+
 		}
 
-		if ( ! $query->get( 'order' ) ) {
-			$query->set( 'order', 'ASC' );
-		}		
+		if ( ! $query->is_post_type_archive( 'calendar_event' ) && ! $query->is_tax( get_object_taxonomies( 'calendar_event' ) ) ) {
+			return;
+		}
+		$query->set( 'order', 'ASC' );
 
 		$this->parse_query( $query );
+
+		if ( ! empty( $query->get( 'cat' ) ) && $term = get_term( $query->get( 'cat' ), 'calendar_event_category' ) ) {
+			// Redirect to taxonomy archive
+			$vars = array( 'from', 'to', 's', 'location', 'post_type', 'calendarp_searchw', 'order' );
+			$redirect_to = get_term_link( $term->term_id, 'calendar_event_category' );
+			foreach ( $vars as $var ) {
+				$value = get_query_var( $var );
+				if ( ! empty( $value ) ) {
+					$redirect_to = add_query_arg( $var, $value, $redirect_to );
+                }
+			}
+
+			wp_redirect( esc_url_raw( $redirect_to ) );
+			die();
+		}
 
 		// Meta query
 		$meta_query = is_array( $query->get( 'meta_query' ) ) ? $query->get( 'meta_query' ) : array();
@@ -57,78 +71,69 @@ class Calendar_Plus_Query {
 
 		$query->set( 'meta_query', $meta_query );
 
-		add_filter( 'posts_clauses', array( $this, 'clauses' ), 10, 2 );
-		add_filter( 'posts_fields', array( $this, 'fields' ), 10, 2 );
+		add_filter( 'posts_clauses', array( $this, 'clauses' ) );
+		add_filter( 'posts_fields', array( $this, 'fields' ) );
 
 		do_action( 'calendarp_query', $query, $this );
+
+		remove_action( 'pre_get_posts', array( $this, 'pre_get_posts' ) );
 	}
 
-	public function fields( $fields, $query ) {
-		remove_filter( 'posts_fields', array( $this, 'fields' ) );
-
+	public function fields( $fields ) {
 		$fields .= ', cal.from_date, cal.until_date, cal.from_time, cal.until_time';
 		return $fields;
 	}
 
-	public function clauses( $clauses, $query ) {
-		global $wpdb;
-
-		remove_filter( 'posts_clauses', array( $this, 'clauses' ) );
-
+	public function clauses( $clauses ) {
+		global $wpdb, $wp_query;
 		$clauses['join'] .= " RIGHT JOIN $wpdb->calendarp_calendar cal ON $wpdb->posts.ID = cal.event_id ";
 		$clauses['groupby'] = ' cal.event_id';
 
-		// Generate all months between the dates
-		$from = explode( '-', $query->get( 'from' ) );
-		$from_is_date = is_array( $from ) && count( $from ) === 3 && checkdate( $from[1], $from[2], $from[0] );
+		if ( is_search() || is_post_type_archive( 'calendar_event' ) || is_tax( get_object_taxonomies( 'calendar_event' ) ) ) {
+			// Generate all months between the dates
+			$from = explode( '-', $wp_query->get( 'from' ) );
+			$from_is_date = is_array( $from ) && count( $from ) === 3 && checkdate( $from[1], $from[2], $from[0] );
 
-		// Makes ordering based on event date
+			$to = false;
+			if ( $wp_query->get( 'to' ) ) {
+				if ( 'today' === $wp_query->get( 'to' ) ) {
+					$to = date( 'Y-m-d', current_time( 'timestamp' ) );
+					$to = explode( '-', $to );
+				} else {
+					$to = explode( '-', $wp_query->get( 'to' ) );
+				}
+			}
+			$to_is_date = is_array( $to ) && count( $to ) === 3 && checkdate( $to[1], $to[2], $to[0] );
+
+			$where_not = array();
+			if ( $from_is_date ) {
+				$where_not[] = $wpdb->prepare( 'cal.until_date < %s', implode( '-', $from ) );
+			}
+
+			if ( $to_is_date ) {
+				$where_not[] = $wpdb->prepare( 'cal.from_date > %s', implode( '-', $to ) );
+			}
+
+			if ( ! $from_is_date && ! $to_is_date ) {
+				$date = date( 'Y-m-d', current_time( 'timestamp' ) );
+				$where_not[] = $wpdb->prepare( 'cal.until_date < %s', $date );
+			}
+
+			$where_not = implode( ' OR ', $where_not );
+			$clauses['where'] .= " AND NOT ( $where_not )";
+		}
+
 		if (
-			( $order = $query->get('order') ) &&
+			( $order = $wp_query->get('order') ) &&
 			'desc' === strtolower( $order )
 		) {
 			$clauses['orderby'] = 'cal.from_date DESC';
-
-			// For DESC order if no to date is set, set to today.
-			if ( ! $query->get( 'to' ) ) {
-				$to = date( 'Y-m-d', strtotime("yesterday") );
-				$to = explode( '-', $to );
-			}
 		} else {
 			$clauses['orderby'] = 'cal.from_date ASC';
 		}
-		
-		if ( $query->get( 'to' ) ) {
-			if ( 'today' === $query->get( 'to' ) ) {
-				$to = date( 'Y-m-d', strtotime("yesterday") );
-				$to = explode( '-', $to );
-			} else {
-				$to = explode( '-', $query->get( 'to' ) );
-			}
-		}
-		$to_is_date = !empty( $to ) && is_array( $to ) && count( $to ) === 3 && checkdate( $to[1], $to[2], $to[0] );
-
-		$where_not = array();
-		if ( $from_is_date ) {
-			$where_not[] = $wpdb->prepare( 'cal.until_date < %s', implode( '-', $from ) );
-		}
-
-		if ( $to_is_date ) {
-			$where_not[] = $wpdb->prepare( 'cal.from_date > %s', implode( '-', $to ) );
-		}
-
-		if ( ! $from_is_date && ! $to_is_date ) {
-			$date = date( 'Y-m-d', strtotime("yesterday") );
-			$where_not[] = $wpdb->prepare( 'cal.until_date < %s', $date );
-		}
-
-		$where_not = implode( ' OR ', $where_not );
-		$clauses['where'] .= " AND NOT ( $where_not )";
-
 		return $clauses;
 	}
 
-	/*
 	public function remove_clauses_query( $posts ) {
 		if ( has_filter( 'posts_clauses', array( $this, 'clauses' ) ) ) {
 			remove_filter( 'posts_clauses', array( $this, 'clauses' ) );
@@ -139,7 +144,6 @@ class Calendar_Plus_Query {
 
 		return $posts;
 	}
-	*/
 
 	public function parse_query( $query ) {
 		foreach ( $this->query_vars as $key ) {
