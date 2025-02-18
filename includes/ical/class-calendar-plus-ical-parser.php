@@ -40,8 +40,8 @@ class Calendar_Plus_iCal_Parser {
 	private $_import_recurring = false;
 
 	/**
-	 * Whether or not to exclude past events. 
-	 * For now only -1 is supported = exclude all events. 
+	 * Whether or not to exclude past events.
+	 * For now only -1 is supported = exclude all events.
 	 *
 	 * @var int
 	 */
@@ -83,54 +83,6 @@ class Calendar_Plus_iCal_Parser {
 	}
 
 	/**
-	 * Gets iCal calendar timezone
-	 *
-	 * Extracted because:
-	 * 1) UTC fallbacks might not be correct
-	 * 2) Microsoft Outlook doesn't use the TZs PHP understands.
-	 *
-	 * @return object DateTimeZone instance
-	 */
-	public function get_ical_tz() {
-		$defaultTz = $this->ical->defaultTimeZone;
-		$this->ical->defaultTimeZone = -1;
-
-		$raw = $this->ical->calendarTimeZone();
-		$tz = $raw !== -1
-			? $raw
-			: $this->get_ical_ms_tz();
-
-		$this->ical->defaultTimeZone = $defaultTz;
-		return empty( $tz )
-			? new DateTimeZone( $defaultTz )
-			: new DateTimeZone( $tz );
-	}
-
-	/**
-	 * Low-level iCal timezone parsing
-	 *
-	 * Used as fallback when normal iCal parser would fail.
-	 * This is so that we can support more timezone offsets.
-	 *
-	 * See https://github.com/u01jmg3/ics-parser/issues/244
-	 *
-	 * @return string
-	 */
-	public function get_ical_ms_tz() {
-		if (isset($this->ical->cal['VCALENDAR']['X-WR-TIMEZONE'])) {
-			$timeZone = $this->ical->cal['VCALENDAR']['X-WR-TIMEZONE'];
-		} elseif (isset($this->ical->cal['VTIMEZONE']['TZID'])) {
-			$timeZone = $this->ical->cal['VTIMEZONE']['TZID'];
-		} else {
-			$timeZone = $this->ical->defaultTimeZone;
-		}
-		if ( stristr( $timeZone, 'UTC' ) !== false ) {
-			return $this->ical->calendarTimeZone();
-		}
-		return $this->get_ms_timezone( $timeZone );
-	}
-
-	/**
 	 * Extract only needed information from events
 	 *
 	 * @return array
@@ -141,8 +93,7 @@ class Calendar_Plus_iCal_Parser {
 		$_events = $this->ical->events();
 		// This is the calendar timezone
 		$calendar_tz = new DateTimeZone( $this->ical->calendarTimeZone() );
-		// This is the *actual* calendar timezone
-		$mod_calendar_tz = $this->get_ical_tz();
+
 		if ( ! $calendar_tz ) {
 			throw new Exception(
 				__( 'iCal timezone cannot be parsed', 'calendarp' ),
@@ -165,6 +116,7 @@ class Calendar_Plus_iCal_Parser {
 		if ( ! $local_tz ) {
 			throw new Exception( __( 'Local timezone cannot be parsed', 'calendarp' ), 'wrong-timezone' );
 		}
+
 		$recurring_single_events = array();
 		foreach ( $_events as $event ) {
 			if ( $event->recurrence_id ) {
@@ -193,32 +145,26 @@ class Calendar_Plus_iCal_Parser {
 
 			$content = html_entity_decode( $content );
 
-			$now = new DateTime( 'now', new DateTimeZone( 'UTC' ) );
-			$event_tz = $calendar_tz->getOffset( $now ) !== $mod_calendar_tz->getOffset( $now )
-				? $mod_calendar_tz
-				: $calendar_tz;
-
 			//dtstart has to be set but, dtend not always.
-			$start_date_tz = $event_tz;
+			$start_date_tz = $calendar_tz;
 			if ( $_event->dtstart_array ) {
 				$start_date_tz = $this->extract_timezone_from_ical_format( $_event->dtstart_array[3] );
-				$start_date_tz = $start_date_tz ?: $event_tz;
+				$start_date_tz = $start_date_tz ?: $calendar_tz;
 
 				// dtstart can have only date instead of date-time
 				if (
 					isset( $_event->dtstart_array[0]['VALUE'] ) &&
 					$_event->dtstart_array[0]['VALUE'] === 'DATE'
 				) {
-					// Set start time to 12:00AM
-					$_event->dtstart .= 'T000000';
+					// Set start time to begining
+					$_event->dtstart .= 'T';
 					$_event->all_day  = true;
-					// We don't need time to be converted
-					$local_tz = $start_date_tz;
 				}
 			}
+
 			$from = self::cast_date_timezones( $_event->dtstart, $start_date_tz, $local_tz );
 
-			$end_date_tz = $event_tz;
+			$end_date_tz = $calendar_tz;
 			if( isset( $_event->dtend ) && $_event->dtend ) {
 				$end_date_tz = null;
 				if ( $_event->dtend_array ) {
@@ -229,18 +175,19 @@ class Calendar_Plus_iCal_Parser {
 						isset( $_event->dtend_array[0]['VALUE'] ) &&
 						$_event->dtend_array[0]['VALUE'] === 'DATE'
 					) {
-						// Set end time to 23:59:59
+						// Set end time to 23:59:59.
 						$_event->dtend .= 'T235959';
 					}
 				}
-				$end_date_tz = $end_date_tz ?: $event_tz;
+				$end_date_tz = $end_date_tz ?: $calendar_tz;
 				$to = self::cast_date_timezones( $_event->dtend, $end_date_tz, $local_tz );
 			}
 			else {
 				$to = $from;
 			}
+
 			if( $this->_exlude_past === -1 ) {
-				
+
 				if( $to < time() && ! $_event->rrule ) {
 					continue;
 				}
@@ -252,12 +199,13 @@ class Calendar_Plus_iCal_Parser {
 				'post_title'    => wp_kses( $_event->summary, wp_kses_allowed_html( 'post' ) ),
 				'from'          => $from,
 				'to'            => $to,
-				'last_updated'  => self::cast_date_timezones( $_event->lastmodified, $event_tz, $local_tz ),
+				'last_updated'  => self::cast_date_timezones( $_event->lastmodified, $calendar_tz, $local_tz ),
 				'uid'           => $this->get_event_uid( $_event ),
 				'location'      => $_event->location,
 				'categories'    => isset( $_event->categories ) ? array_map( 'trim', explode( ',', $_event->categories ) ) : array(),
 				'all_day'       => ! empty( $_event->all_day ),
 			);
+
 			if ( $_event->rrule ) {
 				$rules   = array();
 				$rrule   = $this->parse_rrule( $_event->rrule );
@@ -326,14 +274,9 @@ class Calendar_Plus_iCal_Parser {
 	 * @return DateTimeZone|null
 	 */
 	private function extract_timezone_from_ical_format( string $date_str ): ?DateTimeZone {
-		$parts = explode( '=', $date_str );
-		if ( count( $parts ) > 1 ) {
-			$date_parts = explode( ':', $parts[1] );
-			if ( $date_parts ) {
-				return $this->ical->timeZoneStringToDateTimeZone( $date_parts[0] );
-			}
-		}
-		return null;
+		$datetime = $this->ical->iCalDateToDateTime( $date_str );
+
+		return $datetime->getTimezone() ?: new \DateTimeZone('UTC');
 	}
 
 
@@ -589,161 +532,5 @@ class Calendar_Plus_iCal_Parser {
 
 		//Its not easy to get time zone based timestamp. Hack was needed.
 		return strtotime( $date->format( 'Y-m-d H:i:s' ) );
-	}
-
-	/**
-	 * Static list on Microsoft timezones with their conversion counterparts.
-	 *
-	 * @param string $tz (Optional) timezone.
-	 *
-	 * @return array|string Map of all timezones if no specific timezone, otherwise a timezone string which can be empty.
-	 * ref: https://github.com/fruux/sabre-vobject/blob/master/lib/timezonedata/windowszones.php#L60
-	 */
-	public function get_ms_timezone( $tz = false ) {
-		$mstz = [
-			'AUS Central Standard Time' => 'Australia/Darwin',
-			'AUS Eastern Standard Time' => 'Australia/Sydney',
-			'Afghanistan Standard Time' => 'Asia/Kabul',
-			'Alaskan Standard Time' => 'America/Anchorage',
-			'Aleutian Standard Time' => 'America/Adak',
-			'Altai Standard Time' => 'Asia/Barnaul',
-			'Arab Standard Time' => 'Asia/Riyadh',
-			'Arabian Standard Time' => 'Asia/Dubai',
-			'Arabic Standard Time' => 'Asia/Baghdad',
-			'Argentina Standard Time' => 'America/Buenos_Aires',
-			'Astrakhan Standard Time' => 'Europe/Astrakhan',
-			'Atlantic Standard Time' => 'America/Halifax',
-			'Aus Central W. Standard Time' => 'Australia/Eucla',
-			'Azerbaijan Standard Time' => 'Asia/Baku',
-			'Azores Standard Time' => 'Atlantic/Azores',
-			'Bahia Standard Time' => 'America/Bahia',
-			'Bangladesh Standard Time' => 'Asia/Dhaka',
-			'Belarus Standard Time' => 'Europe/Minsk',
-			'Bougainville Standard Time' => 'Pacific/Bougainville',
-			'Canada Central Standard Time' => 'America/Regina',
-			'Cape Verde Standard Time' => 'Atlantic/Cape_Verde',
-			'Caucasus Standard Time' => 'Asia/Yerevan',
-			'Cen. Australia Standard Time' => 'Australia/Adelaide',
-			'Central America Standard Time' => 'America/Guatemala',
-			'Central Asia Standard Time' => 'Asia/Almaty',
-			'Central Brazilian Standard Time' => 'America/Cuiaba',
-			'Central Europe Standard Time' => 'Europe/Budapest',
-			'Central European Standard Time' => 'Europe/Warsaw',
-			'Central Pacific Standard Time' => 'Pacific/Guadalcanal',
-			'Central Standard Time' => 'America/Chicago',
-			'Central Standard Time (Mexico)' => 'America/Mexico_City',
-			'Chatham Islands Standard Time' => 'Pacific/Chatham',
-			'China Standard Time' => 'Asia/Shanghai',
-			'Cuba Standard Time' => 'America/Havana',
-			'Dateline Standard Time' => 'Etc/GMT+12',
-			'E. Africa Standard Time' => 'Africa/Nairobi',
-			'E. Australia Standard Time' => 'Australia/Brisbane',
-			'E. Europe Standard Time' => 'Europe/Chisinau',
-			'E. South America Standard Time' => 'America/Sao_Paulo',
-			'Easter Island Standard Time' => 'Pacific/Easter',
-			'Eastern Standard Time' => 'America/New_York',
-			'Eastern Standard Time (Mexico)' => 'America/Cancun',
-			'Egypt Standard Time' => 'Africa/Cairo',
-			'Ekaterinburg Standard Time' => 'Asia/Yekaterinburg',
-			'FLE Standard Time' => 'Europe/Kiev',
-			'Fiji Standard Time' => 'Pacific/Fiji',
-			'GMT Standard Time' => 'Europe/London',
-			'GTB Standard Time' => 'Europe/Bucharest',
-			'Georgian Standard Time' => 'Asia/Tbilisi',
-			'Greenland Standard Time' => 'America/Godthab',
-			'Greenwich Standard Time' => 'Atlantic/Reykjavik',
-			'Haiti Standard Time' => 'America/Port-au-Prince',
-			'Hawaiian Standard Time' => 'Pacific/Honolulu',
-			'India Standard Time' => 'Asia/Calcutta',
-			'Iran Standard Time' => 'Asia/Tehran',
-			'Israel Standard Time' => 'Asia/Jerusalem',
-			'Jordan Standard Time' => 'Asia/Amman',
-			'Kaliningrad Standard Time' => 'Europe/Kaliningrad',
-			'Korea Standard Time' => 'Asia/Seoul',
-			'Libya Standard Time' => 'Africa/Tripoli',
-			'Line Islands Standard Time' => 'Pacific/Kiritimati',
-			'Lord Howe Standard Time' => 'Australia/Lord_Howe',
-			'Magadan Standard Time' => 'Asia/Magadan',
-			'Magallanes Standard Time' => 'America/Punta_Arenas',
-			'Marquesas Standard Time' => 'Pacific/Marquesas',
-			'Mauritius Standard Time' => 'Indian/Mauritius',
-			'Middle East Standard Time' => 'Asia/Beirut',
-			'Montevideo Standard Time' => 'America/Montevideo',
-			'Morocco Standard Time' => 'Africa/Casablanca',
-			'Mountain Standard Time' => 'America/Denver',
-			'Mountain Standard Time (Mexico)' => 'America/Chihuahua',
-			'Myanmar Standard Time' => 'Asia/Rangoon',
-			'N. Central Asia Standard Time' => 'Asia/Novosibirsk',
-			'Namibia Standard Time' => 'Africa/Windhoek',
-			'Nepal Standard Time' => 'Asia/Katmandu',
-			'New Zealand Standard Time' => 'Pacific/Auckland',
-			'Newfoundland Standard Time' => 'America/St_Johns',
-			'Norfolk Standard Time' => 'Pacific/Norfolk',
-			'North Asia East Standard Time' => 'Asia/Irkutsk',
-			'North Asia Standard Time' => 'Asia/Krasnoyarsk',
-			'North Korea Standard Time' => 'Asia/Pyongyang',
-			'Omsk Standard Time' => 'Asia/Omsk',
-			'Pacific SA Standard Time' => 'America/Santiago',
-			'Pacific Standard Time' => 'America/Los_Angeles',
-			'Pacific Standard Time (Mexico)' => 'America/Tijuana',
-			'Pakistan Standard Time' => 'Asia/Karachi',
-			'Paraguay Standard Time' => 'America/Asuncion',
-			'Qyzylorda Standard Time' => 'Asia/Qyzylorda',
-			'Romance Standard Time' => 'Europe/Paris',
-			'Russia Time Zone 10' => 'Asia/Srednekolymsk',
-			'Russia Time Zone 11' => 'Asia/Kamchatka',
-			'Russia Time Zone 3' => 'Europe/Samara',
-			'Russian Standard Time' => 'Europe/Moscow',
-			'SA Eastern Standard Time' => 'America/Cayenne',
-			'SA Pacific Standard Time' => 'America/Bogota',
-			'SA Western Standard Time' => 'America/La_Paz',
-			'SE Asia Standard Time' => 'Asia/Bangkok',
-			'Saint Pierre Standard Time' => 'America/Miquelon',
-			'Sakhalin Standard Time' => 'Asia/Sakhalin',
-			'Samoa Standard Time' => 'Pacific/Apia',
-			'Sao Tome Standard Time' => 'Africa/Sao_Tome',
-			'Saratov Standard Time' => 'Europe/Saratov',
-			'Singapore Standard Time' => 'Asia/Singapore',
-			'South Africa Standard Time' => 'Africa/Johannesburg',
-			'Sri Lanka Standard Time' => 'Asia/Colombo',
-			'Sudan Standard Time' => 'Africa/Khartoum',
-			'Syria Standard Time' => 'Asia/Damascus',
-			'Taipei Standard Time' => 'Asia/Taipei',
-			'Tasmania Standard Time' => 'Australia/Hobart',
-			'Tocantins Standard Time' => 'America/Araguaina',
-			'Tokyo Standard Time' => 'Asia/Tokyo',
-			'Tomsk Standard Time' => 'Asia/Tomsk',
-			'Tonga Standard Time' => 'Pacific/Tongatapu',
-			'Transbaikal Standard Time' => 'Asia/Chita',
-			'Turkey Standard Time' => 'Europe/Istanbul',
-			'Turks And Caicos Standard Time' => 'America/Grand_Turk',
-			'US Eastern Standard Time' => 'America/Indianapolis',
-			'US Mountain Standard Time' => 'America/Phoenix',
-			'UTC' => 'Etc/GMT',
-			'UTC+12' => 'Etc/GMT-12',
-			'UTC+13' => 'Etc/GMT-13',
-			'UTC-02' => 'Etc/GMT+2',
-			'UTC-08' => 'Etc/GMT+8',
-			'UTC-09' => 'Etc/GMT+9',
-			'UTC-11' => 'Etc/GMT+11',
-			'Ulaanbaatar Standard Time' => 'Asia/Ulaanbaatar',
-			'Venezuela Standard Time' => 'America/Caracas',
-			'Vladivostok Standard Time' => 'Asia/Vladivostok',
-			'Volgograd Standard Time' => 'Europe/Volgograd',
-			'W. Australia Standard Time' => 'Australia/Perth',
-			'W. Central Africa Standard Time' => 'Africa/Lagos',
-			'W. Europe Standard Time' => 'Europe/Berlin',
-			'W. Mongolia Standard Time' => 'Asia/Hovd',
-			'West Asia Standard Time' => 'Asia/Tashkent',
-			'West Bank Standard Time' => 'Asia/Hebron',
-			'West Pacific Standard Time' => 'Pacific/Port_Moresby',
-			'Yakutsk Standard Time' => 'Asia/Yakutsk',
-			'Yukon Standard Time' => 'America/Whitehorse',
-		];
-		if ( empty( $tz ) ) {
-			return $mstz;
-		}
-
-		return array_key_exists( $tz, $mstz ) ? $mstz[ $tz ] : '';
 	}
 }
