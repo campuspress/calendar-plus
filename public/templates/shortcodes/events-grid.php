@@ -9,7 +9,9 @@
 $is_inline = false;
 
 foreach ( $event_groups as $events_by_date ) {
-	$items_in_row = 0;
+	$items_in_row  = 0;
+    $items_counter = 0;
+    $total_events  = array_sum( array_map( "count", $events_by_date ) );
 
 	foreach ( $events_by_date as $date => $group ) {
 
@@ -18,19 +20,20 @@ foreach ( $event_groups as $events_by_date ) {
             $events     = array( $event );
             $month_name = mysql2date( 'M', $date, true );
             $day        = mysql2date( 'd', $date, true );
-
+            $row_ends   = 1 === ( $items_in_row + 1 ) / $template_data['columns']; 
             ?>
-            <?php if( $items_in_row === 0 ) {
+            <?php if( 0 === $items_in_row ) {
                 ?>
                 <div class="calendarp-grid-row columns">
                 <?php
             }
             $items_in_row++;
+            $items_counter++;
             ?>
                     <div class="calendarp column large-<?php echo $template_data['column_size']; ?>">
                         <?php include( calendarp_locate_template( 'shortcodes/events-list-item.php' ) ); ?>
                     </div>
-            <?php if( $items_in_row === $template_data['columns'] ) {
+            <?php if ( $row_ends || $total_events === $items_counter ) {
                 ?>
                 </div>
                 <?php
