@@ -156,8 +156,8 @@ class Calendar_Plus_iCal_Parser {
 					isset( $_event->dtstart_array[0]['VALUE'] ) &&
 					$_event->dtstart_array[0]['VALUE'] === 'DATE'
 				) {
-					// Set start time to 12:00AM
-					$_event->dtstart .= 'T000000';
+					// Set start time to begining
+					$_event->dtstart .= 'T';
 					$_event->all_day  = true;
 				}
 			}
@@ -175,14 +175,6 @@ class Calendar_Plus_iCal_Parser {
 						isset( $_event->dtend_array[0]['VALUE'] ) &&
 						$_event->dtend_array[0]['VALUE'] === 'DATE'
 					) {
-						// Convert to DateTime object.
-						$dateObj = DateTime::createFromFormat( 'Ymd', $_event->dtend );
-
-						// Subtract one day to calculate the proper end date.
-						$dateObj->modify( '-1 day' );
-
-						$_event->dtend = $dateObj->format( 'Ymd' );
-
 						// Set end time to 23:59:59.
 						$_event->dtend .= 'T235959';
 					}
