@@ -32,7 +32,7 @@ class Event
     /**
      * https://www.kanzaki.com/docs/ical/duration.html
      *
-     * @var string
+     * @var string|null
      */
     public $duration;
 
@@ -81,14 +81,14 @@ class Event
     /**
      * https://www.kanzaki.com/docs/ical/description.html
      *
-     * @var string
+     * @var string|null
      */
     public $description;
 
     /**
      * https://www.kanzaki.com/docs/ical/location.html
      *
-     * @var string
+     * @var string|null
      */
     public $location;
 
@@ -132,7 +132,7 @@ class Event
      *
      * @var array<string, mixed>
      */
-    private $additionalProperties = [];
+    public $additionalProperties = array();
 
     /**
      * Creates the Event object
@@ -165,6 +165,17 @@ class Event
         }
 
         return null;
+    }
+
+    /**
+     * Magic isset method
+     *
+     * @param  string $name
+     * @return boolean
+     */
+    public function __isset($name)
+    {
+        return is_null($this->$name) === false;
     }
 
     /**
@@ -239,10 +250,15 @@ class Event
      */
     protected static function snakeCase($input, $glue = '_', $separator = '-')
     {
-        $input = preg_split('/(?<=[a-z])(?=[A-Z])/x', $input);
-        $input = implode($glue, $input);
-        $input = str_replace($separator, $glue, $input);
+        $inputSplit = preg_split('/(?<=[a-z])(?=[A-Z])/x', $input);
 
-        return strtolower($input);
+        if ($inputSplit === false) {
+            return $input;
+        }
+
+        $inputSplit = implode($glue, $inputSplit);
+        $inputSplit = str_replace($separator, $glue, $inputSplit);
+
+        return strtolower($inputSplit);
     }
 }
