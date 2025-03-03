@@ -27,13 +27,9 @@ class Calendar_Plus_Event_Shortcode {
 	 * @return string Shortcode output
 	 */
 	public function render( $atts ) {
-		if( empty( $atts['event_id'] ) ) {
-			$event_id = get_the_ID();
-		}
-
-		if ( ! $event = calendarp_get_event( $event_id ) ) {
+		if ( empty( $atts['event_id'] ) || ! $event = calendarp_get_event( $atts['event_id'] ) ) {
 			return calendarp_is_rest_api_request()
-				? calendarp_block_error_msg( __( 'Please, enter the event ID in Block Settings', 'calendar-plus' ) )
+				? calendarp_block_error_msg( __( 'Please, enter the event ID in Event Settings', 'calendar-plus' ) )
 				: '';
 		}
 
