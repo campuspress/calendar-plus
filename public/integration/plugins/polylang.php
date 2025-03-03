@@ -1,11 +1,18 @@
 <?php
 
 function calendarp_polylang_language() {
-	return pll_current_language();
+	if ( function_exists( 'pll_current_language' ) ) {
+		return pll_current_language();
+	}
+	return false;
 }
 add_filter( 'calendarp_calendar_language', 'calendarp_polylang_language' );
 
 function calendarp_polylang_filter_events( $events_data ) {
+	if ( ! function_exists( 'pll_current_language' ) || ! function_exists( 'pll_default_language' ) || ! function_exists( 'pll_get_post_language' ) ) {
+		return $events_data;
+	}
+
 	$current_language = pll_current_language();
 	if ( ! $current_language ) {
 		$current_language = pll_default_language();

@@ -18,10 +18,7 @@ if (
 }
 
 if (
-	is_plugin_active( 'polylang/polylang.php' ) &&
-	function_exists( 'pll_current_language' ) &&
-	function_exists( 'pll_default_language' ) &&
-	function_exists( 'pll_get_post_language' )
+	is_plugin_active( 'polylang/polylang.php' )
 ) {
 	include_once calendarp_get_plugin_dir() . 'public/integration/plugins/polylang.php';
 }
