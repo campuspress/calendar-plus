@@ -1,70 +1,84 @@
 'use strict';
 
 import gulp from 'gulp';
-import archiver from 'gulp-archiver';
 import clean from 'gulp-clean';
-import composer from 'gulp-composer';
-import copy from 'gulp-copy';
 import fs from 'fs';
 import phpcs from 'gulp-phpcs';
-import makepot from 'gulp-wp-pot'
+import makepot from 'gulp-wp-pot';
+import zip from 'gulp-zip';
 
 const pkg = require('./package.json');
 
-const php_src = ['*.php', 'admin/**/*.php', 'includes/**/*.php', 'public/**/*.php', 'eb-mods/*.php'];
+const phpFiles = ['*.php', 'admin/**/*.php', 'includes/**/*.php', 'public/**/*.php', 'eb-mods/*.php'];
+const excludeFiles = ['node_modules/**/*', 'dist/**/*', 'gulpfile.babel.js'];
 
+/**
+ * Run PHP CodeSniffer
+ */
 gulp.task('phpcs', () => {
-	return gulp.src(php_src)
-		.pipe(phpcs({
-			bin: 'vendor/bin/phpcs',
-			standard: 'codesniffer.ruleset.xml',
-			showSniffCode: true
-		}))
-		.pipe(phpcs.reporter('log'));
+    console.log('🔹 Running PHP CodeSniffer...');
+    return gulp.src(phpFiles)
+        .pipe(phpcs({
+            bin: 'vendor/bin/phpcs',
+            standard: 'codesniffer.ruleset.xml',
+            showSniffCode: true
+        }))
+        .pipe(phpcs.reporter('log'));
 });
 
-gulp.task('test', gulp.series('phpcs'));
-
+/**
+ * Generate translation files
+ */
 gulp.task('makepot', () => {
-	return gulp.src(php_src)
-		.pipe(makepot({
-			domain: pkg.name,
-			package: pkg.name,
-			metadataFile: 'calendar-plus.php',
-		}))
-		.pipe(gulp.dest(`languages/${pkg.name}.pot`));
+    console.log('🔹 Generating translation files...');
+    return gulp.src(phpFiles)
+        .pipe(makepot({
+            domain: pkg.name,
+            package: pkg.name,
+            metadataFile: 'calendar-plus.php',
+        }))
+        .pipe(gulp.dest(`languages/${pkg.name}.pot`));
 });
 
-gulp.task('i18n', gulp.parallel('makepot'));
+/**
+ * Default task - Ensures translations are generated before anything else
+ */
+gulp.task('default', gulp.series('makepot'));
 
-gulp.task('default', gulp.parallel('i18n'));
+/**
+ * Clean previous build
+ */
+gulp.task('clean', () => {
+    console.log('🔹 Cleaning previous build...');
+    return gulp.src(['dist', `${pkg.name}.zip`], { read: false, allowEmpty: true })
+        .pipe(clean());
+});
 
+/**
+ * Copy required files for packaging
+ */
+gulp.task('copy', () => {
+    console.log('🔹 Copying project files...');
+    return gulp.src(['**/*', ...excludeFiles.map(path => `!${path}`)], { dot: true })
+        .pipe(gulp.dest('dist/' + pkg.name));
+});
+
+/**
+ * Create ZIP package
+ */
+gulp.task('zip', () => {
+    console.log('🔹 Creating ZIP archive...');
+    return gulp.src(`dist/${pkg.name}/**/*`, { base: 'dist' })
+        .pipe(zip(`${pkg.name}.${pkg.version}.zip`))
+        .pipe(gulp.dest('.'))
+        .on('end', () => console.log('✅ ZIP created successfully!'));
+});
+
+/**
+ * Main package task
+ */
 gulp.task('package', gulp.series(
-	'default',
-	// remove files from last run
-	() => gulp.src(['dist', pkg.name, `${pkg.name}.*.zip`], {read: false, allowEmpty: true})
-		.pipe(clean()),
-
-	// remove composer dev dependencies
-	() => composer({'no-dev': true}),
-
-	// copy files into a new directory
-	() => gulp.src(['**/*', '!node_modules/**/*'])
-		.pipe(copy(pkg.name)),
-
-	// create the archive file
-	() => gulp.src(pkg.name + '/**/*', {base: '.'})
-		.pipe(archiver(`${pkg.name}.${pkg.version}.zip`))
-		.pipe(gulp.dest('.')),
-
-	(done) => {
-		// reinstall dev dependencies
-		composer();
-
-		// rename the distribution directory to its proper name
-		fs.rename(pkg.name, 'dist', err => {
-			if (err) throw err;
-			done();
-		});
-	}
+    'clean',
+    'copy',
+    'zip'
 ));

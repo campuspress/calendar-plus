@@ -1,6 +1,6 @@
 {
     "name": "calendar-plus",
-    "version": "2.2.6-2",
+    "version": "2.2.13",
     "description": "Calendar+",
     "main": "gulpfile.babel.js",
     "dependencies": {
@@ -30,7 +30,7 @@
         "foundation-sites": "^6.5.3",
         "friendly-errors-webpack-plugin": "^1.7.0",
         "gulp": "^4.0.0",
-        "gulp-archiver": "^1.0.0",
+        "gulp-zip": "^5.1.0",
         "gulp-clean": "^0.4.0",
         "gulp-composer": "^0.4.5",
         "gulp-copy": "^4.0.1",
