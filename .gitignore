@@ -1,3 +1,7 @@
 node_modules/
 dist/
 calendar-plus.*.zip
+vendor/squizlabs
+vendor/composer
+vendor/bin/phpcs
+vendor/bin/phpcbf
