@@ -1,7 +1,9 @@
 node_modules/
 dist/
 calendar-plus.*.zip
+vendor/bin
+#vendor/composer/
+vendor/dealerdirect
+vendor/phpunit
 vendor/squizlabs
-vendor/composer
-vendor/bin/phpcs
-vendor/bin/phpcbf
+vendor/wp-coding-standards

@@ -10,7 +10,7 @@ import zip from 'gulp-zip';
 const pkg = require('./package.json');
 
 const phpFiles = ['*.php', 'admin/**/*.php', 'includes/**/*.php', 'public/**/*.php', 'eb-mods/*.php'];
-const excludeFiles = ['node_modules/**/*', 'dist/**/*', 'gulpfile.babel.js'];
+const excludeFiles = ['node_modules/**/*', 'dist/**/*', 'gulpfile.babel.js', 'vendor/dealerdirect/**/*', 'vendor/wp-coding-standards/**/*', 'vendor/bin/**/*', 'vendor/phpunit/**/*'];
 
 /**
  * Run PHP CodeSniffer
@@ -59,7 +59,7 @@ gulp.task('clean', () => {
  */
 gulp.task('copy', () => {
     console.log('🔹 Copying project files...');
-    return gulp.src(['**/*', ...excludeFiles.map(path => `!${path}`)], { dot: true })
+    return gulp.src(['**/*', ...excludeFiles.map(path => `!${path}`)], { dot: true, nodir: true })
         .pipe(gulp.dest('dist/' + pkg.name));
 });
 
