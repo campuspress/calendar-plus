@@ -64,9 +64,6 @@ class Calendar_Plus_Upgrader {
 	}
 
 	private static function upgrade_2_0_alpha_1() {
-
-		calendarp_get_event_type_term_ids();
-
 		$recurrent_events = get_posts(
 			array(
 				'post_status'    => array( 'any', 'trash' ),
@@ -87,7 +84,6 @@ class Calendar_Plus_Upgrader {
 			delete_post_meta( $event_id, '_recurrence' );
 			calendarp_update_event_type_recurrence( $event_id, true );
 		}
-
 	}
 
 	private static function upgrade_2_0_alpha_2() {

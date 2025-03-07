@@ -43,7 +43,6 @@ class Calendar_Plus_Activator {
 		}
 
 		self::create_roles();
-		calendarp_get_event_type_term_ids();
 
 		calendarp_set_old_dates_cron();
 	}

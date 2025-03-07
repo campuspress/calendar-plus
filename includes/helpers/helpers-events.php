@@ -648,42 +648,25 @@ function _calendarp_group_events_by_date( $results ) {
 	return $grouped_events;
 }
 
-function calendarp_get_event_type_term_ids() {
-	$defaults = array(
-		'recurrent' => 0,
-		'datespan'  => 0,
-	);
-
-	$term_ids = get_option( 'calendarp_event_type_term_ids', array() );
-	$term_ids = wp_parse_args( $term_ids, $defaults );
-
-	$updated = false;
-	foreach ( $term_ids as $term_name => $term_id ) {
-
-		$term = get_term( $term_id );
-		if (
-			is_wp_error( $term ) ||
-			! $term ||
-			'calendar_event_type' !== $term->taxonomy ||
-			$term_name !== $term->slug
-		) {
-			$term = wp_insert_term( $term_name, 'calendar_event_type' );
-			if ( is_array( $term ) ) {
-				$term_ids[ $term_name ] = $term['term_id'];
-				$updated = true;
-			}
-		}
-	}
-
-	if ( $updated ) {
-		update_option( 'calendarp_event_type_term_ids', $term_ids );
-	}
-
-	return $term_ids;
-}
-
+/**
+ * Retrieves the term ID for a specific calendar event type.
+ *
+ * @param string $type Event type slug.
+ *
+ * @return int|false Term ID if found, or false if not.
+ */
 function calendarp_get_event_type_term_id( $type ) {
-	$term_ids = calendarp_get_event_type_term_ids();
+	$term = get_term_by( 'slug', $type, 'calendar_event_type' );
 
-	return isset( $term_ids[ $type ] ) ? $term_ids[ $type ] : false;
+	if ( $term && ! is_wp_error( $term ) ) {
+		return $term->term_id;
+	}
+
+	$term = wp_insert_term( $type, 'calendar_event_type' );
+
+	if ( ! is_wp_error( $term ) && isset( $term['term_id'] ) ) {
+		return $term['term_id'];
+	}
+
+	return false;
 }
