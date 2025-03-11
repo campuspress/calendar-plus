@@ -100,7 +100,7 @@ class Calendar_Plus_iCal_Generator {
 	 * @return string
 	 */
 	public function convert_datetime( $datetime ) {
-		return gmdate( self::ICAL_DATE_FORMAT, strtotime( gmdate( $datetime ) ) );
+		return gmdate( self::ICAL_DATE_FORMAT, strtotime( get_gmt_from_date( $datetime ) ) );
 	}
 
 	/**
