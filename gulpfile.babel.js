@@ -10,7 +10,7 @@ import zip from 'gulp-zip';
 const pkg = require('./package.json');
 
 const phpFiles = ['*.php', 'admin/**/*.php', 'includes/**/*.php', 'public/**/*.php', 'eb-mods/*.php'];
-const excludeFiles = ['node_modules/**/*', 'dist/**/*', 'gulpfile.babel.js', 'vendor/dealerdirect/**/*', 'vendor/wp-coding-standards/**/*', 'vendor/bin/**/*', 'vendor/phpunit/**/*'];
+const excludeFiles = ['node_modules/**/*', 'dist/**/*', 'gulpfile.babel.js', 'vendor/dealerdirect/**/*', 'vendor/squizlabs/**/*', 'vendor/wp-coding-standards/**/*', 'vendor/bin/**/*', 'vendor/phpunit/**/*'];
 
 /**
  * Run PHP CodeSniffer
