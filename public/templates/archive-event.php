@@ -1,9 +1,12 @@
 <?php
+/*
+ * Legacy theme Integration method.
+ * This file is used to display the event archive page.
+ */
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
-
 ?>
 
 <?php get_header( 'calendar-plus' ); ?>

@@ -18,23 +18,28 @@ class Calendar_Plus_Query {
 	 * @param WP_Query $query
 	 */
 	public function pre_get_posts( $query ) {
-
-		if( $query->get( 'post_type' ) != 'calendar_event' || !empty( $query->get( 'post__in' ) ) || $query->is_single() ) {
+		if( ! empty( $query->get( 'post__in' ) ) || $query->is_single() ) {
+			return;
+		}
+		if( $query->get( 'post_type' ) != 'calendar_event' && ! $query->is_tax( get_object_taxonomies( 'calendar_event' ) ) ) {
 			return;
 		}
 		
 		if( ! wp_is_block_theme() ) {
-			$events_page_id = absint( calendarp_get_setting( 'events_page_id' ) );
-			if ( isset( $query->queried_object_id ) && $query->queried_object_id === $events_page_id ) {
-				$query->set( 'post_type', 'calendar_event' );
-				$query->set( 'page', '' );
-				$query->set( 'pagename', '' );
-
-				$query->is_post_type_archive = true;
-				$query->is_singular = false;
-				$query->is_page = false;
-				$query->is_archive = true;
-
+			$legacy_integration = calendarp_get_setting( 'legacy_theme_integration' );
+			if( ! empty( $legacy_integration ) ) {
+				$events_page_id = absint( calendarp_get_setting( 'events_page_id' ) );
+				if ( isset( $query->queried_object_id ) && $query->queried_object_id === $events_page_id ) {
+					//TODO we don't get here
+					$query->set( 'post_type', 'calendar_event' );
+					$query->set( 'page', '' );
+					$query->set( 'pagename', '' );
+	
+					$query->is_post_type_archive = true;
+					$query->is_singular = false;
+					$query->is_page = false;
+					$query->is_archive = true;
+				}
 			}
 		}
 

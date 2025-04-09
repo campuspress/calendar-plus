@@ -59,8 +59,8 @@ class Calendar_Plus_Upgrader {
 		if ( version_compare( $current_version, '2.0-alpha-4', '<' ) ) {
 			self::upgrade_2_0_alpha_4();
 		}
-		if( version_compare( $current_version, '2.2.6.8', '<' ) ) {
-			self::upgrade_2_2_6_8();
+		if( version_compare( $current_version, '2.3.0', '<' ) ) {
+			self::upgrade_2_3_0();
 		}
 
 		update_option( 'calendar-plus-version', calendarp_get_version() );
@@ -118,10 +118,9 @@ class Calendar_Plus_Upgrader {
 		$model->create_calendar_table();
 	}
 
-	private static function upgrade_2_2_6_8() {
+	private static function upgrade_2_3_0() {
 		calendarp_update_settings( array(
-			'single_event_template_source' => 'calendar_plus',
-			'event_archive_template_source' => 'calendar_plus',
+			'legacy_theme_integration' => '1',
 		) );
 	}
 }

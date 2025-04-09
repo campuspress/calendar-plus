@@ -153,7 +153,7 @@ class Calendar_Plus {
 	 * @return Calendar_Plus object
 	 */
 	public static function get_instance() {
-		if ( ! self::$instance ) {
+		if ( ! isset( self::$instance ) ) {
 			self::$instance = new self();
 		}
 
@@ -211,7 +211,6 @@ class Calendar_Plus {
 
 		new Calendar_Plus_Blocks();
 
-		new Calendar_Plus_Theme_Compat();
 		// Google Calendar
 		//      $this->google_calendar = new Calendar_Plus_Google_Calendar();
 
@@ -245,6 +244,7 @@ class Calendar_Plus {
 		require_once $includes_dir . 'calendar/class-calendar-plus-calendar.php';
 		require_once $includes_dir . 'class-calendar-plus-settings.php';
 
+		require_once $includes_dir . 'helpers/helpers-settings.php';
 		require_once $includes_dir . 'helpers/helpers-events.php';
 		require_once $includes_dir . 'helpers/helpers-locations.php';
 		require_once $includes_dir . 'helpers/helpers-timetables.php';
@@ -259,8 +259,6 @@ class Calendar_Plus {
 		require_once $includes_dir . 'widgets/class-calendar-plus-this-month-events-widget.php';
 		require_once $includes_dir . 'widgets/class-calendar-plus-calendar-widget.php';
 		require_once $includes_dir . 'widgets/class-calendar-plus-events-list-widget.php';
-
-		require_once $includes_dir . 'class-calendar-plus-theme-compat.php';
 	}
 
 	public function init() {

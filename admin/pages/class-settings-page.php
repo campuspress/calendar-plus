@@ -157,8 +157,13 @@ class Calendar_Plus_Admin_Settings_Page {
 							'title' => __( 'Replace Calendar Plus sidebar for', 'calendar-plus' ),
 							'args'  => $settings['replace_sidebar'],
 						),
+						'general-main-legacy-theme-integration'            => array(
+							'title' => __( 'Theme Integration', 'calendar-plus' ),
+							'args'  => $settings['legacy_theme_integration'],
+							'sanitize' => 'isset',
+						),
 					),
-				),
+				),	
 				'gmaps'   => array(
 					'title'  => __( 'Google Maps', 'calendar-plus' ),
 					'fields' => array(
@@ -166,19 +171,6 @@ class Calendar_Plus_Admin_Settings_Page {
 							'title'    => '<label for="gmaps_api_key">' . __( 'Google Maps API Key', 'calendar-plus' ) . '</label>',
 							'args'     => $settings['gmaps_api_key'],
 							'sanitize' => 'sanitize_text_field',
-						),
-					),
-				),
-				'templates'   => array(
-					'title'  => __( 'Templates', 'calendar-plus' ),
-					'fields' => array(
-						'single-event-template-source' => array(
-							'title'    => __( 'Single event template', 'calendar-plus' ),
-							'args'     => $settings['single_event_template_source'],
-						),
-						'event-archive-template-source' => array(
-							'title'    => __( 'Event archive template', 'calendar-plus' ),
-							'args'     => $settings['event_archive_template_source'],
 						),
 					),
 				),
@@ -373,9 +365,7 @@ class Calendar_Plus_Admin_Settings_Page {
 			}
 		} elseif ( isset( $input['submit-general'] ) ) {
 			$settings['display_location_country'] = isset( $input['display_location_country'] );
-			if( isset( $input['single_event_template_source'] ) && in_array( $input['single_event_template_source'], array('calendar_plus', 'theme_default') ) ) {
-				$settings['single_event_template_source'] = $input['single_event_template_source'];
-			}
+			$settings['legacy_theme_integration'] = isset( $input['legacy_theme_integration'] );
 
 		} elseif ( isset( $input['submit-ical-import'] ) ) {
 

@@ -1,9 +1,12 @@
 <?php
+/*
+ * Legacy theme Integration method.
+ * This file is used to display the single events page.
+ */
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
-
 ?>
 
 

@@ -292,32 +292,20 @@ class Calendar_Plus_Settings_Fields {
 
 	}
 
-	function render_single_event_template_source_field( $value ) {
+	function render_general_main_legacy_theme_integration_field( $args ) {
 		?>
-        <select name="<?php echo calendarp_get_settings_slug(); ?>[single_event_template_source]">
-            <option value="calendar_plus_v2" <?php selected( $value, 'calendar_plus' ); ?>>
-				<?php _e( 'Calendar plus theme compat', 'calendar-plus' ); ?>
-            </option>
-            <option value="calendar_plus" <?php selected( $value, 'calendar_plus' ); ?>>
-				<?php _e( 'Calendar plus template', 'calendar-plus' ); ?>
-            </option>
-        </select>
+
+		<fieldset>
+			<legend class="screen-reader-text">
+				<span>Search engine visibility</span>
+			</legend>
+			<label for="legacy_theme_integration">
+				<input name="<?php echo calendarp_get_settings_slug(); ?>[legacy_theme_integration]" type="checkbox" id="legacy_theme_integration" value="1" <?php checked( $args ); ?>>
+				<?php _e( 'Use legacy theme integration method', 'calendar-plus' ); ?>
+			</label>
+			<p class="description"><?php _e( 'In rare cases, enabling may help with potential display issues.', 'calendar-plus' ); ?></p>
+		</fieldset>
 		<?php
-
-	}
-
-	function render_event_archive_template_source_field( $value ) {
-		?>
-        <select name="<?php echo calendarp_get_settings_slug(); ?>[event_archive_template_source]">
-            <option value="calendar_plus_v2" <?php selected( $value, 'calendar_plus' ); ?>>
-				<?php _e( 'Calendar plus theme compat', 'calendar-plus' ); ?>
-            </option>
-            <option value="calendar_plus" <?php selected( $value, 'calendar_plus' ); ?>>
-				<?php _e( 'Calendar plus template', 'calendar-plus' ); ?>
-            </option>
-        </select>
-		<?php
-
 	}
 
 	function render_export_fields_field() {

@@ -65,8 +65,7 @@ class Calendar_Plus_Settings {
 			'gcal_calendar_id'         => '',
 			'gmaps_api_key'            => '',
 			'ical_feed'                => '',
-			'single_event_template_source' => 'calendar_plus_v2',
-			'event_archive_template_source' => 'calendar_plus_v2',
+			'legacy_theme_integration' => '',
 		);
 
 		return apply_filters( 'calendarp_default_settings', $defaults );
@@ -89,20 +88,4 @@ class Calendar_Plus_Settings {
 		return $this->settings_slug;
 	}
 
-}
-
-function calendarp_get_settings() {
-	return calendar_plus()->settings->get_settings();
-}
-
-function calendarp_get_setting( $name ) {
-	return calendar_plus()->settings->get_setting( $name );
-}
-
-function calendarp_update_settings( $new_settings ) {
-	calendar_plus()->settings->update_settings( $new_settings );
-}
-
-function calendarp_get_settings_slug() {
-	return calendar_plus()->settings->get_settings_slug();
 }
