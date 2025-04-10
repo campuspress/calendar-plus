@@ -28,8 +28,8 @@ class Calendar_Plus_GCal_Calendar_Button extends Calendar_Plus_Calendar_Button i
 			$format = 'Ymd\THis\Z';
 		}
 
-		$dates = gmdate( $format, $args['from'] )
-		         . '/' . gmdate( $format, $args['to'] );
+		$dates = get_gmt_from_date( date( 'Y-m-d H:i:s', $args['from'] ), $format )
+			. '/' . get_gmt_from_date( date( 'Y-m-d H:i:s', $args['to'] ), $format );
 
 		return add_query_arg(
 			array(
