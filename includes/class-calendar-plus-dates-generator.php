@@ -278,6 +278,10 @@ class Calendar_Plus_Dates_Generator {
 			update_option( 'calendarp_first_date_generated', $delete_from );
 			self::clear_cached_months();
 		}
+
+		// Lets use this opportunity to store the last known total dates
+		$total_old_dates = (int) $wpdb->get_var( "SELECT COUNT(ID) FROM $table" );
+		update_option( 'calendarp_last_known_total_dates', $delete_from );
 	}
 
 
