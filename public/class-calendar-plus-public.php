@@ -77,12 +77,10 @@ class Calendar_Plus_Public {
 		require_once calendarp_get_plugin_dir() . 'public/helpers-templates.php';
 		require_once calendarp_get_plugin_dir() . 'public/templates-hooks.php';
 
-		$legacy_integration = calendarp_get_setting( 'legacy_theme_integration' );
-		if( ! empty( $legacy_integration ) ) {
-			require_once calendarp_get_plugin_dir() . 'public/legacy/helpers-templates.php';
-			require_once calendarp_get_plugin_dir() . 'public/legacy/templates-hooks.php';
-		}
+		
 		require_once calendarp_get_plugin_dir() . 'public/integration/integration.php';
+		require_once calendarp_get_plugin_dir() . 'public/legacy/helpers-templates.php';
+		require_once calendarp_get_plugin_dir() . 'public/legacy/templates-hooks.php';
 	}
 
 	public function enqueue_scripts() {

@@ -9,33 +9,6 @@
  * PLUGABLE FUNCTIONS
  */
 
- if ( ! function_exists( 'calendarp_template_title' ) ) {
-	function calendarp_get_template_title() {
-
-		$events_page_id = calendarp_get_setting( 'events_page_id' );
-
-		$title = '';
-		if ( isset( $_GET['calendarp_search'] ) ) {
-			$title = __( 'Search Results', 'calendar-plus' );
-		} else {
-			if ( is_search() ) {
-				$title = sprintf( __( 'Search Results: %s', 'calendar-plus' ), get_search_query() );
-			} elseif ( is_tax() ) {
-				$title = sprintf( __( 'Event Category: %s', 'calendar-plus' ), single_term_title( '', false ) );
-			} elseif ( $events_page_id && is_page( $events_page_id ) ) {
-				$title = get_the_title( $events_page_id );
-			} else {
-				$post_type_obj = get_post_type_object( 'calendar_event' );
-				$title = $post_type_obj->labels->name;
-			}
-		}
-
-		$title = apply_filters( 'calendarp_template_title', $title );
-
-		return $title;
-	}
-}
-
 if ( ! function_exists( 'calendarp_advanced_search_title' ) ) {
 	function calendarp_advanced_search_title() {
 		if ( isset( $_GET['calendarp_searchw'] ) ) {

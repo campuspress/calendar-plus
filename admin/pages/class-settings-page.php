@@ -130,7 +130,7 @@ class Calendar_Plus_Admin_Settings_Page {
 	private function get_fields() {
 		$settings = calendarp_get_settings();
 
-		return array(
+		$fields = array(
 			'general'     => array(
 				'general' => array(
 					'title'  => null,
@@ -220,6 +220,8 @@ class Calendar_Plus_Admin_Settings_Page {
 				),
 			),
 		);
+
+		return $fields;
 	}
 
 	public function register_settings() {
