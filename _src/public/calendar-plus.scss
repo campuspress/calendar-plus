@@ -1,18 +1,15 @@
+
 @import 'settings';
-@import 'components/global';
 @import 'components/button';
-@import 'components/table';
+
 @import 'components/calendar';
+
 @import 'components/visibility';
-@import 'typography/typography';
+
 @import 'components/react-calendar';
 
 .calendar-plus {
 	@include react-calendar-default-styles;
-	@include calendar-plus-global-styles;
-	@include calendar-plus-typography;
-	@include calendar-plus-button;
-	@include calendar-plus-table;
 	@include calendar-plus-visibility-classes;
 	@include calendar-plus-calendar;
 }

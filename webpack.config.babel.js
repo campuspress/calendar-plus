@@ -1,13 +1,15 @@
 'use strict';
 
-import merge from 'webpack-merge';
-import calendar_plus from './build/webpack.calendar-plus.js';
-import FriendlyErrorsWebpackPlugin from '@nuxt/friendly-errors-webpack-plugin';
+import { merge } from 'webpack-merge'; // webpack-merge v5+ uses named import
+import calendar_plus from './build/webpack.calendar-plus';
+import FriendlyErrorsWebpackPlugin from '@soda/friendly-errors-webpack-plugin'; // Use the maintained fork for webpack 5
 
-module.exports = function(env, argv) {
+module.exports = (env) => {
 
 	const defaults = {
-		include: []
+		include: [],
+		production: false,
+		mode: 'production'
 	};
 
 	env = Object.assign({}, defaults, env);
@@ -16,11 +18,10 @@ module.exports = function(env, argv) {
 		env.include = env.include.split(',');
 	}
 
-	const mode = argv.mode ?? 'production';
-	let config = calendar_plus(mode);
+	let config = calendar_plus(env.production);
 
 	if (env.include.length > 0) {
-		config.filter((c) => env.include.includes(c.name));
+		config = config.filter((c) => env.include.includes(c.name)); // Fix: assign filtered array
 	}
 
 	const common_config = {
@@ -31,6 +32,8 @@ module.exports = function(env, argv) {
 
 	// Add common config to all configs
 	config = config.map((c) => merge([c, common_config]));
+
+	// NOTE: Ensure all plugins/loaders are compatible with webpack 5 (see migration guide)
 
 	return config;
 };

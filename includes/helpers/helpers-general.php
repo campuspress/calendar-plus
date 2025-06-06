@@ -656,11 +656,21 @@ function calendarp_enqueue_public_script_and_styles() {
 }
 
 function calendarp_enqueue_public_styles() {
-	wp_enqueue_style(
-		'calendar-plus-calendar',
-		calendarp_get_plugin_url() . 'public/css/calendar-plus.css',
-		[], calendarp_get_version()
-	);
+	$legacy_integration = calendarp_get_setting( 'legacy_theme_integration' );
+	if( ! empty( $legacy_integration ) ) {
+		wp_enqueue_style(
+			'calendar-plus-calendar-legacy',
+			calendarp_get_plugin_url() . 'public/css/calendar-plus-legacy.css',
+			[], calendarp_get_version()
+		);
+	}
+	else {
+		wp_enqueue_style(
+			'calendar-plus-calendar',
+			calendarp_get_plugin_url() . 'public/css/calendar-plus.css',
+			[], calendarp_get_version()
+		);
+	}
 
 	wp_enqueue_script(
 		'calendar-plus-calendar',

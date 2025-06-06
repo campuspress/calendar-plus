@@ -1,8 +1,8 @@
 'use strict';
 
 const path = require('path');
-const merge = require('webpack-merge');
-const MiniCssExtractPlugin = require('mini-css-extract-plugin');
+const { merge } = require('webpack-merge'); // webpack-merge v5+ uses named import
+const MiniCssExtractPlugin = require('mini-css-extract-plugin'); // Use mini-css-extract-plugin for webpack 5
 
 const plugin_path = path.join(__dirname, '..');
 const src_path = path.join(plugin_path, '_src');
@@ -12,13 +12,16 @@ const calendar_path = path.join(src_path, 'calendar');
 // This section, generates a file called foundation.js that contains all CSS styles in a variable
 // But then ExtractTextPlugin will move it to a CSS file
 const extractSass = new MiniCssExtractPlugin({
-	filename: getPath => getPath('[name].css').replace('css/js', 'css')
+	filename: ({ chunk }) => {
+		// Replicate the old filename logic if needed
+		return '[name].css';
+	}
 });
 
 const postcss_options = {
 	postcssOptions: {
 		plugins: [
-			'autoprefixer'
+			require('autoprefixer')()
 		]
 	}
 };
@@ -35,14 +38,6 @@ const configs = [
 		output: {
 			filename: '[name].js',
 			path: path.resolve(plugin_path, 'admin/js')
-		}
-	},
-	{
-		name: 'front',
-		entry: calendar_path,
-		output: {
-			filename: 'calendar-plus.js',
-			path: path.join(plugin_path, 'public/js')
 		},
 		module: {
 			rules: [
@@ -59,29 +54,15 @@ const configs = [
 				},
 				{
 					test: /\.css$/,
-					use: [
-						'style-loader',
-					]
-				},
-				{
-					test: /\.css$/,
-					loader: 'css-loader',
-					options: {
-						modules: true
-					}
-				},
-				{
-					test: /\.css$/,
-					loader: 'postcss-loader',
-					options: postcss_options
+					use: [MiniCssExtractPlugin.loader, 'css-loader', 'postcss-loader']
 				},
 				{
 					test: /\.scss$/,
 					use: [
-						'style-loader', // creates style nodes from JS strings
+						MiniCssExtractPlugin.loader,
 						{
-							loader: 'css-loader', // translates CSS into CommonJS
-							options: {modules: true}
+							loader: 'css-loader',
+							options: { modules: true }
 						},
 						{
 							loader: 'postcss-loader',
@@ -90,7 +71,7 @@ const configs = [
 						{
 							loader: 'sass-loader', // compiles Sass to CSS
 							options: {
-								sassOptions: {includePaths: [calendar_path]}
+								sassOptions: { includePaths: [calendar_path] },
 							}
 						}
 					]
@@ -99,9 +80,58 @@ const configs = [
 		}
 	},
 	{
+		name: 'front',
+		entry: calendar_path,
+		output: {
+			filename: 'calendar-plus.js',
+			path: path.join(plugin_path, 'public/js')
+		},
+		module: {
+			rules: [
+				{
+					test: /\.js$/,
+					loader: 'babel-loader',
+					options: {
+						presets: ['@babel/preset-env', '@babel/preset-react'],
+						plugins: ['transform-class-properties']
+					},
+					include: [
+						path.resolve(path.join(calendar_path, 'react-calendar'))
+					]
+				},
+				{
+					test: /\.css$/,
+					use: [MiniCssExtractPlugin.loader, 'css-loader', 'postcss-loader']
+				},
+				{
+					test: /\.scss$/,
+					use: [
+						MiniCssExtractPlugin.loader,
+						{
+							loader: 'css-loader',
+							options: { modules: true }
+						},
+						{
+							loader: 'postcss-loader',
+							options: postcss_options
+						},
+						{
+							loader: 'sass-loader', // compiles Sass to CSS
+							options: {
+								sassOptions: { includePaths: [calendar_path] },
+							}
+						}
+					]
+				}
+			]
+		},
+		plugins: [extractSass]
+	},
+	{
 		name: 'public',
 		entry: {
 			'calendar-plus': path.join(src_path, 'public/calendar-plus.scss'),
+			'calendar-plus-legacy': path.join(src_path, 'public/calendar-plus-legacy.scss'),
 			'calendar-plus-events-by-cat-shortcode': path.join(src_path, 'public/calendar-plus-events-by-cat-shortcode.scss'),
 		},
 		output: {
@@ -109,35 +139,35 @@ const configs = [
 			path: path.resolve(path.join(plugin_path, 'public/css'))
 		},
 		module: {
-			rules: [{
-				test: /\.scss$/,
-				// Extract CSS from foundation.js and move it to a css file
-				use: [
-					// 3. translates CSS into CommonJS
-					{
-						loader: 'css-loader',
-						options: {sourceMap: true}
-					},
-					// 2. runs post-compilation transformations
-					{
-						loader: 'postcss-loader',
-						options: postcss_options,
-					},
-					// 1. compiles Sass to CSS
-					{
-						loader: 'sass-loader',
-						options: {sourceMap: true}
-					},
-				]
-			}]
+			rules: [
+				{
+					test: /\.scss$/,
+					use: [
+						MiniCssExtractPlugin.loader,
+						{
+							loader: 'css-loader',
+							options: { sourceMap: true }
+						},
+						{
+							loader: 'postcss-loader',
+							options: postcss_options
+						},
+						{
+							loader: 'sass-loader',
+							options: {
+								sourceMap: true
+							}
+						}
+					]
+				}
+			]
 		},
 		plugins: [extractSass]
 	}
 ];
 
-module.exports = function (production) {
+module.exports = (production) => {
 	return configs.map(c => merge(c, {
-		devtool: production ? 'source-map' : 'eval-source-map',
-		mode: production ? 'production' : 'development'
+		devtool: production ? 'source-map' : 'eval-source-map'
 	}));
 };
