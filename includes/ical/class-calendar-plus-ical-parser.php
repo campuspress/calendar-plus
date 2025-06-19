@@ -145,6 +145,8 @@ class Calendar_Plus_iCal_Parser {
 
 			$content = html_entity_decode( $content );
 
+			$cast_timezone = true;
+
 			//dtstart has to be set but, dtend not always.
 			$start_date_tz = $calendar_tz;
 			if ( $_event->dtstart_array ) {
@@ -159,10 +161,15 @@ class Calendar_Plus_iCal_Parser {
 					// Set start time to begining
 					$_event->dtstart .= 'T';
 					$_event->all_day  = true;
+					$cast_timezone    = false;
 				}
 			}
 
-			$from = self::cast_date_timezones( $_event->dtstart, $start_date_tz, $local_tz );
+			if ( $_event->all_day && ! $cast_timezone ) {
+				$from = self::cast_date_without_timezones( $_event->dtstart );
+			} else {
+				$from = self::cast_date_timezones( $_event->dtstart, $start_date_tz, $local_tz );
+			}
 
 			$end_date_tz = $calendar_tz;
 			if( isset( $_event->dtend ) && $_event->dtend ) {
@@ -180,7 +187,12 @@ class Calendar_Plus_iCal_Parser {
 					}
 				}
 				$end_date_tz = $end_date_tz ?: $calendar_tz;
-				$to = self::cast_date_timezones( $_event->dtend, $end_date_tz, $local_tz );
+
+				if ( $_event->all_day && ! $cast_timezone ) {
+					$to = self::cast_previous_date_without_timezones( $_event->dtend );
+				} else {
+					$to = self::cast_date_timezones( $_event->dtend, $end_date_tz, $local_tz );
+				}
 			}
 			else {
 				$to = $from;
@@ -532,5 +544,41 @@ class Calendar_Plus_iCal_Parser {
 
 		//Its not easy to get time zone based timestamp. Hack was needed.
 		return strtotime( $date->format( 'Y-m-d H:i:s' ) );
+	}
+
+	/**
+	 * Transform a date to given format without changing timezones.
+	 *
+	 * @param string $date
+	 *
+	 * @return int New timestamp
+	 */
+	private static function cast_date_without_timezones( $date ) {
+		$date = date_create( $date );
+
+		if ( ! $date ) {
+			return '';
+		}
+
+		//Its not easy to get time zone based timestamp. Hack was needed.
+		return strtotime( $date->format( 'Y-m-d H:i:s' ) );
+	}
+
+	/**
+	 * Casts a date to previous day without changing timezones.
+	 *
+	 * @param string $date
+	 *
+	 * @return int New timestamp
+	 */
+	private static function cast_previous_date_without_timezones( $date ) {
+		$date = date_create( $date );
+
+		if ( ! $date ) {
+			return '';
+		}
+
+		//Its not easy to get time zone based timestamp. Hack was needed.
+		return strtotime( $date->format( 'Y-m-d H:i:s' ) . ' -1 day' );
 	}
 }
