@@ -165,8 +165,8 @@ class Calendar_Plus_iCal_Parser {
 				}
 			}
 
-			if ( ! $cast_timezone ) {
-				$from = self::cast_date_without_timezones( $_event->dtstart, $start_date_tz );
+			if ( $_event->all_day && ! $cast_timezone ) {
+				$from = self::cast_date_without_timezones( $_event->dtstart );
 			} else {
 				$from = self::cast_date_timezones( $_event->dtstart, $start_date_tz, $local_tz );
 			}
@@ -189,7 +189,7 @@ class Calendar_Plus_iCal_Parser {
 				$end_date_tz = $end_date_tz ?: $calendar_tz;
 
 				if ( $_event->all_day && ! $cast_timezone ) {
-					$to = self::cast_previous_date( $_event->dtend, $end_date_tz );
+					$to = self::cast_previous_date_without_timezones( $_event->dtend );
 				} else {
 					$to = self::cast_date_timezones( $_event->dtend, $end_date_tz, $local_tz );
 				}
@@ -550,13 +550,11 @@ class Calendar_Plus_iCal_Parser {
 	 * Transform a date to given format without changing timezones.
 	 *
 	 * @param string $date
-	 * @param DateTimeZone $from_tz The $date timezone
 	 *
 	 * @return int New timestamp
 	 */
-	private static function cast_date_without_timezones( $date, $from_tz ) {
-		// Set first the date with the iCal timezone
-		$date = date_create( $date, $from_tz );
+	private static function cast_date_without_timezones( $date ) {
+		$date = date_create( $date );
 
 		if ( ! $date ) {
 			return '';
@@ -570,13 +568,11 @@ class Calendar_Plus_iCal_Parser {
 	 * Casts a date to previous day without changing timezones.
 	 *
 	 * @param string $date
-	 * @param DateTimeZone $from_tz The $date timezone
 	 *
 	 * @return int New timestamp
 	 */
-	private static function cast_previous_date( $date, $from_tz ) {
-		// Set first the date with the iCal timezone
-		$date = date_create( $date, $from_tz );
+	private static function cast_previous_date_without_timezones( $date ) {
+		$date = date_create( $date );
 
 		if ( ! $date ) {
 			return '';
