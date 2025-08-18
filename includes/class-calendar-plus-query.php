@@ -6,7 +6,14 @@ class Calendar_Plus_Query {
 
 	public function __construct() {
 
-		$this->query_vars = array( 'from', 'to', 'location', 'calendarp_searchw', 'order' );
+		$this->query_vars = array( 'location', 'calendarp_searchw', 'order' );
+
+		// "to" and "from" query vars can lead to heavy queries, lets only allow them if total dates is below the limit
+		$last_known_total_dates = (int) get_option( 'calendarp_last_known_total_dates', 0 );
+		if( $last_known_total_dates < apply_filters( 'calendarp_heavy_query_vars_total_dates_limit', 500 ) ) {
+			$this->query_vars[] = 'from';
+			$this->query_vars[] = 'to';
+		}
 
 		if ( ! is_admin() ) {
 			add_action( 'pre_get_posts', array( $this, 'pre_get_posts' ) );
