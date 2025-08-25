@@ -123,7 +123,7 @@ class Calendar_Plus_Query {
 		}
 
 		if ( ! $from_is_date && ! $to_is_date ) {
-			$date = date( 'Y-m-d', strtotime("yesterday") );
+			$date = date( 'Y-m-d', strtotime("today") );
 			$where_not[] = $wpdb->prepare( 'cal.until_date < %s', $date );
 		}
 
