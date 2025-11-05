@@ -202,6 +202,8 @@ class Calendar_Plus_iCal_Sync {
 
 		if ( $event_data['all_day'] ) {
 			update_post_meta( $post_id, '_all_day', 1 );
+		} else {
+			delete_post_meta( $post_id, '_all_day' );
 		}
 
 		update_post_meta( $post_id, '_ical_hash', $event_data_hash );
