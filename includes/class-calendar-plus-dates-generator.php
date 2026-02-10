@@ -375,6 +375,12 @@ class Calendar_Plus_Dates_Generator {
 			return;
 		}
 
+		if ( function_exists( 'wp_cache_set_last_changed' ) ) {
+			// Sets last changed date for calendarp:events cache group to now.
+			// This invalidates all cached queries for this group.
+			wp_cache_set_last_changed( 'calendarp:events' );
+		}
+
 		$wpdb->delete(
 			$wpdb->calendarp_min_max_dates,
 			array( 'event_id' => $event_id ),

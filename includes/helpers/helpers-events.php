@@ -456,6 +456,37 @@ function calendarp_get_events_in_date_range( $from = false, $to = false, $args =
 		'order'           => 'ASC',
 	) );
 
+	/*
+	|--------------------------------------------------------------------------
+	| Salted Cache Layer
+	|--------------------------------------------------------------------------
+	*/
+	if ( function_exists( 'wp_cache_get_last_changed' ) ) {
+		$last_changed = wp_cache_get_last_changed( 'calendarp:events' );
+	}
+
+	if ( function_exists( 'wp_cache_get_salted' ) ) {
+		$cache_group  = 'calendarp_cache';
+		$cache_args   = array(
+			'from' => $from,
+			'to'   => $to,
+			'args' => $args,
+		);
+
+		$cache_key = md5( wp_json_encode( $cache_args ) );
+
+		$cached = wp_cache_get_salted( $cache_key, $cache_group, $last_changed );
+
+		if ( false !== $cached ) {
+			return $cached;
+		}
+	}
+
+	/*
+	|--------------------------------------------------------------------------
+	| Build Query
+	|--------------------------------------------------------------------------
+	*/
 	if ( $from ) {
 		$from_date = date( 'Y-m-d', $from );
 	}
@@ -465,10 +496,9 @@ function calendarp_get_events_in_date_range( $from = false, $to = false, $args =
 	}
 
 	$select = "SELECT DISTINCT cal.* FROM $wpdb->calendarp_calendar cal";
+	$join   = "INNER JOIN $wpdb->posts p ON p.ID = cal.event_id ";
 
-	$join = "INNER JOIN $wpdb->posts p ON p.ID = cal.event_id ";
-
-	$term_ids = array();
+	$term_ids  = array();
 	$tax_names = array();
 
 	foreach ( array( 'category', 'tag' ) as $tax ) {
@@ -483,7 +513,7 @@ function calendarp_get_events_in_date_range( $from = false, $to = false, $args =
 
 		$args[ $tax ] = array_map( 'absint', $args[ $tax ] );
 
-		$term_ids = array_merge( $term_ids, $args[ $tax ] );
+		$term_ids    = array_merge( $term_ids, $args[ $tax ] );
 		$tax_names[] = 'calendar_event_' . $tax;
 	}
 
@@ -513,14 +543,15 @@ function calendarp_get_events_in_date_range( $from = false, $to = false, $args =
 
 	$event_ids = $args['include_ids'];
 
-	$where = array("p.post_status = 'publish'");
+	$where = array( "p.post_status = 'publish'" );
+
 	if ( $args['search'] ) {
 		$search_results = get_posts( array(
-			'post_type' => 'calendar_event',
-			's'         => $args['search'],
-			'fields'    => 'ids',
+			'post_type'      => 'calendar_event',
+			's'              => $args['search'],
+			'fields'         => 'ids',
 			'posts_per_page' => 500,
-			'orderby' => 'none'
+			'orderby'        => 'none'
 		) );
 
 		if ( empty( $search_results ) ) {
@@ -570,6 +601,7 @@ function calendarp_get_events_in_date_range( $from = false, $to = false, $args =
 	}
 
 	$query = "$select $join $where_not $where $order $limit";
+
 	$results = $wpdb->get_results( $query );
 	$results = apply_filters( 'calendarp_events_data', $results );
 
@@ -577,6 +609,20 @@ function calendarp_get_events_in_date_range( $from = false, $to = false, $args =
 		$data = _calendarp_group_events_by_date( $results );
 	} else {
 		$data = $results;
+	}
+
+	/*
+	|--------------------------------------------------------------------------
+	| Store Salted Cache
+	|--------------------------------------------------------------------------
+	*/
+	if ( function_exists( 'wp_cache_set_salted' ) ) {
+		wp_cache_set_salted(
+			$cache_key,
+			$data,
+			$cache_group,
+			$last_changed
+		);
 	}
 
 	return $data;
