@@ -135,18 +135,43 @@ class Calendar_Plus_Dates_Generator {
 			}
 		}
 
+		if ( function_exists( 'wp_cache_get_last_changed' ) ) {
+			$last_changed = wp_cache_get_last_changed( 'calendarp:events' );
+		}
+
 		$cache_args = $args;
 		$cache_args['month'] = $month;
 		$cache_args['year'] = $year;
 		$cache_key = wp_hash( maybe_serialize( $cache_args ) );
-		$month_dates = Calendar_Plus_Cache::get_cache( $cache_key, 'calendarp_months_dates' );
-		if ( false === $month_dates ) {
-			$from = strtotime( "$year-$month-01" );
 
-			$days_in_month = str_pad( date( 't', $from ), 2, '0', STR_PAD_LEFT );
-			$to = strtotime( "$year-$month-$days_in_month" );
-			$month_dates = calendarp_get_events_in_date_range( $from, $to, $args );
-			Calendar_Plus_Cache::set_cache( $cache_key, $month_dates, 'calendarp_months_dates' );
+		if ( function_exists( 'wp_cache_get_salted' ) ) {
+			$cache_group = 'calendarp_cache';
+
+			$month_dates = wp_cache_get_salted( $cache_key, $cache_group, $last_changed );
+
+			if ( false !== $month_dates ) {
+				return $month_dates;
+			}
+		}
+
+		$from = strtotime( "$year-$month-01" );
+
+		$days_in_month = str_pad( date( 't', $from ), 2, '0', STR_PAD_LEFT );
+		$to = strtotime( "$year-$month-$days_in_month" );
+		$month_dates = calendarp_get_events_in_date_range( $from, $to, $args );
+
+		/*
+		|--------------------------------------------------------------------------
+		| Store Salted Cache
+		|--------------------------------------------------------------------------
+		*/
+		if ( function_exists( 'wp_cache_set_salted' ) ) {
+			wp_cache_set_salted(
+				$cache_key,
+				$month_dates,
+				$cache_group,
+				$last_changed
+			);
 		}
 
 		return $month_dates;
