@@ -6,7 +6,7 @@ class Calendar_Plus_Calendar_Widget extends WP_Widget {
 		add_action( 'wp_ajax_nopriv_calendarp_widget_fetch_calendar', array( $this, 'fetch_calendar' ) );
 		add_action( 'wp_ajax_calendarp_widget_fetch_calendar', array( $this, 'fetch_calendar' ) );
 		$widget_ops = array( 'classname' => 'widget_calendar widget_calendar_plus', 'description' => __( 'A calendar of events.' ) );
-		parent::__construct( 'calendar-plus', __( 'Calendar+ Calendar', 'calendar-plus' ), $widget_ops );
+		parent::__construct( 'calendar-plus', __( 'Events Calendar', 'calendar-plus' ), $widget_ops );
 	}
 
 	/**
@@ -24,36 +24,17 @@ class Calendar_Plus_Calendar_Widget extends WP_Widget {
 		if ( $title ) {
 			echo $args['before_title'] . $title . $args['after_title'];
 		}
-		echo '<div id="calendar_wrap" class="calendar_wrap calendarp_calendar_wrap">';
 
 		$category = ! empty( $args['category'] ) ? $args['category'] : array();
-		calendarp_get_calendar_widget( true, true, false, array( 'category' => $category ) );
+		
+		$template_args = array(
+			'args'          => $args,
+			'instance'      => $instance,
+			'calendar_args' => array( 'category' => $category ),
+		);
 
-		echo '</div>';
+		calendarp_get_template( 'widgets/calendar.php', $template_args );
 
-		$gif_url = includes_url( 'images/spinner.gif', is_ssl() ? 'https' : 'http' );
-
-		echo <<<EOT
-	<style>
-		.calendarp-backdrop {
-			background-image: url( '$gif_url' );
-			background-color: white;
-			background-repeat: no-repeat;
-			background-position: center;
-			position:absolute;
-			top:0;
-			left:0;
-			right:0;
-			bottom:0;
-			opacity:0.7;
-			z-index:15000;
-			display:none;
-		}
-		.calendarp_calendar_wrap {
-			position:relative;
-		}
-	</style>
-EOT;
 		echo $args['after_widget'];
 
 		wp_enqueue_script(

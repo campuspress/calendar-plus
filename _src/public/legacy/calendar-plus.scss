@@ -1,0 +1,27 @@
+@import 'settings';
+
+// Legacy components (local)
+@import 'components/global';
+@import 'components/button';
+@import 'components/table';
+@import 'typography/typography';
+
+// Shared components (from parent)
+@import '../components/visibility';
+@import '../components/react-calendar';
+
+// Legacy components (local)
+@import 'components/calendar';
+
+.calendar-plus {
+	@include react-calendar-default-styles;
+	@include calendar-plus-global-styles;
+	@include calendar-plus-typography;
+	@include calendar-plus-button;
+	@include calendar-plus-table;
+	@include calendar-plus-visibility-classes;
+	@include calendar-plus-calendar;
+}
+
+@import 'components/templates';
+@import '../components/a8e-calendar';

@@ -18,7 +18,7 @@ class Calendar_Plus_Search_Widget extends WP_Widget {
 			'description' => __( 'A form for searching calendar events.', 'calendar-plus' )
 		);
 
-		parent::__construct( 'calendarp-search-widget', __( 'Calendar+ Search', 'calendar-plus' ), $widget_ops );
+		parent::__construct( 'calendarp-search-widget', __( 'Events Search', 'calendar-plus' ), $widget_ops );
 	}
 
 
@@ -78,41 +78,16 @@ class Calendar_Plus_Search_Widget extends WP_Widget {
 
 		$past_events = isset( $_GET['show-past-events'] );
 
-		?>
-		<form role="search" method="get" class="search-form" action="<?php echo esc_url( get_post_type_archive_link( 'calendar_event' ) ); ?>">
-			<p>
-				<input type="search" class="search-field" name="s"
-				       placeholder="<?php echo esc_attr_x( 'Search Events &hellip;', 'placeholder', 'calendar-plus' ); ?>"
-				       value="<?php echo esc_attr( get_search_query() ); ?>"
-				       title="<?php echo esc_attr_x( 'Search for events:', 'label', 'calendar-plus' ); ?>">
-			</p>
+		$template_args = array(
+			'args'          => $args,
+			'instance'      => $instance,
+			'from'          => $from,
+			'to'            => $to,
+			'location_args' => $location_args,
+			'category_args' => $category_args,
+		);
 
-			<p>
-				<label for="calendarp-search-from"><?php _e( 'From', 'calendar-plus' ); ?>
-					<br />
-					<input type="text" class="calendarp-datepicker" id="calendarp-search-from" name="from" value="<?php echo esc_attr( $from ); ?>">
-				</label>
-			</p>
-			<p>
-				<label for="calendarp-search-to"><?php _e( 'To', 'calendar-plus' ); ?>
-					<br />
-					<input type="text" class="calendarp-datepicker" id="calendarp-search-to" name="to" value="<?php echo esc_attr( $to ); ?>">
-				</label>
-			</p>
-
-			<p><?php calendarp_locations_dropdown( $location_args ); ?></p>
-
-			<p><?php wp_dropdown_categories( $category_args ); ?></p>
-
-			<input type="hidden" name="post_type" value="calendar_event" />
-			<input type="hidden" name="calendarp_searchw" value="true" />
-
-			<p>
-				<input type="submit" class="search-submit button calendarp-button"
-				       value="<?php echo esc_attr_x( 'Search', 'submit button' ); ?>">
-			</p>
-		</form>
-		<?php
+		calendarp_get_template( 'widgets/search.php', $template_args );
 
 		echo $args['after_widget'];
 	}

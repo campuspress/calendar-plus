@@ -1,43 +1,19 @@
-<div class="calendarp-event-shortcode">
-	<div class="calendarp-event-shortcode-header">
-		<?php echo calendarp_get_the_event_thumbnail( $event->ID, 'event_thumbnail' ); ?>
-		<h3>
-			<a href="<?php echo esc_attr( get_permalink( $event->ID ) ); ?>"
-				title="<?php esc_attr( sprintf( __( 'Permalink to %s', 'calendar-plus' ), get_permalink() ) ); ?>">
-				<?php echo get_the_title( $event->ID ); ?>
-			</a>
-		</h3>
-
-		<div class="event-meta">
-			<?php if ( $date = calendarp_event_human_read_dates( 'date', $event->ID ) ) : ?>
-				<div class="event-meta-item event-dates">
-					<span class="dashicons dashicons-calendar-alt"></span><?php echo $date; ?>
-				</div>
-			<?php endif; ?>
-
-			<?php if ( $recurrence = calendarp_event_human_read_dates( 'recurrence', $event->ID ) ) : ?>
-				<div class="event-meta-item event-recurrence">
-					<span class="dashicons dashicons-update"></span><?php echo $recurrence; ?>
-				</div>
-			<?php endif; ?>
-
-			<?php if ( $time = calendarp_event_human_read_dates( 'time', $event->ID ) ) : ?>
-				<div class="event-meta-item event-time">
-					<span class="dashicons dashicons dashicons-clock"></span><?php echo $time; ?>
-				</div>
-			<?php endif; ?>
-
-			<div class="event-meta-item event-categories">
-				<?php calendarp_event_categories_list( $event->ID ); ?>
-			</div>
-
-			<div class="event-meta-item event-calendars" style="overflow: hidden">
-				<?php _e( 'Add to', 'calendar-plus' ); ?>:
-				<?php calendarp_event_add_to_calendars_links( $event->ID ); ?>
-			</div>
+<div class="cal-plus-event cal-plus-event--shortcode">
+	<?php if ( has_post_thumbnail( $event->ID ) ) : ?>
+		<div class="cal-plus-event__thumbnail">
+			<?php echo calendarp_get_the_event_thumbnail( $event->ID, 'event_thumbnail' ); ?>
 		</div>
-	</div>
-	<div class="calendarp-event-shortcode-content">
+	<?php endif; ?>
+
+	<h3 class="cal-plus-event__title">
+		<a href="<?php echo esc_url( get_permalink( $event->ID ) ); ?>">
+			<?php echo esc_html( get_the_title( $event->ID ) ); ?>
+		</a>
+	</h3>
+
+	<?php calendarp_get_template( 'partials/event-meta.php', array( 'event_id' => $event->ID ) ); ?>
+
+	<div class="cal-plus-event__content">
 		<?php do_action( 'calendarp_content_event_content', $event ); ?>
 	</div>
 </div>

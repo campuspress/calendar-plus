@@ -1,45 +1,4 @@
-// Foundation for Sites by ZURB
-// foundation.zurb.com
-// Licensed under MIT Open Source
-
-/// Hide an element by default, only displaying it above a certain screen size.
-/// @param {Keyword} $size - Breakpoint to use. **Must be a breakpoint defined in `$breakpoints`.**
-@mixin show-for($size) {
-  $size: map-get($breakpoints, $size);
-  $size: -zf-bp-to-em($size) - (1 / 16);
-
-  @include breakpoint($size down) {
-    display: none !important;
-  }
-}
-
-/// Hide an element by default, only displaying it within a certain breakpoint.
-/// @param {Keyword} $size - Breakpoint to use. **Must be a breakpoint defined in `$breakpoints`.**
-@mixin show-for-only($size) {
-  $lower-bound-size: map-get($breakpoints, $size);
-  $upper-bound-size: -zf-map-next($breakpoints, $size);
-
-  // more often than not this will be correct, just one time round the loop it won't so set in scope here
-  $lower-bound: -zf-bp-to-em($lower-bound-size) - (1 / 16);
-  // test actual lower-bound-size, if 0 set it to 0em
-  @if strip-unit($lower-bound-size) == 0 {
-    $lower-bound: -zf-bp-to-em($lower-bound-size);
-  }
-
-  @if $upper-bound-size == null {
-    @media screen and (max-width: $lower-bound) {
-      display: none !important;
-    }
-  }
-  @else {
-    $upper-bound: -zf-bp-to-em($upper-bound-size);
-
-    @media screen and (max-width: $lower-bound), screen and (min-width: $upper-bound) {
-      display: none !important;
-    }
-  }
-}
-
+// Screen reader visibility helper
 @mixin element-invisible {
   position: absolute !important;
   width: 1px;
@@ -48,53 +7,10 @@
   clip: rect(0, 0, 0, 0);
 }
 
-/// Reverses the CSS output created by the `element-invisible()` mixin.
-@mixin element-invisible-off {
-  position: static !important;
-  width: auto;
-  height: auto;
-  overflow: visible;
-  clip: auto;
-}
-
-/// Show an element by default, and hide it above a certain screen size.
-/// @param {Keyword} $size - Breakpoint to use. **Must be a breakpoint defined in `$breakpoints`.**
-@mixin hide-for($size) {
-  @include breakpoint($size) {
-    display: none !important;
-  }
-}
-
-/// Show an element by default, and hide it above a certain screen size.
-/// @param {Keyword} $size - Breakpoint to use. **Must be a breakpoint defined in `$breakpoints`.**
-@mixin hide-for-only($size) {
-  @include breakpoint($size only) {
-    display: none !important;
-  }
-}
-
 @mixin calendar-plus-visibility-classes {
-  // Basic hiding classes
-  .hide {
-    display: none !important;
-  }
-
-  .invisible {
-    visibility: hidden;
-  }
-
-  // Screen reader visibility classes
-  // Need a "hide-for-sr" class? Add aria-hidden='true' to the element
-  .show-for-sr,
-  .show-on-focus {
+  // Screen reader visibility class
+  // Used in React calendar close button
+  .show-for-sr {
     @include element-invisible;
-  }
-
-  // Only display the element when it's focused
-  .show-on-focus {
-    &:active,
-    &:focus {
-      @include element-invisible-off;
-    }
   }
 }

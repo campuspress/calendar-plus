@@ -114,9 +114,11 @@ class Calendar_Plus_Events_By_Category_Shortcode {
 			require_once calendarp_get_plugin_dir() . 'public/helpers-templates.php';
 		}
 
+		$template_path = 'shortcodes/events-' . $layout . '.php';
+
 		ob_start();
 
-		include( calendarp_locate_template( 'shortcodes/events-' . $layout . '.php' ) );
+		include( calendarp_locate_template( $template_path ) );
 
 		$content = ob_get_clean();
 

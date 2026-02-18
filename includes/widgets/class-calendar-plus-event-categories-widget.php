@@ -14,7 +14,7 @@ class Calendar_Plus_Event_Categories_Widget extends WP_Widget {
      **/
     function __construct() {
         $widget_ops = array( 'classname' => 'calendarp-event-categories-widget', 'description' => __( 'A list of calendar event categories.', 'calendar-plus' ) );
-        parent::__construct( 'calendarp-event-categories-widget', __( 'Calendar+ Event Categories', 'calendar-plus' ), $widget_ops );
+        parent::__construct( 'calendarp-event-categories-widget', __( 'Event: Categories', 'calendar-plus' ), $widget_ops );
     }
 
     /**
@@ -25,17 +25,7 @@ class Calendar_Plus_Event_Categories_Widget extends WP_Widget {
      * @return void Echoes it's output
      **/
     function widget( $args, $instance ) {
-        if ( ! function_exists( 'calendarp_events_permalink' ) ) {
-            include_once( calendarp_get_plugin_dir() . 'public/helpers-templates.php' );
-        }
-
     	$instance = wp_parse_args( $instance, $this->get_default_settings() );
-
-        extract( $args, EXTR_SKIP );
-        echo $before_widget;
-        echo $before_title;
-        echo $instance['title'];
-        echo $after_title;
 
         $category_args = array(
             'hierarchical' => $instance['show_hierarchy'],
@@ -43,14 +33,12 @@ class Calendar_Plus_Event_Categories_Widget extends WP_Widget {
             'title_li'     => false,
         );
 
-        echo '<ul>';
-        wp_list_categories( $category_args );
-        echo '</ul>';
-
-        echo '<br/>';
-        calendarp_events_permalink();
-
-    	echo $after_widget;
+        // Load template
+        calendarp_get_template( 'widgets/event-categories.php', array(
+            'args'          => $args,
+            'instance'      => $instance,
+            'category_args' => $category_args,
+        ) );
     }
 
     /**

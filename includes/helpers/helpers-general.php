@@ -660,7 +660,7 @@ function calendarp_enqueue_public_styles() {
 	if( ! empty( $legacy_integration ) ) {
 		wp_enqueue_style(
 			'calendar-plus-calendar-legacy',
-			calendarp_get_plugin_url() . 'public/css/calendar-plus-legacy.css',
+			calendarp_get_plugin_url() . 'public/legacy/css/calendar-plus.css',
 			[], calendarp_get_version()
 		);
 	}

@@ -34,14 +34,25 @@
 	}
 	.rbc-toolbar {
 		button {
-			@include button(false, $button-background, $button-background-hover, $button-color);
+			display: inline-block;
+			padding: 0.85em 1em;
+			margin: 0;
 			font-size: 10px;
-			background: map-get($foundation-palette, secondary);
+			line-height: 1;
+			text-align: center;
+			cursor: pointer;
+			border: 1px solid transparent;
+			background: #767676;
+			color: #fefefe;
 			&:not(:last-child) {
 				margin-right: 0;
 			}
+			&:hover {
+				background: #5e5e5e;
+			}
 			&.rbc-active {
-				@include button-disabled();
+				opacity: 0.25;
+				cursor: not-allowed;
 			}
 		}
 		.rbc-toolbar-label {

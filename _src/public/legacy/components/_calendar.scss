@@ -1,0 +1,98 @@
+@mixin calendar-plus-calendar {
+	.calendar-plus-calendar-wrap {
+		margin: 1em 0;
+	}
+
+	.calendar-plus-big-calendar-wrap {
+		height: 100%;
+	}
+
+	.rbc-month-row {
+		flex: 1;
+		min-height: 150px;
+	}
+
+	.rbc-date-cell {
+		padding-right: 3px;
+		background: #f3f3f3;
+		border-bottom: #dedede;
+		> a {
+			font-size: 14px;
+		}
+	}
+	.rbc-calendar {
+		display: block;
+		height: auto;
+	}
+	.calendar-plus-filter-bar {
+		overflow: hidden;
+	}
+	.rbc-event-content {
+		padding-left: 5px;
+		font-size: 12px;
+		white-space: normal;
+	}
+	.rbc-toolbar {
+		button {
+			@include button(false, $button-background, $button-background-hover, $button-color);
+			font-size: 10px;
+			background: map-get($foundation-palette, secondary);
+			&:not(:last-child) {
+				margin-right: 0;
+			}
+			&.rbc-active {
+				@include button-disabled();
+			}
+		}
+		.rbc-toolbar-label {
+		}
+	}
+
+	.rbc-row-segment {
+		margin: 0 1px 2px 0;
+	}
+
+	.rbc-date-cell > a, .rbc-date-cell > a:active, .rbc-date-cell > a:visited {
+		text-decoration: none;
+		border-bottom: 0px;
+	}
+
+	.rbc-agenda-event-cell {
+		width: auto;
+	}
+
+	.rbc-event {
+		&:hover {
+			background: darken(#3174ad, 20%);
+		}
+	}
+
+	.rbc-header {
+		background: #333;
+		color: white;
+		font-size: 14px;
+		font-weight: normal;
+		a {
+			color: white;
+			&:hover {
+				color: #1779ba;
+			}
+		}
+	}
+
+	.rbc-label {
+		font-size: 14px;
+	}
+
+	.rbc-agenda-content {
+		font-size: 14px;
+	}
+
+	.rbc-row-segment:hover {
+		max-width: 100%;
+	}
+
+	//.rbc-ellipsis, .rbc-event-label, .rbc-row-segment .rbc-event-content, .rbc-show-more {
+	//  white-space: inherit;
+	//}
+}

@@ -1,6 +1,6 @@
 import React, {Component} from 'react';
 import PropTypes from 'prop-types';
-import BigCalendar from 'react-big-calendar';
+import {Calendar} from 'react-big-calendar';
 import Loader from './components/Loader';
 import SingleEvent from './components/SingleEvent';
 import FilterBar from './components/FilterBar';
@@ -287,7 +287,7 @@ export default class CalendarPlus extends Component {
 					: null
 				}
 
-				<BigCalendar
+				<Calendar
 					localizer={this.props.localizer}
 					className="calendar-plus-big-calendar"
 					events={events}

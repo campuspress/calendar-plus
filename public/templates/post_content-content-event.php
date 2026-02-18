@@ -31,57 +31,7 @@
 		endif; 
 		?>
 
-		<ul class="cal-plus-event__meta">
-			<?php
-			$event_dates = calendarp_event_human_read_dates( 'date' );
-			if ( ! empty( $event_dates ) ) :
-				?>
-				<li class="cal-plus-event__meta-item cal-plus-event__meta-item--dates">
-					<span class="cal-plus-event__meta-item-icon dashicons dashicons-calendar-alt" aria-hidden="true"></span> 
-					<span class="cal-plus-event__meta-item-text"><?php echo $event_dates; ?></span>
-				</li>
-				<?php 
-			endif; 
-			?>
-
-			<?php
-			$event_recurrence = calendarp_event_human_read_dates( 'recurrence' );
-			if ( ! empty( $event_recurrence ) ) :
-				?>
-				<li class="cal-plus-event__meta-item cal-plus-event__meta-item--recurrence">
-					<span class="cal-plus-event__meta-item-icon dashicons dashicons-update" aria-hidden="true"></span> 
-					<span class="cal-plus-event__meta-item-text"><?php echo $event_recurrence; ?></span>
-				</li>
-			<?php endif; ?>
-
-			<?php
-			$event_time = calendarp_event_human_read_dates( 'time' );
-			if ( ! empty( $event_time ) ) :
-				?>
-				<li class="cal-plus-event__meta-item cal-plus-event__meta-item--time">
-					<span class="cal-plus-event__meta-item-icon dashicons dashicons-clock" aria-hidden="true"></span> 
-					<span class="cal-plus-event__meta-item-text"><?php echo $event_time; ?></span>
-				</li>
-				<?php 
-			endif; 
-			?>
-
-			<?php
-			$event_categories_list = calendarp_get_post_content_event_categories_list();
-			if ( ! empty( $event_categories_list ) ) :
-				?>
-				<li class="cal-plus-event__meta-item cal-plus-event__meta-item--categories">
-					<?php echo $event_categories_list; ?>
-				</li>
-				<?php 
-			endif; 
-			?>
-
-			<li class="cal-plus-event__meta-item cal-plus-event__meta-item--add-to-calendar">
-				<?php _e( 'Add to', 'calendar-plus' ); ?>:
-				<?php calendarp_event_add_to_calendars_links(); ?>
-			</li>
-		</ul>
+		<?php calendarp_get_template( 'partials/event-meta.php', array( 'event_id' => get_the_ID() ) ); ?>
 
 		<?php if ( is_single() && calendarp_event_has_location() ) : ?>
 			<address class="cal-plus-event__location">

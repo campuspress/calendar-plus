@@ -3,6 +3,7 @@
 const path = require('path');
 const { merge } = require('webpack-merge'); // webpack-merge v5+ uses named import
 const MiniCssExtractPlugin = require('mini-css-extract-plugin'); // Use mini-css-extract-plugin for webpack 5
+const RemoveEmptyScriptsPlugin = require('webpack-remove-empty-scripts');
 
 const plugin_path = path.join(__dirname, '..');
 const src_path = path.join(plugin_path, '_src');
@@ -131,7 +132,6 @@ const configs = [
 		name: 'public',
 		entry: {
 			'calendar-plus': path.join(src_path, 'public/calendar-plus.scss'),
-			'calendar-plus-legacy': path.join(src_path, 'public/calendar-plus-legacy.scss'),
 			'calendar-plus-events-by-cat-shortcode': path.join(src_path, 'public/calendar-plus-events-by-cat-shortcode.scss'),
 		},
 		output: {
@@ -162,7 +162,42 @@ const configs = [
 				}
 			]
 		},
-		plugins: [extractSass]
+		plugins: [extractSass, new RemoveEmptyScriptsPlugin()]
+	},
+	{
+		name: 'public-legacy',
+		entry: {
+			'calendar-plus': path.join(src_path, 'public/legacy/calendar-plus.scss'),
+		},
+		output: {
+			filename: '[name].js',
+			path: path.resolve(path.join(plugin_path, 'public/legacy/css'))
+		},
+		module: {
+			rules: [
+				{
+					test: /\.scss$/,
+					use: [
+						MiniCssExtractPlugin.loader,
+						{
+							loader: 'css-loader',
+							options: { sourceMap: true }
+						},
+						{
+							loader: 'postcss-loader',
+							options: postcss_options
+						},
+						{
+							loader: 'sass-loader',
+							options: {
+								sourceMap: true
+							}
+						}
+					]
+				}
+			]
+		},
+		plugins: [extractSass, new RemoveEmptyScriptsPlugin()]
 	}
 ];
 

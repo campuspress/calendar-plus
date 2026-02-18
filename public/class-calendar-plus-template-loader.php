@@ -53,20 +53,35 @@ class Calendar_Plus_Template_Loader {
 			$templates[] = calendarp_get_template_dir() . $file;
 		}
 
+		// Allow filtering of template file name
+		$file = apply_filters( 'calendarp_template_file', $file, $templates );
+
 		if ( $file ) {
 			$locate_template = locate_template( array_unique( $templates ) );
 			if ( ! $locate_template ) {
 				if ( ! empty( $legacy_integration ) ) {
-					$this->template = calendarp_get_plugin_dir() . 'public/templates/' . $file;
+					$plugin_template = calendarp_get_plugin_dir() . 'public/legacy/templates/' . $file;
+					// Validate template file exists
+					if ( file_exists( $plugin_template ) ) {
+						$this->template = $plugin_template;
+					}
 				} else {
-					$this->replace_post_details( $replace_post_content_template );
-
-					$this->template = locate_template( array( 'page.php', 'singular.php', 'single.php', 'post.php', 'index.php' ) );
+					// Modern integration - skip archive pages if no events page is configured
+					$skip_modern_integration = ( 'archive-event.php' === $file && empty( $events_page_id ) );
+					
+					if ( ! $skip_modern_integration ) {
+						$this->replace_post_details( $replace_post_content_template );
+						$this->template = locate_template( array( 'page.php', 'singular.php', 'single.php', 'post.php', 'index.php' ) );
+					}
+					// If skipped, $this->template stays empty and WordPress uses standard template hierarchy
 				}
 			} else {
 				$this->template = $locate_template;
 			}
 		}
+
+		// Allow filtering of final template path
+		$this->template = apply_filters( 'calendarp_determined_template', $this->template, $file );
 	}
 
 	/**
@@ -93,6 +108,9 @@ class Calendar_Plus_Template_Loader {
 		calendarp_get_template_part( 'post_content', $template_name );
 		$content = '<!-- wp:html -->' . ob_get_clean() . '<!-- /wp:html -->';
 
+		// Allow filtering of the generated content
+		$content = apply_filters( 'calendarp_post_content_replacement', $content, $template_name );
+
 		$title = false;
 
 		// If its an archive page, we will force theme to use same templates as for the events page.
@@ -101,7 +119,9 @@ class Calendar_Plus_Template_Loader {
 
 			// Get the events page ID and set it in the query.
 			$events_page_id = calendarp_get_setting( 'events_page_id' );
-			query_posts( array( 'page_id' => $events_page_id ) );
+			if ( $events_page_id ) {
+				query_posts( array( 'page_id' => $events_page_id ) );
+			}
 		}
 
 		// Replace post content in the $wp_query object.

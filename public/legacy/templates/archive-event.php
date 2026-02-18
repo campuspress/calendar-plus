@@ -48,6 +48,4 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 	<?php do_action( 'calendarp_sidebar' ); ?>
 
-	<?php do_action( 'calendarp_after_sidebar' ); ?>
-
 <?php get_footer( 'calendar-plus' ); ?>

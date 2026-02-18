@@ -14,7 +14,7 @@ class Calendar_Plus_This_Week_Events_Widget extends WP_Widget {
      **/
     function __construct() {
         $widget_ops = array( 'classname' => 'calendarp-this-week-events-widget', 'description' => __( 'A list of calendar events from this week.', 'calendar-plus' ) );
-        parent::__construct( 'calendarp-this-week-events-widget', __( 'Calendar+ This Week Events', 'calendar-plus' ), $widget_ops );
+        parent::__construct( 'calendarp-this-week-events-widget', __( 'Events This Week', 'calendar-plus' ), $widget_ops );
     }
 
     /**
@@ -25,17 +25,7 @@ class Calendar_Plus_This_Week_Events_Widget extends WP_Widget {
      * @return void Echoes it's output
      **/
     function widget( $args, $instance ) {
-        if ( ! function_exists( 'calendarp_events_permalink' ) ) {
-            include_once( calendarp_get_plugin_dir() . 'public/helpers-templates.php' );
-        }
-
         $instance = wp_parse_args( $instance, $this->get_default_settings() );
-
-        extract( $args, EXTR_SKIP );
-        echo $before_widget;
-        echo $before_title;
-        echo $instance['title'];
-        echo $after_title;
 
         $from = current_time( 'timestamp' );
         $from = date( 'Y-m-d', $from ) . ' 00:00:00';
@@ -53,27 +43,12 @@ class Calendar_Plus_This_Week_Events_Widget extends WP_Widget {
             }
         }
 
-        if ( ! empty( $events ) ) {
-            ?>
-                <ul class="this-week-events-list">
-                    <?php foreach ( $events as $event ) : ?>
-                        <li><a href="<?php echo esc_url( get_permalink( $event->ID ) ); ?>" title="<?php echo esc_attr( sprintf( __( 'Permalink to %s', 'calendar-plus' ), get_the_title( $event->ID ) ) ); ?>"><?php echo get_the_title( $event->ID ); ?></a></li>
-                    <?php endforeach; ?>
-
-                </ul>
-            <?php
-        } else {
-            ?>
-                <strong><?php _e( 'There are no events for this week.', 'calendar-plus' ); ?></strong>
-            <?php
-        }
-
-        ?>
-        <br/>
-        <?php
-        calendarp_events_permalink();
-
-    	echo $after_widget;
+        // Load template
+        calendarp_get_template( 'widgets/this-week-events.php', array(
+            'args'     => $args,
+            'instance' => $instance,
+            'events'   => $events,
+        ) );
     }
 
     /**

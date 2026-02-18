@@ -1,0 +1,174 @@
+@mixin button-base {
+  @include disable-mouse-outline;
+  display: inline-block;
+  vertical-align: middle;
+  margin: $button-margin;
+  padding: $button-padding;
+
+  -webkit-appearance: none;
+  border: 1px solid transparent;
+  border-radius: $button-radius;
+  transition: $button-transition;
+
+  font-size: map-get($button-sizes, default);
+  line-height: 1;
+  text-align: center;
+  cursor: pointer;
+}
+
+@mixin button-expand($expand: true) {
+  @if $expand {
+    display: block;
+    width: 100%;
+    margin-right: 0;
+    margin-left: 0;
+  }
+  @else {
+    display: inline-block;
+    width: auto;
+    margin: $button-margin;
+  }
+}
+
+@mixin button-style(
+  $background: $button-background,
+  $background-hover: $button-background-hover,
+  $color: $button-color,
+  $background-hover-lightness: $button-background-hover-lightness
+) {
+  @if $color == auto {
+    $color: color-pick-contrast($background, ($button-color, $button-color-alt));
+  }
+
+  @if $background-hover == auto {
+    $background-hover: scale-color($background, $lightness: $background-hover-lightness);
+  }
+
+  background-color: $background;
+  color: $color;
+
+  &:hover, &:focus {
+    background-color: $background-hover;
+    color: $color;
+  }
+}
+
+@mixin button(
+  $expand: false,
+  $background: $button-background,
+  $background-hover: $button-background-hover,
+  $color: $button-color,
+  $style: $button-fill
+) {
+  @include button-base;
+
+  @if $style == solid {
+    @include button-style($background, $background-hover, $color);
+  }
+  @else if $style == hollow {
+    @include button-hollow;
+    @include button-hollow-style($background);
+  }
+
+  @if $expand {
+    @include button-expand;
+  }
+}
+
+@mixin button-hollow {
+  &,
+  &:hover, &:focus {
+    background-color: transparent;
+  }
+}
+
+@mixin button-hollow-style(
+  $color: $primary-color,
+  $hover-lightness: $button-hollow-hover-lightness
+) {
+  $color-hover: scale-color($color, $lightness: $hover-lightness);
+
+  border: 1px solid $color;
+  color: $color;
+
+  &:hover, &:focus {
+    border-color: $color-hover;
+    color: $color-hover;
+  }
+}
+
+@mixin button-disabled(
+  $background: $primary-color,
+  $color: $button-color
+) {
+  @if $color == auto {
+    $color: color-pick-contrast($background, ($button-color, $button-color-alt));
+  }
+
+  opacity: $button-opacity-disabled;
+  cursor: not-allowed;
+
+  &, &:hover, &:focus {
+    background-color: $background;
+    color: $color;
+  }
+}
+
+@mixin calendar-plus-button {
+  .button {
+    @include button;
+
+    // Sizes
+    @each $size, $value in map-remove($button-sizes, default) {
+      &.#{$size} {
+        font-size: $value;
+      }
+    }
+
+    &.expanded { @include button-expand; }
+
+    // Colors
+    @each $name, $color in $button-palette {
+      @if $button-fill != hollow {
+        &.#{$name} {
+          @include button-style($color, auto, auto);
+        }
+      }
+      @else {
+        &.#{$name} {
+          @include button-hollow-style($color);
+        }
+
+        &.#{$name}.dropdown::after {
+          border-top-color: $color;
+        }
+      }
+    }
+
+    // Hollow style
+    @if $button-fill != hollow {
+      &.hollow {
+        @include button-hollow;
+        @include button-hollow-style;
+
+        @each $name, $color in $button-palette {
+          &.#{$name} {
+            @include button-hollow-style($color);
+          }
+        }
+      }
+    }
+
+    // Disabled style
+    &.disabled,
+    &[disabled] {
+      @include button-disabled;
+
+      @each $name, $color in $button-palette {
+        &.#{$name} {
+          @include button-disabled($color, auto);
+        }
+      }
+    }
+  }
+}

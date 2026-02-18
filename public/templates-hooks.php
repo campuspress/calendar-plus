@@ -2,7 +2,7 @@
 
 add_filter( 'post_class', 'calendarp_event_post_class', 10, 3 );
 
-add_action( 'calendarp_post_content_after_events_loop', 'calendarp_post_content_pagination' );
+add_action( 'calendarp_post_content_after_events_loop', 'calendarp_pagination' );
 
 add_action( 'the_post', 'calendarp_set_global_event' );
 add_action( 'calendarp_sidebar', 'calendarp_get_sidebar' );

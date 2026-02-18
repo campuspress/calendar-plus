@@ -10,7 +10,15 @@ function calendarp_get_template_dir() {
     return apply_filters( 'calendarp_template_dir', 'calendar-plus/' );
 }
 
-function calendarp_get_template_part( $slug, $name = '' ) {
+/**
+ * Load a template part into a template
+ *
+ * @param string $slug The slug name for the generic template.
+ * @param string $name Optional. The name of the specialized template. Default empty.
+ * @param array  $args Optional. Additional arguments passed to the template. Default empty array.
+ * @since 2.0.0
+ */
+function calendarp_get_template_part( $slug, $name = '', $args = array() ) {
     $template = '';
 
     // theme_root_folder/slug-name.php
@@ -19,13 +27,16 @@ function calendarp_get_template_part( $slug, $name = '' ) {
         $template = locate_template( array( $slug . '-' . $name . '.php', calendarp_get_template_dir() . $slug . '-' . $name . '.php' ) );
     }
 
-    // calendar-plus/public/templates/slug-name.php
+    // calendar-plus/public/templates/slug-name.php or legacy/slug-name.php
     if ( ! $template ) {
+        $legacy_integration = calendarp_get_setting( 'legacy_theme_integration' );
+        $template_dir = ! empty( $legacy_integration ) ? 'public/legacy/templates/' : 'public/templates/';
+        
         if( $name ) {
-            $file = calendarp_get_plugin_dir() . 'public/templates/' . $slug . '-' . $name . '.php';
+            $file = calendarp_get_plugin_dir() . $template_dir . $slug . '-' . $name . '.php';
         }
         else {
-            $file = calendarp_get_plugin_dir() . 'public/templates/' . $slug . '.php';
+            $file = calendarp_get_plugin_dir() . $template_dir . $slug . '.php';
         }
         if ( file_exists( $file ) ) {
             $template = $file;
@@ -37,10 +48,10 @@ function calendarp_get_template_part( $slug, $name = '' ) {
         $template = locate_template( array( $slug . '.php', calendarp_get_template_dir() . $slug . '.php' ) );
     }
 
-    $template = apply_filters( 'calendarp_get_template_part', $template, $slug, $name );
+    $template = apply_filters( 'calendarp_get_template_part', $template, $slug, $name, $args );
 
     if ( $template ) {
-        load_template( $template, false );
+        load_template( $template, false, $args );
     }
 }
 
@@ -62,7 +73,6 @@ function calendarp_get_template( $template_name, $args = array() ) {
 
 function calendarp_locate_template( $template_name ) {
     $template_dir = calendarp_get_template_dir();
-    $default_dir = calendarp_get_plugin_dir() . 'public/templates/';
 
     $template = locate_template(
         array(
@@ -72,6 +82,11 @@ function calendarp_locate_template( $template_name ) {
     );
 
     if ( ! $template ) {
+        $legacy_integration = calendarp_get_setting( 'legacy_theme_integration' );
+        $default_dir = ! empty( $legacy_integration ) 
+            ? calendarp_get_plugin_dir() . 'public/legacy/templates/' 
+            : calendarp_get_plugin_dir() . 'public/templates/';
+
         $template = $default_dir . $template_name;
     }
 
@@ -184,7 +199,7 @@ if ( ! function_exists( 'calendarp_post_content_advanced_search_title' ) ) {
             );
 
             ?>
-            <ul class="cal-plus-search-data__list panel no-bullet">
+            <ul class="cal-plus-data-list cal-plus-search-data__list">
                 <?php
                 foreach ( $list as $searching => $value ) {
                     if ( $value ) {
@@ -299,8 +314,8 @@ if ( ! function_exists( 'calendarp_the_event_thumbnail' ) ) {
     }
 }
 
-if ( ! function_exists( 'calendarp_post_content_pagination' ) ) {
-    function calendarp_post_content_pagination() {
+if ( ! function_exists( 'calendarp_pagination' ) ) {
+    function calendarp_pagination() {
         calendarp_get_template( 'content/post_content-pagination.php' );
     }
 }
@@ -321,8 +336,8 @@ if ( ! function_exists( 'calendarp_event_content' ) ) {
     }
 }
 
-if ( ! function_exists( 'calendarp_get_post_content_event_categories_list' ) ) {
-    function calendarp_get_post_content_event_categories_list( $event_id = false ) {
+if ( ! function_exists( 'calendarp_event_categories_list' ) ) {
+    function calendarp_event_categories_list( $event_id = false ) {
         if ( ! $event_id ) {
             $event_id = get_the_ID();
         }
@@ -330,11 +345,9 @@ if ( ! function_exists( 'calendarp_get_post_content_event_categories_list' ) ) {
         echo get_the_term_list(
             $event_id,
             'calendar_event_category',
-            '<div class="cal-plus-event__meta-item cal-plus-event__meta-item--categories">
-            <span class="cal-plus-event__meta-item-icon dashicons dashicons-category"></span> 
-            <span class="cal-plus-event__meta-item-text">',
-            '</span> , <span class="event-category">',
-            '</span></div>'
+            '<span class="cal-plus-event__meta-item-icon dashicons dashicons-category" aria-hidden="true"></span> <span class="cal-plus-event__meta-item-text">',
+            '</span>, <span class="cal-plus-event__meta-item-text">',
+            '</span>'
         );
     }
 }

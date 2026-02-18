@@ -1,7 +1,8 @@
 import 'core-js';
 import React from 'react';
-import {render} from 'react-dom';
-import BigCalendar from 'react-big-calendar';
+import {createRoot} from 'react-dom/client';
+import {momentLocalizer} from 'react-big-calendar';
+
 import moment from 'moment';
 import formatPHP from './helpers/formatPHP';
 import CalendarPlus from './CalendarPlus';
@@ -12,7 +13,7 @@ if (typeof calendarPlusi18n !== 'undefined') {
 
 	// Set the week start
 	moment.updateLocale(moment().locale(), {week: {dow: calendarPlusi18n.dowStart}});
-	const localizer = BigCalendar.momentLocalizer(moment);
+	const localizer = momentLocalizer(moment);
 
 	const dateRangeFormat = function dateRangeFormat(monthNameFormat, yearFormat) {
 		return function (_ref, culture, local) {
@@ -85,7 +86,9 @@ if (typeof calendarPlusi18n !== 'undefined') {
 			views.push(view);
 		}
 
-		render(
+		const container = document.getElementById(instance.id);
+		const root = createRoot(container);
+		root.render(
 			<CalendarPlus
 				localizer={localizer}
 				messages={calendarPlusi18n.messages}
@@ -99,8 +102,7 @@ if (typeof calendarPlusi18n !== 'undefined') {
 				editable={editable}
 				filterable={filterable}
 				category={category}
-			/>,
-			document.getElementById(instance.id)
+			/>
 		);
 	}
 }

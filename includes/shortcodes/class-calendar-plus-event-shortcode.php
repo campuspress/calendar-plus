@@ -31,17 +31,6 @@ class Calendar_Plus_Event_Shortcode {
 	}
 
 	/**
-	 * Renders shortcode. The function is used for compatibility with themes
-	 *
-	 * @param array $atts Shortcode attributes
-	 *
-	 * @return string Shortcode html
-	 */
-	public function render_compat( $atts ) {
-		return $this->render_attributes( $atts, 'shortcodes/event-single.compat.php' );
-	}
-
-	/**
 	 * Render the shortcode content
 	 *
 	 * @param array $atts Shortcode attributes

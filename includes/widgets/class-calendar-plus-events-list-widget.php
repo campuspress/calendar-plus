@@ -12,7 +12,7 @@ class Calendar_Plus_Events_List_Widget extends WP_Widget {
 	function __construct() {
 		parent::__construct(
 			'calendarp-events-list-widget',
-			__( 'Calendar+ Events List', 'calendar-plus' ),
+			__( 'Events List', 'calendar-plus' ),
 			array(
 				'classname'   => 'calendarp-events-list-widget',
 				'description' => __( 'A customizable list of events', 'calendar-plus' ),
@@ -51,76 +51,18 @@ class Calendar_Plus_Events_List_Widget extends WP_Widget {
 
 		$events_by_date = calendarp_get_events_in_date_range( current_time( 'timestamp' ), false, $query_args );
 
-		$display_name = in_array( 'name', $instance['event_fields'] );
-		$display_desc = in_array( 'description', $instance['event_fields'] );
-		$display_date = in_array( 'date', $instance['event_fields'] );
-		$display_time = in_array( 'time', $instance['event_fields'] );
-		$display_cats = in_array( 'category', $instance['event_fields'] );
+		$template_args = array(
+			'args'            => $args,
+			'instance'        => $instance,
+			'events_by_date'  => $events_by_date,
+			'display_name'    => in_array( 'name', $instance['event_fields'] ),
+			'display_desc'    => in_array( 'description', $instance['event_fields'] ),
+			'display_date'    => in_array( 'date', $instance['event_fields'] ),
+			'display_time'    => in_array( 'time', $instance['event_fields'] ),
+			'display_cats'    => in_array( 'category', $instance['event_fields'] ),
+		);
 
-		echo '<ul class="events-list-widget">';
-
-		foreach ( $events_by_date as $date => $events ) {
-			/** @var Calendar_Plus_Event $event */
-			foreach ( $events as $event ) {
-
-				$output = array();
-
-				if ( $display_name ) {
-					$output['name'] = get_the_title( $event->ID );
-				}
-
-				if ( $display_time || $display_date ) {
-					$dates = calendarp_get_human_read_dates( $event->ID, 'array' );
-
-					if ( $display_time && $display_date && $dates['date'] && $dates['time'] ) {
-						$output['date event-time'] = sprintf(
-							_x( '%1$s at %2$s', 'time and date sep', 'calendar-plus' ),
-							$dates['date'], $dates['time']
-						);
-
-					} elseif ( $display_time && $dates['time'] ) {
-						$output['time'] = $dates['time'];
-					} elseif ( $display_date && $dates['date'] ) {
-						$output['date'] = $dates['date'];
-					}
-				}
-
-				if ( $display_desc ) {
-					$output['description'] = get_the_excerpt( $event->ID );
-				}
-
-				if ( $display_cats && $cats = get_the_term_list( $event->ID, 'calendar_event_category' ) ) {
-					$output['category'] = sprintf( __( 'Posted in %s', 'calendar-plus' ), $cats );
-				}
-
-				if ( empty( $output ) ) {
-					continue;
-				}
-
-				$linked = false;
-				echo '<li class="event"><ul>';
-
-				foreach ( $output as $field => $content ) {
-
-					if ( ! $content ) {
-						continue;
-					}
-
-					if ( ! $linked ) {
-						$content = sprintf( '<a href="%s">%s</a>', esc_url( get_permalink( $event->ID ) ), $content );
-						$linked = true;
-					}
-
-					printf( '<li class="event-%s">%s</li>', $field, $content );
-				}
-
-				echo '</ul></li>';
-			}
-		}
-
-		echo '</ul>';
-
-		echo '<p>', calendarp_events_permalink( false ), '</p>';
+		calendarp_get_template( 'widgets/events-list.php', $template_args );
 
 		echo $args['after_widget'];
 	}

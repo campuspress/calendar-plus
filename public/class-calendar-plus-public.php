@@ -62,25 +62,33 @@ class Calendar_Plus_Public {
 		$this->plugin_name = $plugin_name;
 		$this->version = $version;
 
-		$this->load_dependencies();
+		add_action( 'plugins_loaded', array( $this, 'load_dependencies' ), 20 );
 
 		add_action( 'wp_enqueue_scripts', array( $this, 'enqueue_scripts' ), 100 );
 
 		do_action( 'calendarp_public_loaded' );
 
 		if( ! wp_is_block_theme() ) {
-			$this->template_loader = new Calendar_Plus_Template_Loader();
+			add_action( 'init', array( $this, 'init_template_loader' ), 2 );
 		}
 	}
 
-	private function load_dependencies() {
-		require_once calendarp_get_plugin_dir() . 'public/helpers-templates.php';
-		require_once calendarp_get_plugin_dir() . 'public/templates-hooks.php';
+	public function init_template_loader() {
+		$this->template_loader = new Calendar_Plus_Template_Loader();
+	}
 
+	public function load_dependencies() {
+		// Load legacy files first if enabled, so they take precedence via function_exists checks
+		if ( calendarp_get_setting( 'legacy_theme_integration' ) ) {
+			require_once calendarp_get_plugin_dir() . 'public/integration/integration.php';
+			require_once calendarp_get_plugin_dir() . 'public/legacy/helpers-templates.php';
+			require_once calendarp_get_plugin_dir() . 'public/legacy/templates-hooks.php';
+			
+		}
+
+		require_once calendarp_get_plugin_dir() . 'public/helpers-templates.php';
 		
-		require_once calendarp_get_plugin_dir() . 'public/integration/integration.php';
-		require_once calendarp_get_plugin_dir() . 'public/legacy/helpers-templates.php';
-		require_once calendarp_get_plugin_dir() . 'public/legacy/templates-hooks.php';
+		require_once calendarp_get_plugin_dir() . 'public/templates-hooks.php';
 	}
 
 	public function enqueue_scripts() {

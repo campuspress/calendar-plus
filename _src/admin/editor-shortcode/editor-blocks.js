@@ -1,92 +1,20 @@
 const {registerBlockType} = wp.blocks;
 const {createElement, useState} = wp.element;
 const {__} = wp.i18n;
-const {InspectorControls} = wp.editor;
+const {InspectorControls} = wp.blockEditor;
 const {
     TextControl,
     RangeControl,
     SelectControl,
     PanelBody,
-    __experimentalHeading,
-    __experimentalView,
-    __experimentalSpacer,
-    __experimentalScrollable,
-    __experimentalVStack,
     CheckboxControl,
     SearchControl,
-    ToggleControl
+    ToggleControl,
+    TreeSelect,
+    QueryControls
 } = wp.components;
 const {withSelect} = window.wp.data;
 const { serverSideRender: ServerSideRender } = wp;
-
-const CategorySelect = function(props) {
-    const [ searchText, setSearchText ] = useState('');
-    const categories = props.categories ? props.categories : [];
-    const [ items, setItems ] = useState(categories);
-    const selected = props.selected ? props.selected : [];
-
-    const list = [];
-    for (const item of items) {
-
-        list.push(
-            createElement(
-                CheckboxControl,
-                {
-                    label: item.label,
-                    checked: selected.indexOf( item.value ) !== -1 ,
-                    key: item.label,
-                    style: { marginBottom: 5 },
-                    onChange: function(value) {
-                        if ( props.onSelect ) {
-                            props.onSelect( item.value, value );
-                        }
-                    }
-                }
-            ),
-        );
-    }
-    var elements = [
-        createElement(
-            __experimentalSpacer,
-            { marginBottom: 5 },
-            createElement(
-                SearchControl,
-                {
-                    value: searchText,
-                    onChange: function(value) {
-                        const filtered = props.categories.filter(function(item){
-                            return item.label.toLowerCase().indexOf(value) !== -1;
-                        });
-                        setItems(filtered);
-                        setSearchText(value);
-                    }
-                }
-            ),
-        ),
-        createElement(
-            __experimentalScrollable,
-            {
-                style: { maxHeight: 200 }
-            },
-            createElement(__experimentalVStack, {}, list)
-        )
-    ];
-    if ( props.label ) {
-        elements.unshift(
-            createElement(
-                __experimentalSpacer,
-                { marginBottom: 5 },
-                createElement( __experimentalHeading, { level: 5 }, props.label )
-            )
-        );
-    }
-
-     return createElement(
-         __experimentalSpacer,
-         { marginBottom: 10 },
-         createElement(__experimentalView, {}, elements)
-     );
-}
 
 registerBlockType( 'calendar-plus/calendar', {
     title: __( 'Events Calendar' ),
@@ -110,7 +38,7 @@ registerBlockType( 'calendar-plus/calendar', {
     } )( function( props ) {
         var categoryOptions = [ { value: '', label: __( 'All' ) } ];
         
-        if( props.categories ) {
+        if( props.categories && Array.isArray(props.categories) ) {
             props.categories.forEach((category) => {
                 categoryOptions.push({value:category.id, label:category.name});
             });
@@ -288,11 +216,29 @@ registerBlockType( 'calendar-plus/events-list', {
                 }
             );
         
-        if( props.categories ) {
-            props.categories.forEach((category) => {
-                categoryOptions.push({value:category.id, label:category.name});
+        // Transform categories for QueryControls - needs to be an object with category name as key
+        const categorySuggestions = {};
+        const selectedCategoryObjects = [];
+        
+        if (props.categories && Array.isArray(props.categories)) {
+            props.categories.forEach(function(category) {
+                categorySuggestions[category.name] = {
+                    id: category.id,
+                    name: category.name,
+                    parent: category.parent || 0
+                };
+                
+                // Build selected categories array - objects with id, value, parent
+                if (selectedCategories.indexOf(category.id) !== -1) {
+                    selectedCategoryObjects.push({
+                        id: category.id,
+                        value: category.name,  // 'value' is what gets displayed!
+                        parent: category.parent || 0
+                    });
+                }
             });
         }
+        
         const eventsSettings = [
             createElement(RangeControl, {
                 value: props.attributes.events,
@@ -303,45 +249,17 @@ registerBlockType( 'calendar-plus/events-list', {
                 min: 1,
                 max: 100,
             }),
-            createElement(
-                CategorySelect,
-                {
-                    label: __( 'Category' ),
-                    categories: categoryOptions,
-                    selected: selectedCategories,
-                    onSelect: function(id, value) {
-                        /*
-                        if ( ! id ) {
-                            if ( value ) {
-                                selectedCategories = props.categories.map(
-                                    function( item ) {
-                                        return item.id;
-                                    }
-                                );
-                                selectedCategories.push( 0 );
-                                props.setAttributes( { category: selectedCategories.join( ',' ) } );
-                            } else {
-                                props.setAttributes( { category: '' } );
-                            }
-
-
-                            return;
-                        }
-                        */
-
-                        const index = selectedCategories.indexOf( id );
-
-                        if ( value && index === -1 ) {
-                            selectedCategories.push( id );
-                        } else if ( index !== -1 ) {
-                            delete selectedCategories[ index ];
-                        }
-                        props.setAttributes( {
-                            category: selectedCategories.join( ',' )
-                        } );
-                    }
+            createElement(QueryControls, {
+                categorySuggestions: categorySuggestions,
+                selectedCategories: selectedCategoryObjects,
+                onCategoryChange: function(newSelectedCategories) {
+                    // Receives array of objects with {id, value, parent}
+                    const categoryIds = newSelectedCategories.map(function(cat) {
+                        return cat.id;
+                    });
+                    props.setAttributes({ category: categoryIds.join(',') });
                 }
-            ),
+            }),
             createElement(ToggleControl, {
                 value: props.attributes.past_events,
                 checked: props.attributes.past_events,
@@ -350,13 +268,13 @@ registerBlockType( 'calendar-plus/events-list', {
                     props.setAttributes( { past_events: value } );
                 }
             }),
-            createElement(__experimentalView, {}, [
+            createElement('div', {}, [
                 createElement(
-                    __experimentalSpacer,
+                    'div',
                     {},
                     createElement(
-                        __experimentalHeading,
-                        { level: 5 },
+                        'h5',
+                        {},
                         __( 'Choose fields to display' )
                     ),
                 ),
