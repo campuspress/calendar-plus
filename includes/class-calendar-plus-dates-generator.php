@@ -135,19 +135,11 @@ class Calendar_Plus_Dates_Generator {
 			}
 		}
 
-		$cache_args = $args;
-		$cache_args['month'] = $month;
-		$cache_args['year'] = $year;
-		$cache_key = wp_hash( maybe_serialize( $cache_args ) );
-		$month_dates = Calendar_Plus_Cache::get_cache( $cache_key, 'calendarp_months_dates' );
-		if ( false === $month_dates ) {
-			$from = strtotime( "$year-$month-01" );
+		$from = strtotime( "$year-$month-01" );
 
-			$days_in_month = str_pad( date( 't', $from ), 2, '0', STR_PAD_LEFT );
-			$to = strtotime( "$year-$month-$days_in_month" );
-			$month_dates = calendarp_get_events_in_date_range( $from, $to, $args );
-			Calendar_Plus_Cache::set_cache( $cache_key, $month_dates, 'calendarp_months_dates' );
-		}
+		$days_in_month = str_pad( date( 't', $from ), 2, '0', STR_PAD_LEFT );
+		$to = strtotime( "$year-$month-$days_in_month" );
+		$month_dates = calendarp_get_events_in_date_range( $from, $to, $args );
 
 		return $month_dates;
 	}
@@ -373,6 +365,12 @@ class Calendar_Plus_Dates_Generator {
 		$event = calendarp_get_event( $event_id );
 		if ( ! $event ) {
 			return;
+		}
+
+		if ( function_exists( 'wp_cache_set_last_changed' ) ) {
+			// Sets last changed date for calendarp:events cache group to now.
+			// This invalidates all cached queries for this group.
+			wp_cache_set_last_changed( 'calendarp:events' );
 		}
 
 		$wpdb->delete(
