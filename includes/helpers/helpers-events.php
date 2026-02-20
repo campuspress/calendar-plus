@@ -456,6 +456,37 @@ function calendarp_get_events_in_date_range( $from = false, $to = false, $args =
 		'order'           => 'ASC',
 	) );
 
+	/*
+	|--------------------------------------------------------------------------
+	| Salted Cache Layer
+	|--------------------------------------------------------------------------
+	*/
+	if ( function_exists( 'wp_cache_get_last_changed' ) ) {
+		$last_changed = wp_cache_get_last_changed( 'calendarp:events' );
+	}
+
+	if ( function_exists( 'wp_cache_get_salted' ) ) {
+		$cache_group  = 'calendarp_cache';
+		$cache_args   = array(
+			'from' => $from,
+			'to'   => $to,
+			'args' => $args,
+		);
+
+		$cache_key = md5( wp_json_encode( $cache_args ) );
+
+		$cached = wp_cache_get_salted( $cache_key, $cache_group, $last_changed );
+
+		if ( false !== $cached ) {
+			return $cached;
+		}
+	}
+
+	/*
+	|--------------------------------------------------------------------------
+	| Build Query
+	|--------------------------------------------------------------------------
+	*/
 	if ( $from ) {
 		$from_date = date( 'Y-m-d', $from );
 	}
@@ -606,6 +637,20 @@ function calendarp_get_events_in_date_range( $from = false, $to = false, $args =
 		$data = _calendarp_group_events_by_date( $results );
 	} else {
 		$data = $results;
+	}
+
+	/*
+	|--------------------------------------------------------------------------
+	| Store Salted Cache
+	|--------------------------------------------------------------------------
+	*/
+	if ( function_exists( 'wp_cache_set_salted' ) ) {
+		wp_cache_set_salted(
+			$cache_key,
+			$data,
+			$cache_group,
+			$last_changed
+		);
 	}
 
 	return $data;
