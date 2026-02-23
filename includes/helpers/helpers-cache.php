@@ -15,6 +15,12 @@ function calendarp_delete_calendar_cache( $post_id ) {
 		return;
 	}
 
+	if ( function_exists( 'wp_cache_set_last_changed' ) ) {
+		// Sets last changed date for calendarp:events cache group to now.
+		// This invalidates all cached queries for this group.
+		wp_cache_set_last_changed( 'calendarp:events' );
+	}
+
 	wp_cache_delete( $post_id, 'calendarp_events_calendars' );
 	Calendar_Plus_Cache::delete_cache_group( 'calendarp_months_dates' );
 }

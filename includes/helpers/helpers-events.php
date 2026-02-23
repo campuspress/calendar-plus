@@ -456,6 +456,37 @@ function calendarp_get_events_in_date_range( $from = false, $to = false, $args =
 		'order'           => 'ASC',
 	) );
 
+	/*
+	|--------------------------------------------------------------------------
+	| Salted Cache Layer
+	|--------------------------------------------------------------------------
+	*/
+	if ( function_exists( 'wp_cache_get_last_changed' ) ) {
+		$last_changed = wp_cache_get_last_changed( 'calendarp:events' );
+	}
+
+	if ( function_exists( 'wp_cache_get_salted' ) ) {
+		$cache_group  = 'calendarp_cache';
+		$cache_args   = array(
+			'from' => $from,
+			'to'   => $to,
+			'args' => $args,
+		);
+
+		$cache_key = md5( wp_json_encode( $cache_args ) );
+
+		$cached = wp_cache_get_salted( $cache_key, $cache_group, $last_changed );
+
+		if ( false !== $cached ) {
+			return $cached;
+		}
+	}
+
+	/*
+	|--------------------------------------------------------------------------
+	| Build Query
+	|--------------------------------------------------------------------------
+	*/
 	if ( $from ) {
 		$from_date = date( 'Y-m-d', $from );
 	}
@@ -464,11 +495,10 @@ function calendarp_get_events_in_date_range( $from = false, $to = false, $args =
 		$to_date = date( 'Y-m-d', $to );
 	}
 
-	$select = "SELECT DISTINCT cal.* FROM $wpdb->calendarp_calendar cal";
+	$select = "SELECT cal.* FROM $wpdb->calendarp_calendar cal";
+	$join   = "INNER JOIN $wpdb->posts p ON p.ID = cal.event_id ";
 
-	$join = "INNER JOIN $wpdb->posts p ON p.ID = cal.event_id ";
-
-	$term_ids = array();
+	$term_ids  = array();
 	$tax_names = array();
 
 	foreach ( array( 'category', 'tag' ) as $tax ) {
@@ -483,93 +513,123 @@ function calendarp_get_events_in_date_range( $from = false, $to = false, $args =
 
 		$args[ $tax ] = array_map( 'absint', $args[ $tax ] );
 
-		$term_ids = array_merge( $term_ids, $args[ $tax ] );
-		$tax_names[] = 'calendar_event_' . $tax;
+		if ( ! empty( $args[ $tax ] ) ) {
+			$term_ids    = array_merge( $term_ids, $args[ $tax ] );
+			$tax_names[] = 'calendar_event_' . $tax;
+		}
 	}
+	
+	/*
+	|--------------------------------------------------------------------------
+	| WHERE conditions
+	|--------------------------------------------------------------------------
+	*/
+	$where = array( "p.post_status = 'publish'" );
 
-	if ( ! empty( $term_ids ) ) {
-
-		$terms_join = sprintf(
-			"JOIN $wpdb->term_taxonomy tt ON tt.term_id IN (%s) AND tt.taxonomy IN (%s) ",
-			implode( ',', array_fill( 0, count( $term_ids ), '%d' ) ),
-			implode( ',', array_fill( 0, count( $tax_names ), '%s' ) )
-		);
-
-		$terms_join = $wpdb->prepare( $terms_join, array_merge( $term_ids, $tax_names ) );
-		$terms_join .= "JOIN $wpdb->term_relationships tr ON tr.object_id = cal.event_id AND tr.term_taxonomy_id = tt.term_taxonomy_id ";
-
-		$join .= $terms_join;
-	}
-
-	$where_not = array();
-
+	/*
+	|--------------------------------------------------------------------------
+	| Optimized Date Range (Index Friendly)
+	|--------------------------------------------------------------------------
+	*/
 	if ( isset( $from_date ) ) {
-		$where_not[] = $wpdb->prepare( 'cal.until_date < %s', $from_date );
+		$where[] = $wpdb->prepare( 'cal.until_date >= %s', $from_date );
 	}
 
 	if ( isset( $to_date ) ) {
-		$where_not[] = $wpdb->prepare( 'cal.from_date > %s', $to_date );
+		$where[] = $wpdb->prepare( 'cal.from_date <= %s', $to_date );
 	}
 
+	if ( ! empty( $term_ids ) ) {
+		$placeholders_terms = implode( ',', array_fill( 0, count( $term_ids ), '%d' ) );
+		$placeholders_tax   = implode( ',', array_fill( 0, count( $tax_names ), '%s' ) );
+
+		$exists_sql = "
+			EXISTS (
+				SELECT 1
+				FROM $wpdb->term_relationships tr
+				INNER JOIN $wpdb->term_taxonomy tt
+					ON tt.term_taxonomy_id = tr.term_taxonomy_id
+				WHERE tr.object_id = cal.event_id
+				AND tt.term_id IN ($placeholders_terms)
+				AND tt.taxonomy IN ($placeholders_tax)
+			)
+		";
+
+		$where[] = $wpdb->prepare(
+			$exists_sql,
+			array_merge( $term_ids, $tax_names )
+		);
+	}
+
+	/*
+	|--------------------------------------------------------------------------
+	| Include / Exclude / Search
+	|--------------------------------------------------------------------------
+	*/
 	$event_ids = $args['include_ids'];
 
-	$where = array("p.post_status = 'publish'");
 	if ( $args['search'] ) {
 		$search_results = get_posts( array(
-			'post_type' => 'calendar_event',
-			's'         => $args['search'],
-			'fields'    => 'ids',
+			'post_type'      => 'calendar_event',
+			's'              => $args['search'],
+			'fields'         => 'ids',
 			'posts_per_page' => 500,
-			'orderby' => 'none'
+			'orderby'        => 'none'
 		) );
 
 		if ( empty( $search_results ) ) {
 			$search_results = array( 0 );
 		}
 
-		$event_ids += $search_results;
+		$event_ids = array_unique( array_merge( $event_ids, $search_results ) );
 	}
 
-	if ( $event_ids ) {
-		$where[] = sprintf( 'cal.event_id IN (%s)', implode( ',', $event_ids ) );
+	if ( ! empty( $event_ids ) ) {
+		$where[] = sprintf(
+			'cal.event_id IN (%s)',
+			implode( ',', array_map( 'absint', $event_ids ) )
+		);
 	}
 
-	if ( $args['exclude_ids'] ) {
-		$where[] = sprintf( 'cal.event_id NOT IN (%s)', implode( ',', $args['exclude_ids'] ) );
+	if ( ! empty( $args['exclude_ids'] ) ) {
+		$where[] = sprintf(
+			'cal.event_id NOT IN (%s)',
+			implode( ',', array_map( 'absint', $args['exclude_ids'] ) )
+		);
 	}
 
 	if ( $args['event_id'] ) {
 		$where[] = $wpdb->prepare( 'cal.event_id = %d', $args['event_id'] );
 	}
 
-	if ( $where ) {
-		$where = ' AND ' . implode( ' AND ', $where );
-	} else {
-		$where = '';
+	$where_sql = 'WHERE ' . implode( ' AND ', $where );
+
+	/*
+	|--------------------------------------------------------------------------
+	| Ordering
+	|--------------------------------------------------------------------------
+	*/
+	$sort_type = strtoupper( $args['order'] ) ?? 'ASC';
+
+	if ( ! in_array( $sort_type, array( 'ASC', 'DESC' ), true ) ) {
+		$sort_type = 'ASC';
 	}
 
-	$where_not = 'WHERE NOT (' . implode( ' OR ', $where_not ) . ')';
+	$order = "ORDER BY cal.from_date $sort_type, cal.from_time $sort_type, cal.event_id $sort_type";
 
-	if ( is_string( $args['order'] ) ) {
-		$sort_type = strtoupper( $args['order'] );
-
-		if ( in_array( $sort_type, array( 'ASC', 'DESC' ) ) ) {
-			$order = "ORDER BY cal.from_date $sort_type, cal.from_time $sort_type, cal.event_id $sort_type";
-		} else {
-			$order = 'ORDER BY cal.from_date ASC, cal.from_time ASC, cal.event_id ASC';
-		}
-
-	} else {
-		$order = 'ORDER BY cal.from_date ASC, cal.from_time ASC, cal.event_id ASC';
-	}
-
+	/*
+	|--------------------------------------------------------------------------
+	| Limit
+	|--------------------------------------------------------------------------
+	*/
 	$limit = '';
 	$per_page = intval( $args['events_per_page'] );
 	if ( $per_page > 0 ) {
 		$limit = $wpdb->prepare( 'LIMIT %d', $per_page );
 	}
 
-	$query = "$select $join $where_not $where $order $limit";
+	$query = "$select $join $where_sql $order $limit";
+
 	$results = $wpdb->get_results( $query );
 	$results = apply_filters( 'calendarp_events_data', $results );
 
@@ -577,6 +637,20 @@ function calendarp_get_events_in_date_range( $from = false, $to = false, $args =
 		$data = _calendarp_group_events_by_date( $results );
 	} else {
 		$data = $results;
+	}
+
+	/*
+	|--------------------------------------------------------------------------
+	| Store Salted Cache
+	|--------------------------------------------------------------------------
+	*/
+	if ( function_exists( 'wp_cache_set_salted' ) ) {
+		wp_cache_set_salted(
+			$cache_key,
+			$data,
+			$cache_group,
+			$last_changed
+		);
 	}
 
 	return $data;
