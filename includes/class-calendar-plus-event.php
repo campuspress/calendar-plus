@@ -389,7 +389,6 @@ class Calendar_Plus_Event {
 	 */
 	public function delete_dates() {
 		calendar_plus()->generator->delete_event_dates( $this->ID );
-		delete_transient( 'calendarp_events_in_range' );
 		calendarp_delete_events_since_cache();
 		calendarp_delete_calendar_cache( $this->ID );
 

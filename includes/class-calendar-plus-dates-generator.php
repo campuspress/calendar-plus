@@ -173,7 +173,6 @@ class Calendar_Plus_Dates_Generator {
 
 		self::clear_cached_months();
 		calendarp_sort_calendar_event_cells( $event_id );
-		calendarp_delete_events_in_range_cache();
 		calendarp_delete_events_since_cache();
 		calendarp_delete_calendar_cache( $event_id );
 		update_post_meta( $event_id, '_has_custom_dates', true );
@@ -208,7 +207,6 @@ class Calendar_Plus_Dates_Generator {
 	 * Clear all cached months
 	 */
 	private static function clear_cached_months() {
-		Calendar_Plus_Cache::delete_cache_group( 'calendarp_months_dates' );
 		wp_cache_delete( 'get_calendar_plus_widget', 'calendar' );
 	}
 

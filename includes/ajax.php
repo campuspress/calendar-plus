@@ -78,7 +78,6 @@ function calendarp_edit_calendar_cell() {
 	}
 
 	calendarp_delete_calendar_cache( $event_id );
-	calendarp_delete_events_in_range_cache();
 	calendarp_delete_events_since_cache();
 	update_post_meta( $event_id, '_has_custom_dates', true );
 

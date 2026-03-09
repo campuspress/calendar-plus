@@ -65,7 +65,6 @@ class ComposerStaticInitba8cd9875988ddc0f8426e609db814f8
         'Calendar_Plus_Admin_Importers' => __DIR__ . '/../..' . '/admin/class-calendar-plus-admin-importers.php',
         'Calendar_Plus_Admin_Settings_Page' => __DIR__ . '/../..' . '/admin/pages/class-settings-page.php',
         'Calendar_Plus_Blocks' => __DIR__ . '/../..' . '/includes/class-calendar-plus-blocks.php',
-        'Calendar_Plus_Cache' => __DIR__ . '/../..' . '/includes/class-calendar-plus-cache.php',
         'Calendar_Plus_Calendar' => __DIR__ . '/../..' . '/includes/calendar/class-calendar-plus-calendar.php',
         'Calendar_Plus_Calendar_Button' => __DIR__ . '/../..' . '/includes/calendar-buttons/abstract-calendar-plus-calendar-button.php',
         'Calendar_Plus_Calendar_Cell' => __DIR__ . '/../..' . '/includes/calendar/class-calendar-plus-calendar.php',
