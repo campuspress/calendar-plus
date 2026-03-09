@@ -21,7 +21,6 @@ function calendarp_delete_calendar_cache( $post_id ) {
 		wp_cache_set_last_changed( 'calendarp:events' );
 	}
 
-	wp_cache_delete( $post_id, 'calendarp_events_calendars' );
 	Calendar_Plus_Cache::delete_cache_group( 'calendarp_months_dates' );
 }
 
@@ -30,6 +29,5 @@ function calendarp_delete_events_since_cache() {
 }
 
 function calendarp_delete_events_in_range_cache() {
-	delete_transient( 'calendarp_events_in_range' );
 	Calendar_Plus_Cache::delete_cache_group( 'calendarp_months_dates' );
 }
