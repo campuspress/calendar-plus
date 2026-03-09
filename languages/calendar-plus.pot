@@ -1,4 +1,4 @@
-# Copyright (C) 2025 calendar-plus
+# Copyright (C) 2026 calendar-plus
 # This file is distributed under the same license as the calendar-plus package.
 msgid ""
 msgstr ""
@@ -6,7 +6,7 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2025-03-03 09:48+0000\n"
+"POT-Creation-Date: 2026-03-09 14:20+0000\n"
 "X-Poedit-Basepath: ..\n"
 "X-Poedit-KeywordsList: __;_e;_ex:1,2c;_n:1,2;_n_noop:1,2;_nx:1,2,4c;_nx_noop:1,2,3c;_x:1,2c;esc_attr__;esc_attr_e;esc_attr_x:1,2c;esc_html__;esc_html_e;esc_html_x:1,2c\n"
 "X-Poedit-SearchPath-0: .\n"
@@ -142,7 +142,7 @@ msgstr ""
 msgid "None"
 msgstr ""
 
-#: admin/settings-fields.php:213, admin/settings-fields.php:240, public/helpers-templates.php:366, includes/rest-api/endpoints/class-calendar-plus-rest-endpoints-event.php:564
+#: admin/settings-fields.php:213, admin/settings-fields.php:240, public/helpers-templates.php:366, includes/rest-api/endpoints/class-calendar-plus-rest-endpoints-event.php:563
 msgid "Google Calendar"
 msgstr ""
 
@@ -271,11 +271,11 @@ msgid "Search By Title…"
 msgstr ""
 
 #. translators: %s: user display name
-#: includes/ajax.php:158, admin/pages/class-settings-page.php:81
+#: includes/ajax.php:157, admin/pages/class-settings-page.php:81
 msgid "Edit %s user"
 msgstr ""
 
-#: includes/class-calendar-plus-activator.php:62
+#: includes/class-calendar-plus-activator.php:61
 msgid "Calendar Plus Manager"
 msgstr ""
 
@@ -563,11 +563,11 @@ msgstr ""
 msgid "<span>Displaying past events</span>"
 msgstr ""
 
-#: public/helpers-templates.php:370, includes/rest-api/endpoints/class-calendar-plus-rest-endpoints-event.php:568
+#: public/helpers-templates.php:370, includes/rest-api/endpoints/class-calendar-plus-rest-endpoints-event.php:567
 msgid "Outlook"
 msgstr ""
 
-#: public/helpers-templates.php:374, includes/rest-api/endpoints/class-calendar-plus-rest-endpoints-event.php:572
+#: public/helpers-templates.php:374, includes/rest-api/endpoints/class-calendar-plus-rest-endpoints-event.php:571
 msgid "iCal File"
 msgstr ""
 
@@ -1345,72 +1345,77 @@ msgctxt "Order status"
 msgid "Archived"
 msgstr ""
 
-#: includes/helpers/helpers-events.php:180
+#: includes/helpers/helpers-events.php:182
 msgctxt "Human read date for an event with more than 2 dates"
 msgid "From %1$s to %2$s"
 msgstr ""
 
-#: includes/helpers/helpers-events.php:181
+#: includes/helpers/helpers-events.php:183
 msgctxt "Human read date for an event with more than 2 dates"
 msgid "%1$s to %2$s"
 msgstr ""
 
-#: includes/helpers/helpers-events.php:193, includes/helpers/helpers-events.php:207, includes/helpers/helpers-events.php:213, includes/helpers/helpers-events.php:222, includes/helpers/helpers-events.php:231
+#: includes/helpers/helpers-events.php:195, includes/helpers/helpers-events.php:209, includes/helpers/helpers-events.php:215, includes/helpers/helpers-events.php:224, includes/helpers/helpers-events.php:233
 msgid "Every %s"
 msgstr ""
 
-#: includes/helpers/helpers-events.php:194
+#: includes/helpers/helpers-events.php:196
 msgid "day"
 msgid_plural "%d days"
 msgstr[0] ""
 msgstr[1] ""
 
-#: includes/helpers/helpers-events.php:214
+#: includes/helpers/helpers-events.php:216
 msgid "week"
 msgid_plural "%d weeks"
 msgstr[0] ""
 msgstr[1] ""
 
-#: includes/helpers/helpers-events.php:223
+#: includes/helpers/helpers-events.php:225
 msgid "month"
 msgid_plural "%d months"
 msgstr[0] ""
 msgstr[1] ""
 
-#: includes/helpers/helpers-events.php:232
+#: includes/helpers/helpers-events.php:234
 msgid "year"
 msgid_plural "%d years"
 msgstr[0] ""
 msgstr[1] ""
 
-#: includes/helpers/helpers-events.php:246
+#: includes/helpers/helpers-events.php:253
 msgctxt "Human read time for an event with more than 2 dates"
 msgid "at %s"
 msgstr ""
 
-#: includes/helpers/helpers-events.php:165
-msgctxt "Human read date for an event with two dates"
-msgid "On %1$s and %2$s"
+#: includes/helpers/helpers-events.php:259
+msgctxt "Human read time for an event with more than 2 dates"
+msgid "till %s"
 msgstr ""
 
 #: includes/helpers/helpers-events.php:166
 msgctxt "Human read date for an event with two dates"
+msgid "On %1$s and %2$s"
+msgstr ""
+
+#: includes/helpers/helpers-events.php:167
+msgctxt "Human read date for an event with two dates"
 msgid "%1$s and %2$s"
 msgstr ""
 
-#: includes/helpers/helpers-events.php:170
+#: includes/helpers/helpers-events.php:172
 msgctxt "Human read time for an event with two dates"
-msgid "at %s"
+msgid "at %s till %s"
 msgstr ""
 
-#: includes/helpers/helpers-events.php:152
+#: includes/helpers/helpers-events.php:153
 msgctxt "Human read date for an event with only one date"
 msgid "On %s"
 msgstr ""
 
-#: includes/helpers/helpers-events.php:158
+#: includes/helpers/helpers-events.php:159
 msgctxt "Human read time for an event with only one date"
-msgid "at %s"
+msgid "at %s till %s"
 msgstr ""
 
 #: includes/helpers/helpers-events.php:146, includes/helpers/helpers-events.php:147, includes/helpers/helpers-events.php:139, includes/helpers/helpers-events.php:140
@@ -2882,7 +2887,7 @@ msgstr ""
 msgid "Back to Calendar"
 msgstr ""
 
-#: public/templates/content-event.php:66
+#: public/templates/content-event.php:66, includes/blocks/event-add-to/render.php:6
 msgid "Add to"
 msgstr ""
 
@@ -2930,58 +2935,58 @@ msgstr ""
 msgid "Please, use correct dates."
 msgstr ""
 
-#: includes/rest-api/endpoints/class-calendar-plus-rest-endpoints-event.php:297
+#: includes/rest-api/endpoints/class-calendar-plus-rest-endpoints-event.php:296
 msgid "The month from when retrieve the list of the events."
 msgstr ""
 
-#: includes/rest-api/endpoints/class-calendar-plus-rest-endpoints-event.php:308
+#: includes/rest-api/endpoints/class-calendar-plus-rest-endpoints-event.php:307
 msgid "The year from when retrieve the list of the events."
 msgstr ""
 
-#: includes/rest-api/endpoints/class-calendar-plus-rest-endpoints-event.php:318
+#: includes/rest-api/endpoints/class-calendar-plus-rest-endpoints-event.php:317
 msgid "Limit result set to products assigned to specific category IDs separated by commas."
 msgstr ""
 
-#: includes/rest-api/endpoints/class-calendar-plus-rest-endpoints-event.php:327
+#: includes/rest-api/endpoints/class-calendar-plus-rest-endpoints-event.php:326
 msgid "Search events."
 msgstr ""
 
-#: includes/rest-api/endpoints/class-calendar-plus-rest-endpoints-event.php:361
+#: includes/rest-api/endpoints/class-calendar-plus-rest-endpoints-event.php:360
 msgid "Unique identifier for the event."
 msgstr ""
 
-#: includes/rest-api/endpoints/class-calendar-plus-rest-endpoints-event.php:367
+#: includes/rest-api/endpoints/class-calendar-plus-rest-endpoints-event.php:366
 msgid "The title of the event."
 msgstr ""
 
-#: includes/rest-api/endpoints/class-calendar-plus-rest-endpoints-event.php:371
+#: includes/rest-api/endpoints/class-calendar-plus-rest-endpoints-event.php:370
 msgid "The event description."
 msgstr ""
 
-#: includes/rest-api/endpoints/class-calendar-plus-rest-endpoints-event.php:375
+#: includes/rest-api/endpoints/class-calendar-plus-rest-endpoints-event.php:374
 msgid "The event permalink."
 msgstr ""
 
-#: includes/rest-api/endpoints/class-calendar-plus-rest-endpoints-event.php:380
+#: includes/rest-api/endpoints/class-calendar-plus-rest-endpoints-event.php:379
 msgid "The event start date."
 msgstr ""
 
-#: includes/rest-api/endpoints/class-calendar-plus-rest-endpoints-event.php:384
+#: includes/rest-api/endpoints/class-calendar-plus-rest-endpoints-event.php:383
 msgid "The event end date."
 msgstr ""
 
-#: includes/rest-api/endpoints/class-calendar-plus-rest-endpoints-event.php:388
+#: includes/rest-api/endpoints/class-calendar-plus-rest-endpoints-event.php:387
 msgid "If the event is all day or not."
 msgstr ""
 
-#: includes/rest-api/endpoints/class-calendar-plus-rest-endpoints-event.php:392
+#: includes/rest-api/endpoints/class-calendar-plus-rest-endpoints-event.php:391
 msgid "Location attributes. False if there is no location attached to the event."
 msgstr ""
 
-#: includes/rest-api/endpoints/class-calendar-plus-rest-endpoints-event.php:396
+#: includes/rest-api/endpoints/class-calendar-plus-rest-endpoints-event.php:395
 msgid "Dates string adapted to human read."
 msgstr ""
 
-#: includes/rest-api/endpoints/class-calendar-plus-rest-endpoints-event.php:400
+#: includes/rest-api/endpoints/class-calendar-plus-rest-endpoints-event.php:399
 msgid "URLs to import to external calendars"
 msgstr ""
