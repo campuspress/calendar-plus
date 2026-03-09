@@ -20,14 +20,9 @@ function calendarp_delete_calendar_cache( $post_id ) {
 		// This invalidates all cached queries for this group.
 		wp_cache_set_last_changed( 'calendarp:events' );
 	}
-
-	Calendar_Plus_Cache::delete_cache_group( 'calendarp_months_dates' );
 }
 
 function calendarp_delete_events_since_cache() {
 	delete_transient( 'calendarp_events_since' );
 }
 
-function calendarp_delete_events_in_range_cache() {
-	Calendar_Plus_Cache::delete_cache_group( 'calendarp_months_dates' );
-}

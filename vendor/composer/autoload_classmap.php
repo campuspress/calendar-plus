@@ -15,7 +15,6 @@ return array(
     'Calendar_Plus_Admin_Importers' => $baseDir . '/admin/class-calendar-plus-admin-importers.php',
     'Calendar_Plus_Admin_Settings_Page' => $baseDir . '/admin/pages/class-settings-page.php',
     'Calendar_Plus_Blocks' => $baseDir . '/includes/class-calendar-plus-blocks.php',
-    'Calendar_Plus_Cache' => $baseDir . '/includes/class-calendar-plus-cache.php',
     'Calendar_Plus_Calendar' => $baseDir . '/includes/calendar/class-calendar-plus-calendar.php',
     'Calendar_Plus_Calendar_Button' => $baseDir . '/includes/calendar-buttons/abstract-calendar-plus-calendar-button.php',
     'Calendar_Plus_Calendar_Cell' => $baseDir . '/includes/calendar/class-calendar-plus-calendar.php',
