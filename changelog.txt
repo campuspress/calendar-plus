@@ -1,5 +1,11 @@
 Change Log:
 ----------------------------------------------------------------------
+2.2.15 - 2026-03-09
+----------------------------------------------------------------------
+- Add: New event metadata block support.
+- Improve: Event query and date retrieval performance.
+- Fix: Event date/time output and export consistency.
+
 2.2.13 - 2025-03-04
 ----------------------------------------------------------------------
 - Improve: Ical parser.
