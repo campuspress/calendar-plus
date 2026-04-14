@@ -32,6 +32,19 @@ class Calendar_Plus_Query {
 			return;
 		}
 
+		// If this is a taxonomy archive and the post type isn't explicitly calendar_event,
+		// only apply event-specific changes to taxonomies used exclusively by calendar_event.
+		// Leave shared taxonomies (e.g., those also used by post) unchanged so their archive pages function normally.
+		if ( $query->is_tax() && $query->get( 'post_type' ) != 'calendar_event' ) {
+			$queried_object = $query->get_queried_object();
+			if ( $queried_object instanceof WP_Term ) {
+				$tax_object = get_taxonomy( $queried_object->taxonomy );
+				if ( $tax_object && count( $tax_object->object_type ) > 1 ) {
+					return;
+				}
+			}
+		}
+
 		if ( ! wp_is_block_theme() ) {
 			$events_page_id = absint( calendarp_get_setting( 'events_page_id' ) );
 			if ( isset( $query->queried_object_id ) && $query->queried_object_id === $events_page_id ) {
