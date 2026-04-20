@@ -13,6 +13,14 @@ class Calendar_Plus_Template_Loader {
 		$templates = array( 'calendar-plus.php' );
 		$file = '';
 
+		// If this is a taxonomy archive and the post type isn't explicitly calendar_event.
+		if ( is_tax() && get_post_type() !== 'calendar_event' ) {
+			// if taxonomy is assigned to multiple post types, we are not forcing Cal+ template
+			$assigned_to_multiple = calendarp_is_taxonomy_assigned_to_multiple( get_queried_object() );
+
+			return $template;
+		}
+
 		if ( is_single() && get_post_type() == 'calendar_event' ) {
 			$file = 'single-event.php';
 			$templates[] = $file;
