@@ -29,6 +29,13 @@ class Calendar_Plus_iCal_Generator {
 	const ICAL_DATE_FORMAT = 'Ymd\THis\Z';
 
 	/**
+	 * PHP date() format used for iCal date-only parameters
+	 *
+	 * @var string
+	 */
+	const ICAL_DATE_ONLY_FORMAT = 'Ymd';
+
+	/**
 	 * List of iCal weekday codes
 	 *
 	 * @var array
@@ -104,6 +111,27 @@ class Calendar_Plus_iCal_Generator {
 	}
 
 	/**
+	 * Convert a local date string into iCal date-only format
+	 *
+	 * @param string $date
+	 * @param int    $days_to_add Number of days to add to the date (used for end dates to make them inclusive)
+	 *
+	 * @return string
+	 */
+	public function convert_date( $date, $days_to_add = 0  ) {
+		return gmdate(
+			self::ICAL_DATE_ONLY_FORMAT,
+			strtotime(
+				sprintf(
+					'+%d day',
+					$days_to_add
+				),
+				strtotime( get_gmt_from_date( $date ) )
+			)
+		);
+	}
+
+	/**
 	 * Convert a weekday number into its associated code
 	 *
 	 * @param int $weekday
@@ -169,8 +197,14 @@ class Calendar_Plus_iCal_Generator {
 
 		$result['UID'] = $event->ID . '-' . $row->series_number;
 		$result['SUMMARY'] = $this->convert_plaintext( get_the_title( $event->ID ) );
-		$result['DTSTART'] = $from_date_string;
-		$result['DTEND'] = $until_date_string;
+
+		if ( $event->is_all_day_event() && 'general' === $event->get_event_type() ) {
+			$result['DTSTART;VALUE=DATE'] = $this->convert_date( $row->from_date );
+			$result['DTEND;VALUE=DATE'] = $this->convert_date( $row->until_date, 1 );
+		} else {
+			$result['DTSTART'] = $from_date_string;
+			$result['DTEND'] = $until_date_string;
+		}
 
 		$result['DTSTAMP'] = $publish_date_string;
 		$result['LAST-MODIFIED'] = $update_date_string;
