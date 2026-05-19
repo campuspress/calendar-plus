@@ -111,7 +111,7 @@ class Calendar_Plus_iCal_Generator {
 	}
 
 	/**
-	 * Convert a local date string into iCal date-only format
+	 * Convert a local date string into iCal date-only format, optionally adding a number of days to the date
 	 *
 	 * @param string $date
 	 * @param int    $days_to_add Number of days to add to the date (used for end dates to make them inclusive)
@@ -119,16 +119,17 @@ class Calendar_Plus_iCal_Generator {
 	 * @return string
 	 */
 	public function convert_date( $date, $days_to_add = 0  ) {
-		return gmdate(
-			self::ICAL_DATE_ONLY_FORMAT,
-			strtotime(
-				sprintf(
-					'+%d day',
-					$days_to_add
-				),
-				strtotime( get_gmt_from_date( $date ) )
-			)
-		);
+		$converted_date = DateTimeImmutable::createFromFormat( '!Y-m-d', $date );
+
+		if ( false === $converted_date ) {
+			return $date;
+		}
+
+		if ( 0 !== ( int ) $days_to_add ) {
+			$converted_date = $converted_date->modify( sprintf( '%+d day', ( int ) $days_to_add ) );
+		}
+
+		return $converted_date->format( self::ICAL_DATE_ONLY_FORMAT );
 	}
 
 	/**
