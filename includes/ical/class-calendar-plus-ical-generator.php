@@ -199,7 +199,7 @@ class Calendar_Plus_iCal_Generator {
 		$result['UID'] = $event->ID . '-' . $row->series_number;
 		$result['SUMMARY'] = $this->convert_plaintext( get_the_title( $event->ID ) );
 
-		if ( $event->is_all_day_event() && 'general' === $event->get_event_type() ) {
+		if ( $event->is_all_day_event() && 'recurrent' !== $event->get_event_type() ) {
 			$result['DTSTART;VALUE=DATE'] = $this->convert_date( $row->from_date );
 			$result['DTEND;VALUE=DATE'] = $this->convert_date( $row->until_date, 1 );
 		} else {
@@ -226,7 +226,12 @@ class Calendar_Plus_iCal_Generator {
 				$until_date_string = $this->convert_datetime( $rules['dates'][0]['until'] . ' ' . $rules['times'][0]['until'] );
 
 				$result['UID'] = $event->ID;
-				$result['DTSTART'] = $from_date_string;
+				if ( $event->is_all_day_event() ) {
+					unset( $result['DTSTART'] );
+					$result['DTSTART;VALUE=DATE'] = $this->convert_date( $rules['dates'][0]['from'] );
+				} else {
+					$result['DTSTART'] = $from_date_string;
+				}
 				unset( $result['DTEND'] );
 
 				$this->skip[] = $event->ID;
