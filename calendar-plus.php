@@ -6,7 +6,7 @@
  * Plugin Name: Calendar+ (An Accessible Events Calendar)
  * Plugin URI:  https://campuspress.com/accessible-wordpress-calendar-plugin/
  * Description: Accessibility-ready complete calendar and events plugin. Import from Google Calendar, subscribe to events, and more.
- * Version:     2.2.15
+ * Version:     2.2.18
  * Author:      CampusPress
  * Author URI:  https://campuspress.com
  * License:     GPL-2.0+
@@ -27,7 +27,7 @@ require_once plugin_dir_path( __FILE__ ) . 'vendor/autoload.php';
  * @return string Plugin version
  */
 function calendarp_get_version() {
-	return '2.2.15';
+	return '2.2.18';
 }
 
 /**
@@ -75,9 +75,9 @@ include_once 'includes/hooks/calendar-plus-hooks.php';
 /**
  * Enables automatic updates from GitHub
  */
-require_once plugin_dir_path( __FILE__ ) . 'includes/plugin-update-checker/plugin-update-checker.php';
-if ( class_exists( 'Puc_v4_Factory' ) ) {
-	$calendar_plus_update_checker = Puc_v4_Factory::buildUpdateChecker(
+use YahnisElsts\PluginUpdateChecker\v5\PucFactory;
+if ( wp_next_scheduled('wp_update_plugins') ) {
+	$calendar_plus_update_checker = PucFactory::buildUpdateChecker(
 		'https://github.com/campuspress/calendar-plus',
 		__FILE__,
 		'calendar-plus'

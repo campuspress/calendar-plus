@@ -880,3 +880,28 @@ function calendarp_block_error_msg( $msg ) {
 		'<div class="components-placeholder__fieldset">' . esc_html( $msg ) .  '</div>' .
 	'</div>';
 }
+
+/**
+ * Returns true if a taxonomy is assigned to multiple post types
+ *
+ * @param WP_Term|WP_Post_Type|WP_Post|WP_User|null $queried_object The queried object.
+ *
+ * @return boolean
+ */
+function calendarp_is_taxonomy_assigned_to_multiple( $queried_object ) {
+	if (
+		! $queried_object ||
+		empty( $queried_object->taxonomy ) ||
+		! ( $queried_object instanceof WP_Term )
+	) {
+		return false;
+	}
+
+	$tax_object = get_taxonomy( $queried_object->taxonomy );
+
+	if ( ! $tax_object ) {
+		return false;
+	}
+
+	return is_countable( $tax_object->object_type ) && count( $tax_object->object_type ) > 1;
+}
