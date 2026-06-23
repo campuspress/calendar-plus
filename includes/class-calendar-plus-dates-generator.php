@@ -270,8 +270,8 @@ class Calendar_Plus_Dates_Generator {
 		}
 
 		// Lets use this opportunity to store the last known total dates
-		$total_old_dates = (int) $wpdb->get_var( "SELECT COUNT(ID) FROM $table" );
-		update_option( 'calendarp_last_known_total_dates', $total_old_dates );
+		$total_dates = (int) $wpdb->get_var( "SELECT COUNT(ID) FROM $table" );
+		update_option( 'calendarp_last_known_total_dates', $total_dates );
 	}
 
 
