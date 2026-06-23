@@ -474,48 +474,16 @@ function calendarp_get_events_in_date_range( $from = false, $to = false, $args =
 		'order'           => 'ASC',
 	) );
 
-	/*
-	|--------------------------------------------------------------------------
-	| Salted Cache Layer
-	|--------------------------------------------------------------------------
-	*/
-	if ( function_exists( 'wp_cache_get_last_changed' ) ) {
-		$last_changed = wp_cache_get_last_changed( 'calendarp:events' );
-	}
-
-	if ( function_exists( 'wp_cache_get_salted' ) ) {
-		$cache_group  = 'calendarp_cache';
-		$cache_args   = array(
-			'from' => $from,
-			'to'   => $to,
-			'args' => $args,
-		);
-
-		$cache_key = md5( wp_json_encode( $cache_args ) );
-
-		$cached = wp_cache_get_salted( $cache_key, $cache_group, $last_changed );
-
-		if ( false !== $cached ) {
-			return $cached;
-		}
-	}
-
-	/*
-	|--------------------------------------------------------------------------
-	| Build Query
-	|--------------------------------------------------------------------------
-	*/
+	// Normalise timestamps to Y-m-d date strings before building the cache key.
 	if ( $from ) {
-		$from_date = date( 'Y-m-d', $from );
+		$from = date( 'Y-m-d', $from );
 	}
-
 	if ( $to ) {
-		$to_date = date( 'Y-m-d', $to );
+		$to = date( 'Y-m-d', $to );
 	}
 
-	$select = "SELECT cal.* FROM $wpdb->calendarp_calendar cal";
-	$join   = "INNER JOIN $wpdb->posts p ON p.ID = cal.event_id ";
-
+	// Normalise category/tag before building the cache key so callers passing
+	// a scalar, a string-int, or an array all produce the same key.
 	$term_ids  = array();
 	$tax_names = array();
 
@@ -536,25 +504,27 @@ function calendarp_get_events_in_date_range( $from = false, $to = false, $args =
 			$tax_names[] = 'calendar_event_' . $tax;
 		}
 	}
-	
-	/*
-	|--------------------------------------------------------------------------
-	| WHERE conditions
-	|--------------------------------------------------------------------------
-	*/
-	$where = array( "p.post_status = 'publish'" );
 
-	/*
-	|--------------------------------------------------------------------------
-	| Optimized Date Range (Index Friendly)
-	|--------------------------------------------------------------------------
-	*/
-	if ( isset( $from_date ) ) {
-		$where[] = $wpdb->prepare( 'cal.until_date >= %s', $from_date );
+	// Return early if a valid cache entry exists for this query.
+	$last_changed      = wp_cache_get_last_changed( 'calendarp:events' );
+	$cache_key = 'calendarp_date_range_' . md5( wp_json_encode( compact( 'from', 'to', 'args' ) ) );
+	$cached    = wp_cache_get_salted( $cache_key, 'calendarp:events', $last_changed );
+
+	if ( false !== $cached ) {
+		return $cached;
 	}
 
-	if ( isset( $to_date ) ) {
-		$where[] = $wpdb->prepare( 'cal.from_date <= %s', $to_date );
+	$select = "SELECT cal.* FROM $wpdb->calendarp_calendar cal";
+	$join   = "INNER JOIN $wpdb->posts p ON p.ID = cal.event_id ";
+
+	// Conditions use until_date/from_date to catch events that overlap the requested range.
+	$where = array( "p.post_status = 'publish'" );
+	if ( $from ) {
+		$where[] = $wpdb->prepare( 'cal.until_date >= %s', $from );
+	}
+
+	if ( $to ) {
+		$where[] = $wpdb->prepare( 'cal.from_date <= %s', $to );
 	}
 
 	if ( ! empty( $term_ids ) ) {
@@ -579,11 +549,7 @@ function calendarp_get_events_in_date_range( $from = false, $to = false, $args =
 		);
 	}
 
-	/*
-	|--------------------------------------------------------------------------
-	| Include / Exclude / Search
-	|--------------------------------------------------------------------------
-	*/
+	// Merge explicitly included IDs with any keyword-search matches.
 	$event_ids = $args['include_ids'];
 
 	if ( $args['search'] ) {
@@ -622,11 +588,7 @@ function calendarp_get_events_in_date_range( $from = false, $to = false, $args =
 
 	$where_sql = 'WHERE ' . implode( ' AND ', $where );
 
-	/*
-	|--------------------------------------------------------------------------
-	| Ordering
-	|--------------------------------------------------------------------------
-	*/
+	// Validate the sort direction to prevent unexpected SQL behaviour.
 	$sort_type = strtoupper( $args['order'] ) ?? 'ASC';
 
 	if ( ! in_array( $sort_type, array( 'ASC', 'DESC' ), true ) ) {
@@ -635,11 +597,6 @@ function calendarp_get_events_in_date_range( $from = false, $to = false, $args =
 
 	$order = "ORDER BY cal.from_date $sort_type, cal.from_time $sort_type, cal.event_id $sort_type";
 
-	/*
-	|--------------------------------------------------------------------------
-	| Limit
-	|--------------------------------------------------------------------------
-	*/
 	$limit = '';
 	$per_page = intval( $args['events_per_page'] );
 	if ( $per_page > 0 ) {
@@ -657,19 +614,7 @@ function calendarp_get_events_in_date_range( $from = false, $to = false, $args =
 		$data = $results;
 	}
 
-	/*
-	|--------------------------------------------------------------------------
-	| Store Salted Cache
-	|--------------------------------------------------------------------------
-	*/
-	if ( function_exists( 'wp_cache_set_salted' ) ) {
-		wp_cache_set_salted(
-			$cache_key,
-			$data,
-			$cache_group,
-			$last_changed
-		);
-	}
+	wp_cache_set_salted( $cache_key, $data, 'calendarp:events', $last_changed );
 
 	return $data;
 }
