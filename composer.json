@@ -13,7 +13,8 @@
         "ext-calendar": "*",
         "composer/installers": "~1.0",
         "johngrogg/ics-parser": "^3.2",
-        "mexitek/phpcolors": "~1.0"
+        "mexitek/phpcolors": "~1.0",
+        "yahnis-elsts/plugin-update-checker": "~5.7"
     },
     "require-dev": {
         "phpunit/phpunit": "3.7.*",
@@ -22,7 +23,7 @@
     },
     "autoload": {
         "classmap": ["admin", "includes", "modules", "public"],
-        "exclude-from-classmap": ["/includes/plugin-update-checker/"]
+        "exclude-from-classmap": ["/vendor/yahnis-elsts/plugin-update-checker"]
     },
     "config": {
         "allow-plugins": {

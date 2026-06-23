@@ -3,22 +3,46 @@
 declare(strict_types=1);
 
 use Rector\Config\RectorConfig;
-use Rector\Php53\Rector\Ternary\TernaryToElvisRector;
+use Rector\EarlyReturn\Rector\If_\RemoveAlwaysElseRector;
 use Rector\Set\ValueObject\SetList;
 use Rector\ValueObject\PhpVersion;
 
 // phpcs:disable Generic.Arrays.DisallowLongArraySyntax
 
-// rector process src
+// rector process
 
-return static function (RectorConfig $rectorConfig): void {
-    $rectorConfig->disableParallel();
-
-    $rectorConfig->importShortClasses(false);
-
-    $rectorConfig->phpVersion(PhpVersion::PHP_56);
-
-    $rectorConfig->skip(
+return RectorConfig::configure()
+    ->withParallel(120 * 2, 16, 16)
+    ->withPhpVersion(PhpVersion::PHP_56)
+    ->withSets(
+        array(
+            SetList::CODE_QUALITY,
+            SetList::CODING_STYLE,
+            SetList::DEAD_CODE,
+            SetList::PHP_70,
+            SetList::PHP_71,
+            SetList::PHP_72,
+            SetList::PHP_73,
+            SetList::PHP_74,
+            SetList::PHP_80,
+            SetList::PHP_81,
+            SetList::PHP_82,
+            SetList::PHP_83,
+            SetList::PHP_84,
+            SetList::PHP_85,
+        )
+    )
+    ->withPaths(
+        array(
+            __DIR__ . DIRECTORY_SEPARATOR . 'src',
+        )
+    )
+    ->withRules(
+        array(
+            RemoveAlwaysElseRector::class,
+        )
+    )
+    ->withSkip(
         array(
             Rector\CodeQuality\Rector\Class_\CompleteDynamicPropertiesRector::class,
             Rector\CodeQuality\Rector\Concat\JoinStringConcatRector::class,
@@ -35,7 +59,7 @@ return static function (RectorConfig $rectorConfig): void {
             Rector\CodeQuality\Rector\Isset_\IssetOnPropertyObjectToPropertyExistsRector::class,
             Rector\CodingStyle\Rector\Encapsed\EncapsedStringsToSprintfRector::class,
             Rector\CodingStyle\Rector\Stmt\NewlineAfterStatementRector::class,
-            Rector\CodingStyle\Rector\String_\SymplifyQuoteEscapeRector::class,
+            Rector\CodingStyle\Rector\String_\SimplifyQuoteEscapeRector::class,
             Rector\DeadCode\Rector\Assign\RemoveUnusedVariableAssignRector::class,
             Rector\DeadCode\Rector\ClassMethod\RemoveUnusedPromotedPropertyRector::class,
             Rector\DeadCode\Rector\ClassMethod\RemoveUselessParamTagRector::class,
@@ -55,25 +79,7 @@ return static function (RectorConfig $rectorConfig): void {
             Rector\Php73\Rector\BooleanOr\IsCountableRector::class,
             Rector\Php74\Rector\Assign\NullCoalescingOperatorRector::class,
             Rector\Php74\Rector\StaticCall\ExportToReflectionFunctionRector::class,
+            Rector\CodingStyle\Rector\ClassLike\NewlineBetweenClassLikeStmtsRector::class,
             Rector\CodingStyle\Rector\ClassConst\RemoveFinalFromConstRector::class, // PHP 8
         )
     );
-
-    $rectorConfig->sets(
-        array(
-            SetList::CODE_QUALITY,
-            SetList::CODING_STYLE,
-            SetList::DEAD_CODE,
-            SetList::PHP_70,
-            SetList::PHP_71,
-            SetList::PHP_72,
-            SetList::PHP_73,
-            SetList::PHP_74,
-            SetList::PHP_80,
-            SetList::PHP_81,
-            SetList::PHP_82,
-        )
-    );
-
-    $rectorConfig->rule(TernaryToElvisRector::class);
-};
