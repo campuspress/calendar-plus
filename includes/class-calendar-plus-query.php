@@ -6,16 +6,16 @@ class Calendar_Plus_Query {
 
 	public function __construct() {
 
-		$this->query_vars = array( 'location', 'calendarp_searchw', 'order' );
+		$this->query_vars = array( 'location' );
 
 		// "to" and "from" query vars can lead to heavy queries, lets only allow them if total dates is below the limit
 		$last_known_total_dates = (int) get_option( 'calendarp_last_known_total_dates', 0 );
-		if ( $last_known_total_dates < apply_filters( 'calendarp_heavy_query_vars_total_dates_limit', 500 ) ) {
+		if ( $last_known_total_dates < $this->get_total_dates_limit() ) {
 			$this->query_vars[] = 'from';
 			$this->query_vars[] = 'to';
 		}
 
-		if ( ! is_admin() ) {
+		if ( ! is_admin() || wp_doing_ajax() ) {
 			add_action( 'pre_get_posts', array( $this, 'pre_get_posts' ) );
 		}
 	}
@@ -92,16 +92,10 @@ class Calendar_Plus_Query {
 		$query->set( 'meta_query', $meta_query );
 
 		add_filter( 'posts_clauses', array( $this, 'clauses' ), 10, 2 );
-		add_filter( 'posts_fields', array( $this, 'fields' ), 10, 2 );
+		add_filter( 'posts_request', array( $this, 'maybe_strip_calc_found_rows' ), 10, 2 );
+		add_filter( 'found_posts', array( $this, 'cap_found_posts' ), 10, 2 );
 
 		do_action( 'calendarp_query', $query, $this );
-	}
-
-	public function fields( $fields, $query ) {
-		remove_filter( 'posts_fields', array( $this, 'fields' ) );
-
-		$fields .= ', cal.from_date, cal.until_date, cal.from_time, cal.until_time';
-		return $fields;
 	}
 
 	public function clauses( $clauses, $query ) {
@@ -111,6 +105,17 @@ class Calendar_Plus_Query {
 
 		$clauses['join']   .= " RIGHT JOIN $wpdb->calendarp_calendar cal ON $wpdb->posts.ID = cal.event_id ";
 		$clauses['groupby'] = ' cal.event_id';
+
+		// Cap LIMIT offset to prevent bots from deep-paginating past the total-dates threshold.
+		if ( $clauses['limits'] ) {
+			$max_offset     = $this->get_total_dates_limit();
+			$posts_per_page = (int) $query->get( 'posts_per_page' );
+			$offset         = ( (int) $query->get( 'paged' ) - 1 ) * $posts_per_page;
+
+			if ( $offset > $max_offset ) {
+				$clauses['limits'] = $wpdb->prepare( 'LIMIT %d, %d', $max_offset, $posts_per_page );
+			}
+		}
 
 		// Generate all months between the dates
 		$from         = explode( '-', $query->get( 'from' ) );
@@ -168,5 +173,59 @@ class Calendar_Plus_Query {
 				$query->query_vars[ $key ] = $_REQUEST[ $key ];
 			}
 		}
+	}
+
+	public function maybe_strip_calc_found_rows( $sql, $query ) {
+		remove_filter( 'posts_request', array( $this, 'maybe_strip_calc_found_rows' ), 10 );
+
+		if ( false === strpos( $sql, 'SQL_CALC_FOUND_ROWS' ) ) {
+			return $sql;
+		}
+
+		$last_changed = wp_cache_get_last_changed( 'calendarp:events' );
+		if ( false !== wp_cache_get_salted( $this->found_posts_cache_key( $query ), 'calendarp:events', $last_changed ) ) {
+			add_filter( 'found_posts_query', array( $this, 'found_posts_query' ), 10, 2 );
+			return str_replace( 'SQL_CALC_FOUND_ROWS ', '', $sql );
+		}
+
+		return $sql;
+	}
+
+	public function found_posts_query( $sql, $query ) {
+		remove_filter( 'found_posts_query', array( $this, 'found_posts_query' ), 10 );
+
+		$last_changed   = wp_cache_get_last_changed( 'calendarp:events' );
+		$cached = wp_cache_get_salted( $this->found_posts_cache_key( $query ), 'calendarp:events', $last_changed );
+
+		if ( false !== $cached ) {
+			return 'SELECT ' . (int) $cached;
+		}
+
+		return $sql;
+	}
+
+	public function cap_found_posts( $found_posts, $query ) {
+		remove_filter( 'found_posts', array( $this, 'cap_found_posts' ) );
+
+		$last_changed   = wp_cache_get_last_changed( 'calendarp:events' );
+		$cached = wp_cache_get_salted( $this->found_posts_cache_key( $query ), 'calendarp:events', $last_changed );
+		if ( false !== $cached ) {
+			$found_posts = $cached;
+		} else {
+			wp_cache_set_salted( $this->found_posts_cache_key( $query ), $found_posts, 'calendarp:events', $last_changed );
+		}
+
+		return min( (int) $found_posts, $this->get_total_dates_limit() );
+	}
+
+	private function found_posts_cache_key( $query ) {
+		$vars = $query->query_vars;
+		unset( $vars['paged'], $vars['offset'], $vars['no_found_rows'] );
+
+		return 'calendarp_found_' . md5( serialize( $vars ) );
+	}
+
+	private function get_total_dates_limit() {
+		return (int) apply_filters( 'calendarp_heavy_query_vars_total_dates_limit', 500 );
 	}
 }
