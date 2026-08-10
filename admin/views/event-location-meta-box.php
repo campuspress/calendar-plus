@@ -12,7 +12,7 @@
 </script>
 <script id="location-search-template" type="text/html">
     <div id="location-results"></div>
-    <div id="location-search">
+    <div id="location-search-inner">
         <div class="spinner"></div>
         <input type="text" id="location-search-string" class="components-text-control__input" value="<%= title %>" aria-label="Location search">
         <input type="hidden" name="event_location[_location_id]" id="event_location" value="<%= id %>">
