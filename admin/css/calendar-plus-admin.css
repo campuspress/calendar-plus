@@ -345,10 +345,6 @@
 }
 
 /** EVENT LOCATION META BOX */
-#location-search {
-	position: relative;
-}
-
 #location-search .spinner {
 	position: absolute;
 	top: 0.2em;
@@ -364,7 +360,7 @@
 	box-shadow: 0 2px 5px rgb(0 0 0 / 20%);
 	z-index: 1000;
 	background: #fff;
-	position: fixed;
+	position: absolute;
 }
 
 #location-results .location-result {
