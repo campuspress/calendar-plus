@@ -1,9 +1,12 @@
 <?php
-require_once calendarp_get_plugin_dir() . 'public/helpers-templates.php';
+/**
+ * Context-aware event field.
+ *
+ * @package Calendar_Plus
+ */
 
-$date = calendarp_get_human_read_dates( get_the_ID() );
-if( $date ) {
-    $date = '<span class="calendarp-block-event-date">' . $date . '</span>';
+if ( ! defined( 'ABSPATH' ) ) {
+	return;
 }
-
-echo $date;
+// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Shared renderer escapes each field.
+echo Calendar_Plus_Event_Display::field( 'date', $attributes, $block );

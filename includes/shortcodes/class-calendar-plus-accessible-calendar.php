@@ -1,59 +1,77 @@
 <?php
+/**
+ * Calendar Plus: includes/shortcodes/class-calendar-plus-accessible-calendar.php.
+ *
+ * @package Calendar_Plus
+ */
+
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 
 /**
  * Class for rendering an accessible calendar designed for screen readers
  */
 class Calendar_Plus_Accessible_Calendar {
 
+
 	/**
+	 * Calendar component state.
+	 *
 	 * @var int
 	 */
 	public $month;
 
 	/**
+	 * Calendar component state.
+	 *
 	 * @var int
 	 */
 	public $year;
 
 	/**
+	 * Calendar component state.
+	 *
 	 * @var string
 	 */
 	public $search;
 
 	/**
-	 * Class constructor
+	 * Class constructor.
 	 */
 	public function __construct() {
 
-		$current_time = current_time( 'timestamp' );
+		$current_time = calendarp_wall_time();
 
-		$this->month = date( 'n', $current_time );
-		$this->year = date( 'Y', $current_time );
+		$this->month  = gmdate( 'n', $current_time );
+		$this->year   = gmdate( 'Y', $current_time );
 		$this->search = '';
 
-		if ( isset( $_GET['acal_month'] ) && is_numeric( $_GET['acal_month'] ) && $_GET['acal_month'] > 0 && $_GET['acal_month'] <= 12 ) {
-			$this->month = $_GET['acal_month'];
+		if ( null !== calendarp_form_input( 'acal_month', null, 'get' ) && is_numeric( calendarp_form_input( 'acal_month', '', 'get' ) ) && calendarp_form_input( 'acal_month', '', 'get' ) > 0 && calendarp_form_input( 'acal_month', '', 'get' ) <= 12 ) {
+			$this->month = calendarp_form_input( 'acal_month', '', 'get' );
 		}
 
-		if ( isset( $_GET['acal_year'] ) && false !== strtotime( $_GET['acal_year'] ) ) {
-			$this->year = $_GET['acal_year'];
+		if ( null !== calendarp_form_input( 'acal_year', null, 'get' ) && false !== strtotime( calendarp_form_input( 'acal_year', '', 'get' ) ) ) {
+			$this->year = calendarp_form_input( 'acal_year', '', 'get' );
 		}
 
-		if ( ! empty( $_GET['acal_s'] ) ) {
-			$this->search = $_GET['acal_s'];
+		if ( ! empty( calendarp_form_input( 'acal_s', '', 'get' ) ) ) {
+			$this->search = calendarp_form_input( 'acal_s', '', 'get' );
 		}
 	}
 
 	/**
-	 * Retrieve the range of years when events take place
+	 * Retrieve the range of years when events take place.
+	 *
 	 * @return array
 	 */
 	private function get_year_range() {
 		global $wpdb;
 
-		$results = $wpdb->get_row( "SELECT MIN(min_date) AS min, MAX(max_date) AS max FROM $wpdb->calendarp_min_max_dates" );
+		$results = calendarp_schedule_read( 'SELECT MIN(min_date) AS min, MAX(max_date) AS max FROM %i', array( $wpdb->calendarp_min_max_dates ), 'row' );
 
-		$current_time = current_time( 'timestamp' );
+		$current_time = calendarp_wall_time();
 
 		$min = strtotime( $results->min );
 		$max = strtotime( $results->max );
@@ -71,16 +89,18 @@ class Calendar_Plus_Accessible_Calendar {
 			}
 		}
 
-		return array( date( 'Y', $min ), date( 'Y', $max ) );
+		return array( gmdate( 'Y', $min ), gmdate( 'Y', $max ) );
 	}
 
 	/**
-	 * Render the calendar navigation form
+	 * Render the calendar navigation form.
 	 *
-	 * @param string $title
+	 * @param string $title Title.
+	 *
+	 * @return mixed Calendar operation result.
 	 */
 	private function render_navigation( $title ) {
-		/** @var WP_Locale $wp_locale */
+		/** Calendar component state. @var WP_Locale $wp_locale */
 		global $wp_locale;
 
 		$year_range = $this->get_year_range();
@@ -101,9 +121,11 @@ class Calendar_Plus_Accessible_Calendar {
 				<select id="acal_month_label" name="acal_month">
 					<?php
 					for ( $m = 1; $m < 12; $m++ ) {
-						printf( '<option value="%s"%s>%s</option>', $m,
+						printf(
+							'<option value="%s"%s>%s</option>',
+							esc_attr( $m ),
 							selected( $m, $this->month, false ),
-							$wp_locale->get_month( $m )
+							esc_html( $wp_locale->get_month( $m ) )
 						);
 					}
 					?>
@@ -115,7 +137,7 @@ class Calendar_Plus_Accessible_Calendar {
 				<select id="acal_year_label" name="acal_year">
 					<?php
 					for ( $y = $year_range[1]; $y >= $year_range[0]; $y-- ) {
-						printf( '<option value="%s"%s>%s</option>', $y, selected( $y, $this->year, false ), $y );
+						printf( '<option value="%s"%s>%s</option>', esc_attr( $y ), selected( $y, $this->year, false ), esc_html( $y ) );
 					}
 					?>
 				</select>
@@ -130,10 +152,9 @@ class Calendar_Plus_Accessible_Calendar {
 	}
 
 	/**
-	 * Build a list of information for a given event
+	 * Build a list of information for a given event.
 	 *
-	 * @param Calendar_Plus_Event $event
-	 *
+	 * @param Calendar_Plus_Event $event Event.
 	 * @return array
 	 */
 	private function get_event_info( Calendar_Plus_Event $event ) {
@@ -144,6 +165,7 @@ class Calendar_Plus_Accessible_Calendar {
 		$info['categories'] = get_the_term_list( $event->ID, 'calendar_event_category' );
 		if ( $info['categories'] ) {
 			$info['categories'] = sprintf(
+				/* translators: %s: event category names. */
 				__( 'Posted in %s', 'calendar-plus' ),
 				$info['categories']
 			);
@@ -158,29 +180,43 @@ class Calendar_Plus_Accessible_Calendar {
 	}
 
 	/**
-	 * Render the search results screen
+	 * Render the search results screen.
+	 *
+	 * @return mixed Calendar operation result.
 	 */
 	private function render_search_results() {
-		/** @var WP_Locale $wp_locale */
+		/** Calendar component state. @var WP_Locale $wp_locale */
 		global $wp_locale;
 
-		echo '<p>',
-		sprintf(
-			esc_html__( 'Search results for “%1$s” in %2$s %3$d.', 'calendar-plus' ),
-			esc_html( $this->search ), $wp_locale->get_month( $this->month ), $this->year
+		echo wp_kses_post( '<p>' ),
+		esc_html(
+			sprintf(
+			/* translators: 1: search phrase, 2: month name, 3: four-digit year. */
+				esc_html__( 'Search results for “%1$s” in %2$s %3$d.', 'calendar-plus' ),
+				esc_html( $this->search ),
+				$wp_locale->get_month( $this->month ),
+				$this->year
+			)
 		),
-		sprintf( ' <a href="%s">%s</a>',
-			esc_url( remove_query_arg( 'acal_s' ) ),
-			esc_html__( 'Return to Calendar', 'calendar-plus' )
+		wp_kses_post(
+			sprintf(
+				' <a href="%s">%s</a>',
+				esc_url( remove_query_arg( 'acal_s' ) ),
+				esc_html__( 'Return to Calendar', 'calendar-plus' )
+			)
 		),
-		'</p>';
+		wp_kses_post( '</p>' );
 
 		$this->render_navigation( __( 'Refine Query', 'calendar-plus' ) );
 
-		$results = calendar_plus()->generator->get_month_dates( $this->month, $this->year, array(
-			'search'         => $this->search,
-			'grouped_by_day' => false,
-		) );
+		$results = calendar_plus()->generator->get_month_dates(
+			$this->month,
+			$this->year,
+			array(
+				'search'         => $this->search,
+				'grouped_by_day' => false,
+			)
+		);
 
 		$events = array();
 
@@ -196,20 +232,25 @@ class Calendar_Plus_Accessible_Calendar {
 
 		foreach ( $events as $result ) {
 			$event = calendarp_get_event( $result[0]->event_id );
-			$info = $this->get_event_info( $event );
+			$info  = $this->get_event_info( $event );
 
 			echo '<hr><section>';
 
-			echo '<strong>', get_the_title( $event->ID ), '</strong>';
+			echo wp_kses_post( '<strong>' ), esc_html( get_the_title( $event->ID ) ), wp_kses_post( '</strong>' );
 
 			if ( $info['date'] ) {
-				echo '<br>', $info['date'];
+				echo wp_kses_post( '<br>' ), esc_html( $info['date'] );
 			}
 
 			if ( 'recurrent' === $event->get_event_type() ) {
-				echo '<br>', sprintf(
-					_n( 'Occurs %1$d time in %2$s %3$d: ', 'Occurs %1$d times in %2$s %3$d: ', 'calendar-plus' ),
-					count( $result ), $wp_locale->get_month( $this->month ), $this->year
+				echo wp_kses_post( '<br>' ), esc_html(
+					sprintf(
+					/* translators: 1: occurrence count, 2: month name, 3: four-digit year. */
+						_n( 'Occurs %1$d time in %2$s %3$d: ', 'Occurs %1$d times in %2$s %3$d: ', 'calendar-plus', 'calendar-plus' ),
+						count( $result ),
+						$wp_locale->get_month( $this->month ),
+						$this->year
+					)
 				);
 
 				$dates = array();
@@ -218,12 +259,18 @@ class Calendar_Plus_Accessible_Calendar {
 					$dates[] = date_i18n( _x( 'jS', 'day format', 'calendar-plus' ), strtotime( $occurrence->from_date ) );
 				}
 
-				echo implode( _x( ', ', 'event day separator', 'calendar-plus' ), $dates );
+				echo esc_html( implode( _x( ', ', 'event day separator', 'calendar-plus' ), $dates ) );
 			}
 
-			printf( '<br><a href="%s">%s</a>',
-				get_the_permalink( $event->ID ),
-				sprintf( esc_html__( 'Continue Reading %s', 'calendar-plus' ), get_the_title( $event->ID ) )
+			printf(
+				'<br><a href="%s">%s</a>',
+				esc_url( get_the_permalink( $event->ID ) ),
+				esc_html(
+					sprintf( /* translators: %s: event title. */
+						esc_html__( 'Continue Reading %s', 'calendar-plus' ),
+						get_the_title( $event->ID )
+					)
+				)
 			);
 
 			echo '</section>';
@@ -231,10 +278,12 @@ class Calendar_Plus_Accessible_Calendar {
 	}
 
 	/**
-	 * Render a single event within the calendar
+	 * Render a single event within the calendar.
 	 *
-	 * @param Calendar_Plus_Event $event
-	 * @param string $formatted_date
+	 * @param Calendar_Plus_Event $event Event.
+	 * @param string              $formatted_date Formatted date.
+	 *
+	 * @return mixed Calendar operation result.
 	 */
 	private function render_calendar_event( Calendar_Plus_Event $event, string $formatted_date ) {
 		?>
@@ -245,7 +294,15 @@ class Calendar_Plus_Accessible_Calendar {
 					<?php echo esc_html( get_the_title( $event->post ) ); ?> (<time><?php echo esc_html( $formatted_date ); ?></time>)</h2>
 			</header>
 			<button class="toggle-event-details" aria-expanded="false">
-				<?php echo sprintf( esc_html__( 'Show Details for %s', 'calendar-plus' ) . ' (<time>%s</time>)', get_the_title( $event->post ), esc_html( $formatted_date ) ); ?>
+				<?php
+				echo wp_kses_post(
+					sprintf( /* translators: %s: event title. */
+						esc_html__( 'Show Details for %s', 'calendar-plus' ) . ' (<time>%s</time>)',
+						get_the_title( $event->post ),
+						esc_html( $formatted_date )
+					)
+				);
+				?>
 			</button>
 
 			<div class="event-details" aria-hidden="true">
@@ -263,8 +320,13 @@ class Calendar_Plus_Accessible_Calendar {
 				?>
 				<div class="event-section event-details-link">
 					<a href="<?php echo esc_url( get_the_permalink( $event->post ) ); ?>">
-						 <?php
-							echo sprintf( esc_html__( 'View Full Details for %s', 'calendar-plus' ), get_the_title( $event->post ) );
+						<?php
+							echo esc_html(
+								sprintf( /* translators: %s: event title. */
+									esc_html__( 'View Full Details for %s', 'calendar-plus' ),
+									get_the_title( $event->post )
+								)
+							);
 						?>
 					</a>
 				</div>
@@ -274,30 +336,32 @@ class Calendar_Plus_Accessible_Calendar {
 	}
 
 	/**
-	 * Render the calendar view
+	 * Render the calendar view.
+	 *
+	 * @return mixed Calendar operation result.
 	 */
 	private function render_calendar() {
-		/** @var WP_Locale $wp_locale */
+		/** Calendar component state. @var WP_Locale $wp_locale */
 		global $wp_locale;
 
-		$total_days = date( 't', mktime( 0, 0, 0, $this->month, 1, $this->year ) );
-		$first_dow = date( 'w', mktime( 0, 0, 0, $this->month, 1, $this->year ) );
+		$total_days = gmdate( 't', mktime( 0, 0, 0, $this->month, 1, $this->year ) );
+		$first_dow  = gmdate( 'w', mktime( 0, 0, 0, $this->month, 1, $this->year ) );
 
 		$previous_month = $this->month - 1;
-		$previous_year = $this->year;
+		$previous_year  = $this->year;
 
 		if ( $previous_month < 1 ) {
 			$previous_month = 12;
-			$previous_year--;
+			--$previous_year;
 		}
 
-		$prev_month_total_days = date( 't', mktime( 0, 0, 0, $previous_month, 1, $previous_year ) );
-		$prev_month_start_day = ( $prev_month_total_days - $first_dow ) + 1;
+		$prev_month_total_days = gmdate( 't', mktime( 0, 0, 0, $previous_month, 1, $previous_year ) );
+		$prev_month_start_day  = ( $prev_month_total_days - $first_dow ) + 1;
 
-		// Days from previous month that will be present at the start of our current month
+		// Days from previous month that will be present at the start of our current month.
 		$days_from_back_month = $prev_month_total_days - $prev_month_start_day;
 
-		// Day from we start (can be negative if the previous month does not ends on saturday)
+		// Day from we start (can be negative if the previous month does not ends on saturday).
 		$day = -$days_from_back_month - 1;
 
 		$events = array();
@@ -318,16 +382,28 @@ class Calendar_Plus_Accessible_Calendar {
 
 		<div class="calendar-plus-accessible-calendar"
 			data-title-fallback="<?php esc_attr_e( 'this event', 'calendar-plus' ); ?>"
-			data-show-details-text="<?php esc_attr_e( 'Show Details for %EVENT%', 'calendar-plus' ); ?>"
-			data-hide-details-text="<?php esc_attr_e( 'Hide Details for %EVENT%', 'calendar-plus' ); ?>">
+			data-show-details-text="
+			<?php
+			/* translators: %EVENT%: literal token replaced with the event title by the details toggle. */
+			esc_attr_e( 'Show Details for %EVENT%', 'calendar-plus' );
+			?>
+	"
+			data-hide-details-text="
+			<?php
+			/* translators: %EVENT%: literal token replaced with the event title by the details toggle. */
+			esc_attr_e( 'Hide Details for %EVENT%', 'calendar-plus' );
+			?>
+	">
 
-			<nav role="navigation" aria-label="<?php _e( 'Calendar Navigation', 'calendar-plus' ); ?>">
+			<nav role="navigation" aria-label="<?php esc_html_e( 'Calendar Navigation', 'calendar-plus' ); ?>">
 
 				<p>
 					<?php
 					printf(
+						/* translators: 1: month name, 2: four-digit year. */
 						esc_html__( 'Showing events from %1$s %2$d.', 'calendar-plus' ),
-						$wp_locale->get_month( $this->month ), $this->year
+						esc_html( $wp_locale->get_month( $this->month ) ),
+						esc_html( $this->year )
 					);
 					?>
 				</p>
@@ -337,13 +413,15 @@ class Calendar_Plus_Accessible_Calendar {
 			</nav>
 
 			<table
-				aria-label="<?php _e( 'Calendar Dates', 'calendar-plus' ); ?>"
+				aria-label="<?php esc_html_e( 'Calendar Dates', 'calendar-plus' ); ?>"
 			>
 				<caption>
 				<?php
 					printf(
+						/* translators: 1: month name, 2: four-digit year. */
 						esc_html__( 'Events for %1$s %2$d', 'calendar-plus' ),
-						$wp_locale->get_month( $this->month ), $this->year
+						esc_html( $wp_locale->get_month( $this->month ) ),
+						esc_html( $this->year )
 					);
 				?>
 				</caption>
@@ -352,7 +430,7 @@ class Calendar_Plus_Accessible_Calendar {
 					<?php
 
 					for ( $dow = 0; $dow < 7; $dow++ ) {
-						echo '<th>', $wp_locale->get_weekday( $dow ), "</th>\n";
+						echo wp_kses_post( '<th>' ), esc_html( $wp_locale->get_weekday( $dow ) ), "</th>\n";
 					}
 
 					?>
@@ -365,22 +443,22 @@ class Calendar_Plus_Accessible_Calendar {
 					echo '<tr>';
 
 					for ( $dow = 0; $dow < 7; $dow++ ) {
-						$day++;
+						++$day;
 						$current_datetime = mktime( 0, 0, 0, $this->month, $day, $this->year );
-						$ymd = date( 'Y-m-d', $current_datetime );
+						$ymd              = gmdate( 'Y-m-d', $current_datetime );
 
 						printf( '<td data-date="%s">', esc_attr( $ymd ) );
 						echo '<strong>' .
-							'<time datetime="' .  esc_attr( $ymd ) .  '" title="' .
+							'<time datetime="' . esc_attr( $ymd ) . '" title="' .
 								esc_attr( $ymd ) .
 							'">' .
-							esc_html( date( 'j', $current_datetime ) ) .
+							esc_html( gmdate( 'j', $current_datetime ) ) .
 							'</time>' .
 						'</strong>';
 
 						foreach ( $events as $event ) {
 							if ( $event['start'] <= $current_datetime && $event['finish'] >= $current_datetime ) {
-								$formatted_time = date( 'Y-m-d', $current_datetime );
+								$formatted_time = gmdate( 'Y-m-d', $current_datetime );
 								$this->render_calendar_event( $event['event'], $formatted_time );
 							}
 						}
@@ -400,7 +478,9 @@ class Calendar_Plus_Accessible_Calendar {
 	}
 
 	/**
-	 * Render the accessible calendar
+	 * Render the accessible calendar.
+	 *
+	 * @return mixed Calendar operation result.
 	 */
 	public function render() {
 
@@ -409,11 +489,11 @@ class Calendar_Plus_Accessible_Calendar {
 		} else {
 			$this->render_calendar();
 
-			printf( '<a href="%s">%s</a>',
+			printf(
+				'<a href="%s">%s</a>',
 				esc_url( remove_query_arg( 'acal' ) ),
 				esc_html__( 'View Interactive Version', 'calendar-plus' )
 			);
 		}
 	}
-
 }

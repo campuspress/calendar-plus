@@ -1,13 +1,16 @@
 <?php
 /**
- * @author: WPMUDEV, Ignacio Cruz (igmoweb)
- * @version:
+ * Calendar Plus: includes/class-calendar-plus-rest-api.php.
+ *
+ * @author WPMUDEV, Ignacio Cruz (igmoweb)
+ * @package Calendar_Plus
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
+/** Calendar component: Calendar_Plus_REST_API. */
 class Calendar_Plus_REST_API {
 
 	/**
@@ -20,6 +23,8 @@ class Calendar_Plus_REST_API {
 
 	/**
 	 * Init WP REST API.
+	 *
+	 * @return mixed Calendar operation result.
 	 */
 	private function rest_api_init() {
 		// REST API was included starting WordPress 4.4.
@@ -35,20 +40,24 @@ class Calendar_Plus_REST_API {
 
 	/**
 	 * Include REST API classes.
+	 *
+	 * @return mixed Calendar operation result.
 	 */
 	private function rest_api_includes() {
 		// Exception handler.
-		include_once( calendarp_get_plugin_dir() . 'includes/rest-api/class-calendar-plus-rest-exception.php' );
+		include_once calendarp_get_plugin_dir() . 'includes/rest-api/class-calendar-plus-rest-exception.php';
 
 		// Abstract controllers.
-		include_once( calendarp_get_plugin_dir() . 'includes/rest-api/abstract-calendar-plus-rest-controller.php' );
+		include_once calendarp_get_plugin_dir() . 'includes/rest-api/abstract-calendar-plus-rest-controller.php';
 
 		// REST API controllers.
-		include_once( calendarp_get_plugin_dir() . 'includes/rest-api/endpoints/class-calendar-plus-rest-endpoints-event.php' );
+		include_once calendarp_get_plugin_dir() . 'includes/rest-api/endpoints/class-calendar-plus-rest-endpoints-event.php';
 	}
 
 	/**
 	 * Register REST API routes.
+	 *
+	 * @return mixed Calendar operation result.
 	 */
 	public function register_rest_routes() {
 		$controllers = array(

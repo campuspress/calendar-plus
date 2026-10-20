@@ -1,4 +1,9 @@
 <?php
+/**
+ * Calendar Plus: public/templates/content/before-content.php.
+ *
+ * @package Calendar_Plus
+ */
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;

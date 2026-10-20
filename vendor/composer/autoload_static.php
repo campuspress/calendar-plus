@@ -6,10 +6,6 @@ namespace Composer\Autoload;
 
 class ComposerStaticInitba8cd9875988ddc0f8426e609db814f8
 {
-    public static $files = array (
-        'bc0af1337b39f0d750e835f5263eb646' => __DIR__ . '/..' . '/yahnis-elsts/plugin-update-checker/load-v5p7.php',
-    );
-
     public static $prefixLengthsPsr4 = array (
         'C' => 
         array (
@@ -58,6 +54,8 @@ class ComposerStaticInitba8cd9875988ddc0f8426e609db814f8
         'Calendar_Plus_Event_Categories_Widget' => __DIR__ . '/../..' . '/includes/widgets/class-calendar-plus-event-categories-widget.php',
         'Calendar_Plus_Event_Color_Metabox' => __DIR__ . '/../..' . '/admin/meta-boxes/event/class-event-color-meta-box.php',
         'Calendar_Plus_Event_Details_Metabox' => __DIR__ . '/../..' . '/admin/meta-boxes/event/class-event-details-meta-box.php',
+        'Calendar_Plus_Event_Display' => __DIR__ . '/../..' . '/includes/class-calendar-plus-event-display.php',
+        'Calendar_Plus_Event_Feed' => __DIR__ . '/../..' . '/includes/class-calendar-plus-event-feed.php',
         'Calendar_Plus_Event_Location_Metabox' => __DIR__ . '/../..' . '/admin/meta-boxes/event/class-event-location-meta-box.php',
         'Calendar_Plus_Event_Rules_Dates_Formatter' => __DIR__ . '/../..' . '/includes/class-calendar-plus-event-rules-formatter.php',
         'Calendar_Plus_Event_Rules_Datespan_Formatter' => __DIR__ . '/../..' . '/includes/class-calendar-plus-event-rules-formatter.php',
@@ -71,6 +69,7 @@ class ComposerStaticInitba8cd9875988ddc0f8426e609db814f8
         'Calendar_Plus_Event_Status_Metabox' => __DIR__ . '/../..' . '/admin/meta-boxes/event/class-event-status-meta-box.php',
         'Calendar_Plus_Events_By_Category_Shortcode' => __DIR__ . '/../..' . '/includes/shortcodes/class-calendar-plus-events-by-cat-shortcode.php',
         'Calendar_Plus_Events_List_Widget' => __DIR__ . '/../..' . '/includes/widgets/class-calendar-plus-events-list-widget.php',
+        'Calendar_Plus_Events_Showcase' => __DIR__ . '/../..' . '/includes/class-calendar-plus-events-showcase.php',
         'Calendar_Plus_Export_CSV' => __DIR__ . '/../..' . '/includes/class-calendar-plus-export-csv.php',
         'Calendar_Plus_External_Calendar_Button' => __DIR__ . '/../..' . '/includes/calendar-buttons/interface-calendar-plus-external-calendar-button.php',
         'Calendar_Plus_GCal_Calendar_Button' => __DIR__ . '/../..' . '/includes/calendar-buttons/class-calendar-plus-gcal-calendar-button.php',
@@ -96,9 +95,13 @@ class ComposerStaticInitba8cd9875988ddc0f8426e609db814f8
         'Calendar_Plus_Settings' => __DIR__ . '/../..' . '/includes/class-calendar-plus-settings.php',
         'Calendar_Plus_Settings_Fields' => __DIR__ . '/../..' . '/admin/settings-fields.php',
         'Calendar_Plus_Sidebar' => __DIR__ . '/../..' . '/includes/class-calendar-plus-sidebar.php',
+        'Calendar_Plus_TEC_Details' => __DIR__ . '/../..' . '/admin/importers/class-calendar-plus-tec-details.php',
+        'Calendar_Plus_TEC_Media' => __DIR__ . '/../..' . '/admin/importers/class-calendar-plus-tec-media.php',
+        'Calendar_Plus_TEC_Preview' => __DIR__ . '/../..' . '/admin/importers/class-calendar-plus-tec-preview.php',
+        'Calendar_Plus_TEC_WXR_Reader' => __DIR__ . '/../..' . '/admin/importers/class-calendar-plus-tec-wxr-reader.php',
         'Calendar_Plus_Taxonomies' => __DIR__ . '/../..' . '/includes/class-calendar-plus-taxonomies.php',
         'Calendar_Plus_Template_Loader' => __DIR__ . '/../..' . '/public/class-calendar-plus-template-loader.php',
-        'Calendar_Plus_The_Events_Calendar_Importer' => __DIR__ . '/../..' . '/admin/importers/class-the-events-calendar-importer.php',
+        'Calendar_Plus_The_Events_Calendar_Importer' => __DIR__ . '/../..' . '/admin/importers/class-calendar-plus-the-events-calendar-importer.php',
         'Calendar_Plus_This_Month_Events_Widget' => __DIR__ . '/../..' . '/includes/widgets/class-calendar-plus-this-month-events-widget.php',
         'Calendar_Plus_This_Week_Events_Widget' => __DIR__ . '/../..' . '/includes/widgets/class-calendar-plus-this-week-events-widget.php',
         'Calendar_Plus_Timespan' => __DIR__ . '/../..' . '/includes/calendar/class-calendar-plus-calendar.php',
@@ -110,10 +113,6 @@ class ComposerStaticInitba8cd9875988ddc0f8426e609db814f8
         'Calendar_Plus_iCal_Sync' => __DIR__ . '/../..' . '/includes/ical/class-calendar-plus-ical-sync.php',
         'Composer\\InstalledVersions' => __DIR__ . '/..' . '/composer/InstalledVersions.php',
         'Mexitek\\PHPColors\\Color' => __DIR__ . '/..' . '/mexitek/phpcolors/src/Mexitek/PHPColors/Color.php',
-        'WXR_Parser' => __DIR__ . '/../..' . '/admin/importers/parsers.php',
-        'WXR_Parser_Regex' => __DIR__ . '/../..' . '/admin/importers/parsers.php',
-        'WXR_Parser_SimpleXML' => __DIR__ . '/../..' . '/admin/importers/parsers.php',
-        'WXR_Parser_XML' => __DIR__ . '/../..' . '/admin/importers/parsers.php',
     );
 
     public static function getInitializer(ClassLoader $loader)

@@ -1,29 +1,41 @@
 <?php
+/**
+ * Calendar Plus: includes/shortcodes/class-calendar-plus-calendar-shortcode.php.
+ *
+ * @package Calendar_Plus
+ */
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
+
+/** Calendar component: Calendar_Plus_Calendar_Shortcode. */
 class Calendar_Plus_Calendar_Shortcode {
 
 	/**
 	 * Shortcode instances
+	 *
+	 * @var mixed
 	 */
 	public static $instances = array();
 
 	/**
-	 * Class constructor
+	 * Class constructor.
 	 */
 	public function __construct() {
 		add_shortcode( 'calendarp-calendar', array( $this, 'render' ) );
 		add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_editor_admin_scripts' ) );
 
-		add_action('init', array($this,'register_block'));
+		add_action( 'init', array( $this, 'register_block' ) );
 
 		$this->init_tiny_mce_button();
 	}
 
 	/**
-	 * Build a new instance array using a list of shortcode attributes
+	 * Build a new instance array using a list of shortcode attributes.
 	 *
-	 * @param array $atts The shortcode attributes
-	 *
+	 * @param array $atts The shortcode attributes.
 	 * @return array A shortcode instance array
 	 */
 	private function build_instance( $atts ) {
@@ -40,14 +52,14 @@ class Calendar_Plus_Calendar_Shortcode {
 
 		$atts = wp_parse_args( $atts, $default_atts );
 
-		$current_date = current_time( 'timestamp' );
+		$current_date = calendarp_wall_time();
 
 		$instance = array(
 			'id'          => 'calendar-plus-calendar-' . count( self::$instances ),
 			'currentDate' => array(
-				'year'  => date( 'Y', $current_date ),
-				'month' => date( 'm', $current_date ),
-				'day'   => date( 'd', $current_date ),
+				'year'  => gmdate( 'Y', $current_date ),
+				'month' => gmdate( 'm', $current_date ),
+				'day'   => gmdate( 'd', $current_date ),
 			),
 			'showPopups'  => true,
 		);
@@ -61,7 +73,7 @@ class Calendar_Plus_Calendar_Shortcode {
 			$categories = array_filter( $categories, array( $this, 'is_valid_category' ) );
 
 			if ( $categories ) {
-				$instance['category'] = $categories;
+				$instance['category']   = $categories;
 				$instance['filterable'] = false;
 			}
 		}
@@ -72,26 +84,24 @@ class Calendar_Plus_Calendar_Shortcode {
 	}
 
 	/**
-	 * Determine whether a given Event Category is valid
+	 * Determine whether a given Event Category is valid.
 	 *
-	 * @param int|string $category
-	 *
+	 * @param int|string $category Category.
 	 * @return bool
 	 */
 	private function is_valid_category( $category ) {
-		return ! ! term_exists( $category, 'calendar_event_category' );
+		return (bool) term_exists( $category, 'calendar_event_category' );
 	}
 
 	/**
-	 * Render the content of the shortcode
+	 * Render the content of the shortcode.
 	 *
-	 * @param array $atts
-	 *
+	 * @param array $atts Atts.
 	 * @return string
 	 */
 	public function render( $atts ) {
-		$instance = $this->build_instance( $atts );
-		$accessible_view = isset( $_GET['acal'] ) && $_GET['acal'];
+		$instance        = $this->build_instance( $atts );
+		$accessible_view = null !== calendarp_form_input( 'acal', null, 'get' ) && calendarp_form_input( 'acal', '', 'get' );
 
 		ob_start();
 
@@ -100,9 +110,11 @@ class Calendar_Plus_Calendar_Shortcode {
 			$acal->render();
 
 		} else { ?>
-			<a href="<?php echo esc_url( add_query_arg( 'acal', true ) ); ?>" class="calendar-plus-a8e-link"><?php
+			<a href="<?php echo esc_url( add_query_arg( 'acal', true ) ); ?>" class="calendar-plus-a8e-link">
+			<?php
 				esc_html_e( 'View Accessible Version', 'calendar-plus' );
-				?></a>
+			?>
+				</a>
 
 			<div class="calendar-plus">
 				<div id="<?php echo esc_attr( $instance['id'] ); ?>" class="calendar-plus-calendar-wrap"></div>
@@ -116,23 +128,30 @@ class Calendar_Plus_Calendar_Shortcode {
 	}
 
 	/**
-	 * Enqueue the necessary scripts to render the calendar
+	 * Enqueue the necessary scripts to render the calendar.
+	 *
+	 * @return mixed Calendar operation result.
 	 */
 	public function enqueue_public_scripts() {
 		calendarp_enqueue_public_script_and_styles();
 		calendarp_enqueue_public_styles();
 
-		$categories = get_terms( array(
-			'taxonomy' => 'calendar_event_category',
-		) );
+		$categories = get_terms(
+			array(
+				'taxonomy' => 'calendar_event_category',
+			)
+		);
 
-		$categories = array_map( function ( $item ) {
-			$cat = new stdClass();
-			$cat->id = $item->term_id;
-			$cat->name = $item->name;
+		$categories = array_map(
+			function ( $item ) {
+				$cat       = new stdClass();
+				$cat->id   = $item->term_id;
+				$cat->name = $item->name;
 
-			return $cat;
-		}, $categories );
+				return $cat;
+			},
+			$categories
+		);
 
 		$i18n = array(
 			'messages'         => array(
@@ -157,7 +176,7 @@ class Calendar_Plus_Calendar_Shortcode {
 				'addTo'             => __( 'Add to:', 'calendar-plus' ),
 				'location'          => __( 'Location:', 'calendar-plus' ),
 			),
-			'currentTimestamp' => current_time( 'timestamp' ),
+			'currentTimestamp' => calendarp_wall_time(),
 			'categories'       => $categories,
 			'i18n'             => array(
 				'rtl'                => is_rtl(),
@@ -182,21 +201,25 @@ class Calendar_Plus_Calendar_Shortcode {
 	}
 
 	/**
-	 * Register actions for the TinyMCE editor
+	 * Register actions for the TinyMCE editor.
+	 *
+	 * @return mixed Calendar operation result.
 	 */
 	public function init_tiny_mce_button() {
 		add_action( 'admin_head', array( $this, 'add_shortcode_button' ) );
 	}
 
 	/**
-	 * Register actions for adding buttons to the TinyMCE editor
+	 * Register actions for adding buttons to the TinyMCE editor.
+	 *
+	 * @return mixed Calendar operation result.
 	 */
-	function add_shortcode_button() {
+	public function add_shortcode_button() {
 		if ( ! current_user_can( 'manage_calendar_plus' ) ) {
 			return;
 		}
 
-		if ( 'true' == get_user_option( 'rich_editing' ) ) {
+		if ( 'true' === get_user_option( 'rich_editing' ) ) {
 			add_filter( 'mce_external_plugins', array( $this, 'add_shortcode_tinymce_plugin' ) );
 			add_filter( 'mce_buttons', array( $this, 'register_shortcode_button' ) );
 			add_filter( 'mce_external_languages', array( $this, 'add_tinymce_i18n' ) );
@@ -204,28 +227,29 @@ class Calendar_Plus_Calendar_Shortcode {
 	}
 
 	/**
-	 * Enqueue assets for the admin dashboard
+	 * Enqueue assets for the admin dashboard.
 	 *
 	 * @param string $hook Current page hookname.
+	 *
+	 * @return mixed Calendar operation result.
 	 */
 	public function enqueue_editor_admin_scripts( $hook ) {
-		$version = calendarp_get_version();
+		$version  = calendarp_get_version();
 		$url_base = calendarp_get_plugin_url() . 'admin/css/';
 
 		if ( 'widgets.php' === $hook ) {
-			wp_enqueue_style( 'calendarp-admin-widgets', $url_base . 'widgets.css', [], $version );
+			wp_enqueue_style( 'calendarp-admin-widgets', $url_base . 'widgets.css', array(), $version );
 		}
 
 		if ( current_user_can( 'manage_calendar_plus' ) ) {
-			wp_enqueue_style( 'calendarp-admin-shortcodes', $url_base . 'editor-shortcode.css', [], $version );
+			wp_enqueue_style( 'calendarp-admin-shortcodes', $url_base . 'editor-shortcode.css', array(), $version );
 		}
 	}
 
 	/**
-	 * Add a shortcode insertion button to the TinyMCE editor
+	 * Add a shortcode insertion button to the TinyMCE editor.
 	 *
-	 * @param array $plugins
-	 *
+	 * @param array $plugins Plugins.
 	 * @return array
 	 */
 	public function add_shortcode_tinymce_plugin( $plugins ) {
@@ -235,10 +259,9 @@ class Calendar_Plus_Calendar_Shortcode {
 	}
 
 	/**
-	 * Alter the position of the TinyMCE shortcode button
+	 * Alter the position of the TinyMCE shortcode button.
 	 *
-	 * @param array $buttons
-	 *
+	 * @param array $buttons Buttons.
 	 * @return array
 	 */
 	public function register_shortcode_button( $buttons ) {
@@ -250,8 +273,7 @@ class Calendar_Plus_Calendar_Shortcode {
 	/**
 	 * Localise the text of the TinyMCE shortcode button.
 	 *
-	 * @param array $i18n
-	 *
+	 * @param array $i18n I18n.
 	 * @return array
 	 */
 	public function add_tinymce_i18n( $i18n ) {
@@ -261,51 +283,54 @@ class Calendar_Plus_Calendar_Shortcode {
 	}
 
 	/**
-	 * Register block for this shortcode
+	 * Register block for this shortcode.
+	 *
+	 * @return mixed Calendar operation result.
 	 */
 	public function register_block() {
-		if(function_exists('register_block_type')) {
-			register_block_type( 'calendar-plus/calendar', 
+		if ( function_exists( 'register_block_type' ) ) {
+			register_block_type(
+				'calendar-plus/calendar',
 				array(
 					'render_callback' => array( $this, 'blocks_content' ),
-					'attributes' => array(
-						'category' => array(
+					'attributes'      => array(
+						'category'          => array(
 							'type' => 'string',
 						),
-						'date_format' => array(
+						'date_format'       => array(
 							'type' => 'string',
 						),
-						'day_format' => array(
+						'day_format'        => array(
 							'type' => 'string',
 						),
 						'month_name_format' => array(
 							'type' => 'string',
 						),
-						'dow_format' => array(
+						'dow_format'        => array(
 							'type' => 'string',
 						),
-						'time_format' => array(
-							'type' => 'string',
-							'default' => get_option( 'time_format' )
+						'time_format'       => array(
+							'type'    => 'string',
+							'default' => get_option( 'time_format' ),
 						),
-					)
+					),
 				)
 			);
 		}
 	}
 
 	/**
-	 * Render block on frontend
+	 * Render block on frontend.
 	 *
-	 * @param array $atts
+	 * @param array $atts Atts.
 	 * @return string
 	 */
-	public function blocks_content($atts) {
+	public function blocks_content( $atts ) {
 		if ( ! wp_script_is( 'calendar-plus-calendar' ) ) {
 			calendarp_enqueue_public_script_and_styles();
 			calendarp_enqueue_public_styles();
 		}
 
-		return $this->render($atts);
+		return $this->render( $atts );
 	}
 }

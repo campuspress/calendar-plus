@@ -1,4 +1,14 @@
 <?php
+/**
+ * Calendar Plus: public/templates-hooks.php.
+ *
+ * @package Calendar_Plus
+ */
+
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 
 add_filter( 'post_class', 'calendarp_event_post_class', 10, 3 );
 

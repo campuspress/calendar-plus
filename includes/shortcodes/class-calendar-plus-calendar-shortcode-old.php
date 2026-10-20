@@ -1,42 +1,73 @@
 <?php
+/**
+ * Calendar Plus: includes/shortcodes/class-calendar-plus-calendar-shortcode-old.php.
+ *
+ * @package Calendar_Plus
+ */
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
+
+/** Calendar component: Calendar_Plus_Calendar_Shortcode_Old. */
 class Calendar_Plus_Calendar_Shortcode_Old {
 
+	/**
+	 * Calendar component state.
+	 *
+	 * @var mixed
+	 */
 	public $enqueue_scripts = false;
 
+	/**
+	 * Initialize this calendar component.
+	 */
 	public function __construct() {
 		add_shortcode( 'calendarp-calendar-v1', array( $this, 'render' ) );
 		add_action( 'wp_footer', array( $this, 'enqueue_scripts' ) );
 	}
 
 
+	/**
+	 * Enqueue scripts.
+	 *
+	 * @return mixed Calendar operation result.
+	 */
 	public function enqueue_scripts() {
 		if ( ! $this->enqueue_scripts ) {
 			return;
 		}
 
 		$url_base = calendarp_get_plugin_url() . 'public/';
-		$version = calendarp_get_version();
+		$version  = calendarp_get_version();
 
-		wp_enqueue_style( 'calendarp-v1', $url_base . 'css/calendar-plus-v1.css', [], $version );
-		wp_enqueue_script( 'calendarp-v1', $url_base . 'js/calendar-plus-v1.js', [], $version );
+		wp_enqueue_style( 'calendarp-v1', $url_base . 'css/calendar-plus-v1.css', array(), $version, true );
+		wp_enqueue_script( 'calendarp-v1', $url_base . 'js/calendar-plus-v1.js', array(), $version, true );
 	}
 
+	/**
+	 * Handle render.
+	 *
+	 * @param array $atts Atts.
+	 *
+	 * @return mixed Calendar operation result.
+	 */
 	public function render( $atts ) {
 		$this->enqueue_scripts = true;
 
-		$current_time = current_time( 'timestamp' );
+		$current_time = calendarp_wall_time();
 
 		$default_mode = 'month';
 		if ( isset( $atts['view'] ) ) {
 			$default_mode = $atts['view'];
 		}
 		$args = array(
-			'month'           => isset( $_REQUEST['calendar_month'] ) ? absint( $_REQUEST['calendar_month'] ) : date( 'n', $current_time ),
-			'year'            => isset( $_REQUEST['calendar_year'] ) ? absint( $_REQUEST['calendar_year'] ) : date( 'Y', $current_time ),
-			'day'             => isset( $_REQUEST['calendar_day'] ) ? absint( $_REQUEST['calendar_day'] ) : date( 'd', $current_time ),
-			'mode'            => isset( $_REQUEST['calendar_mode'] ) ? $_REQUEST['calendar_mode'] : $default_mode,
-			'page'            => isset( $_REQUEST['calendar_page'] ) ? $_REQUEST['calendar_page'] : 1,
+			'month'           => null !== calendarp_form_input( 'calendar_month', null, 'request' ) ? absint( calendarp_form_input( 'calendar_month', '', 'request' ) ) : gmdate( 'n', $current_time ),
+			'year'            => null !== calendarp_form_input( 'calendar_year', null, 'request' ) ? absint( calendarp_form_input( 'calendar_year', '', 'request' ) ) : gmdate( 'Y', $current_time ),
+			'day'             => null !== calendarp_form_input( 'calendar_day', null, 'request' ) ? absint( calendarp_form_input( 'calendar_day', '', 'request' ) ) : gmdate( 'd', $current_time ),
+			'mode'            => null !== calendarp_form_input( 'calendar_mode', null, 'request' ) ? calendarp_form_input( 'calendar_mode', '', 'request' ) : $default_mode,
+			'page'            => null !== calendarp_form_input( 'calendar_page', null, 'request' ) ? calendarp_form_input( 'calendar_page', '', 'request' ) : 1,
 			'events_per_page' => ! empty( $atts['epp'] ) ? absint( $atts['epp'] ) : calendarp_get_events_per_page(),
 		);
 
@@ -44,12 +75,15 @@ class Calendar_Plus_Calendar_Shortcode_Old {
 			$args['category'] = absint( $atts['category'] );
 		}
 
-		if ( 'agenda' != $args['mode'] ) {
+		if ( 'agenda' !== $args['mode'] ) {
 			$args['events_per_page'] = -1;
 		}
 
-		$cal_obj = calendarp_get_the_calendar_object( $args );
-		extract( $cal_obj );
+		$cal_obj             = calendarp_get_the_calendar_object( $args );
+		$the_calendar        = $cal_obj['the_calendar'] ?? '';
+		$calendar_renderer   = $cal_obj['calendar_renderer'] ?? '';
+		$calendar_cells_week = $cal_obj['calendar_cells_week'] ?? '';
+		$calendar_cells_ids  = $cal_obj['calendar_cells_ids'] ?? '';
 
 		ob_start();
 
@@ -64,11 +98,11 @@ class Calendar_Plus_Calendar_Shortcode_Old {
 
 			<?php
 
-			echo $the_calendar;
+			echo wp_kses( $the_calendar, calendarp_get_allowed_calendar_html() );
 
 			?>
 
-			<?php echo $calendar_renderer->controls(); ?>
+			<?php $calendar_renderer->controls(); ?>
 		</div>
 		<?php
 

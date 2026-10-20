@@ -1,9 +1,18 @@
 <?php
+/**
+ * Calendar Plus: includes/class-calendar-plus-deactivator.php.
+ *
+ * @package Calendar_Plus
+ */
+
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 
 /**
  * Fired during plugin deactivation
  *
- * @link       http://example.com
  * @since      0.1
  *
  * @package    calendarp
@@ -18,15 +27,19 @@
  * @since      0.1
  * @package    calendarp
  * @subpackage calendarp/includes
- * @author     Your Name <email@example.com>
+ * @author     CampusPress
  */
 class Calendar_Plus_Deactivator {
 
+	/**
+	 * Handle deactivate.
+	 *
+	 * @return mixed Calendar operation result.
+	 */
 	public static function deactivate() {
-		delete_option( 'calendar-plus-version' );
-		delete_option( 'calendarp_first_date_generated' );
+		// Preserve version, scheduling bounds and event data for reactivation.
 		wp_clear_scheduled_hook( 'calendar_plus_delete_old_dates' );
+		wp_clear_scheduled_hook( 'calendarp_init' );
 		calendarp_unschedule_ical_sync_cron();
 	}
-
 }

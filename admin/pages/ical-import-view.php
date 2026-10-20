@@ -1,9 +1,19 @@
 <?php
+/**
+ * Calendar Plus: admin/pages/ical-import-view.php.
+ *
+ * @package Calendar_Plus
+ */
 
-$nonce_action = calendarp_get_settings_slug() . '_import';
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 
-$settings_prefix = calendarp_get_settings_slug();
-$settings = calendarp_get_settings();
+
+$calendarp_nonce_action = calendarp_get_settings_slug() . '_import';
+
+$calendarp_settings_prefix = calendarp_get_settings_slug();
+$calendarp_settings        = calendarp_get_settings();
 
 ?>
 
@@ -11,16 +21,16 @@ $settings = calendarp_get_settings();
 
 <p><?php esc_html_e( 'Import events from an iCal (.ics) file.', 'calendar-plus' ); ?></p>
 
-<form action="<?php echo self_admin_url( 'options.php' ); ?>" method="post" enctype="multipart/form-data">
+<form action="<?php echo esc_url( self_admin_url( 'options.php' ) ); ?>" method="post" enctype="multipart/form-data">
 	<?php settings_fields( calendarp_get_settings_slug() ); ?>
 	<table class="form-table">
 		<tr>
 			<th scope="row">
-				<label for="ical-file"><?php _e( 'File (.ics)', 'calendar-plus' ); ?></label>
+				<label for="ical-file"><?php esc_html_e( 'File (.ics)', 'calendar-plus' ); ?></label>
 			</th>
 			<td>
 				<input type="file" name="ical-file" id="ical-file">
-				<p class="description"><?php _e( 'Events are imported based on their UID fields. If the same UID already exists in Calendar+, the event will be updated instead of created again.', 'calendarp' ); ?></p>
+				<p class="description"><?php esc_html_e( 'Events are imported based on their UID fields. If the same UID already exists in Calendar+, the event will be updated instead of created again.', 'calendar-plus' ); ?></p>
 			</td>
 		</tr>
 		<tr>
@@ -30,16 +40,16 @@ $settings = calendarp_get_settings();
 			<td>
 				<label for="import-recurring">
 					<input type="checkbox"
-						name="<?php echo esc_attr( $settings_prefix ); ?>[import-recurring]"
+						name="<?php echo esc_attr( $calendarp_settings_prefix ); ?>[import-recurring]"
 						id="import-recurring" value="1" />
-					<?php _e( 'Import recurring events?', 'calendar-plus' ); ?>
+					<?php esc_html_e( 'Import recurring events?', 'calendar-plus' ); ?>
 				</label>
-				<p class="description"><?php _e( 'By default, only the first recurring event instance will be imported. Selecting this option will import all recurring events as dedicated event instances.', 'calendarp' ); ?></p>
+				<p class="description"><?php esc_html_e( 'By default, only the first recurring event instance will be imported. Selecting this option will import all recurring events as dedicated event instances.', 'calendar-plus' ); ?></p>
 			</td>
 		</tr>
 	</table>
 
-	<?php submit_button( esc_html__( 'Upload file and import', 'calendar-plus' ), 'primary', $settings_prefix . '[submit-ical-import]' ); ?>
+	<?php submit_button( esc_html__( 'Upload file and import', 'calendar-plus' ), 'primary', $calendarp_settings_prefix . '[submit-ical-import]' ); ?>
 </form>
 
 <h2><?php esc_html_e( 'Synchronise Remote Feeds', 'calendar-plus' ); ?></h2>
@@ -51,60 +61,68 @@ $settings = calendarp_get_settings();
 		<div class="col-wrap">
 			<?php
 
-			$users = get_users();
-			$categories = get_terms( [ 'taxonomy' => 'calendar_event_category', 'hide_empty' => false ] );
-			$current_user = wp_get_current_user();
+			$calendarp_users        = get_users();
+			$calendarp_categories   = get_terms(
+				array(
+					'taxonomy'   => 'calendar_event_category',
+					'hide_empty' => false,
+				)
+			);
+			$calendarp_current_user = wp_get_current_user();
 
-			if ( false !== ( $feeds = get_option( 'calendar_plus_ical_feeds', false ) ) ) {
+			$calendarp_feeds = get_option( 'calendar_plus_ical_feeds', false );
+			if ( false !== ( $calendarp_feeds ) ) {
 				delete_option( 'calendar_plus_ical_feeds' );
-				add_option( 'calendar_plus_remote_feeds', $feeds );
+				add_option( 'calendar_plus_remote_feeds', $calendarp_feeds );
 			}
 
-			$feeds = get_option( 'calendar_plus_remote_feeds', array() );
+			$calendarp_feeds = get_option( 'calendar_plus_remote_feeds', array() );
 
-			$current_feed = array(
-				'name'           => '',
-				'source'         => '',
-				'type'           => '',
-				'author'         => 0,
-				'category'       => 0,
-				'status'         => '',
-				'exclude_past'   => '',
-				'keep_updated'  => '',
+			$calendarp_current_feed = array(
+				'name'         => '',
+				'source'       => '',
+				'type'         => '',
+				'author'       => 0,
+				'category'     => 0,
+				'status'       => '',
+				'exclude_past' => '',
+				'keep_updated' => '',
 			);
 
-			if ( isset( $_GET['edit_remote_feed'] ) && is_numeric( $_GET['edit_remote_feed'] ) ) {
-				$feed_id = intval( $_GET['edit_remote_feed'] );
+			if ( null !== calendarp_form_input( 'edit_remote_feed', null, 'get' ) && is_numeric( calendarp_form_input( 'edit_remote_feed', '', 'get' ) ) ) {
+				$calendarp_feed_id = intval( calendarp_form_input( 'edit_remote_feed', '', 'get' ) );
 
-				if ( isset( $feeds[ $feed_id ] ) ) {
-					$current_feed = array_merge( $current_feed, $feeds[ $feed_id ] );
-					$current_feed['id'] = $feed_id;
+				if ( isset( $calendarp_feeds[ $calendarp_feed_id ] ) ) {
+					$calendarp_current_feed       = array_merge( $calendarp_current_feed, $calendarp_feeds[ $calendarp_feed_id ] );
+					$calendarp_current_feed['id'] = $calendarp_feed_id;
 				}
 			}
 
 			?>
 
-			<h2><?php
+			<h2>
+			<?php
 
-				if ( isset( $current_feed['id'] ) ) {
-					esc_html_e( 'Edit Feed', 'calendar-plus' );
-					printf(
-						' <a href="%s" class="page-title-action" style="float: right;">%s</a>',
-						esc_url( remove_query_arg( 'edit_remote_feed' ) ),
-						esc_html__( 'Cancel', 'calendar-plus' )
-					);
-				} else {
-					esc_html_e( 'Add New Feed', 'calendar-plus' );
-				}
-				?></h2>
+			if ( isset( $calendarp_current_feed['id'] ) ) {
+				esc_html_e( 'Edit Feed', 'calendar-plus' );
+				printf(
+					' <a href="%s" class="page-title-action" style="float: right;">%s</a>',
+					esc_url( remove_query_arg( 'edit_remote_feed' ) ),
+					esc_html__( 'Cancel', 'calendar-plus' )
+				);
+			} else {
+				esc_html_e( 'Add New Feed', 'calendar-plus' );
+			}
+			?>
+				</h2>
 
 			<form method="post" action="<?php echo esc_url( self_admin_url( 'options.php' ) ); ?>">
 				<?php
 
 				settings_fields( calendarp_get_settings_slug() );
 
-				if ( isset( $current_feed['id'] ) ) {
-					printf( '<input type="hidden" name="remote_feed_id" value="%d">', $current_feed['id'] );
+				if ( isset( $calendarp_current_feed['id'] ) ) {
+					printf( '<input type="hidden" name="remote_feed_id" value="%d">', esc_attr( $calendarp_current_feed['id'] ) );
 				}
 
 				?>
@@ -117,7 +135,7 @@ $settings = calendarp_get_settings();
 						</th>
 						<td>
 							<input name="remote_feed[name]" id="remote-feed-name" type="text" size="40"
-							       value="<?php echo esc_attr( $current_feed['name'] ); ?>">
+									value="<?php echo esc_attr( $calendarp_current_feed['name'] ); ?>">
 							<p class="description">
 								<?php esc_html_e( 'Enter a memorable label for this feed.', 'calendar-plus' ); ?>
 							</p>
@@ -131,7 +149,7 @@ $settings = calendarp_get_settings();
 						</th>
 						<td>
 							<input name="remote_feed[source]" id="remote-feed-source" type="url" size="40"
-							       value="<?php echo esc_attr( $current_feed['source'] ); ?>" required="required">
+									value="<?php echo esc_attr( $calendarp_current_feed['source'] ); ?>" required="required">
 							<p class="description">
 								<?php esc_html_e( 'Enter the full URL to the remote feed.', 'calendar-plus' ); ?>
 							</p>
@@ -145,10 +163,10 @@ $settings = calendarp_get_settings();
 						</th>
 						<td>
 							<select id="remote-feed-type" name="remote_feed[type]" required="required">
-								<option value="ical"<?php selected( $current_feed['type'], 'ical' ); ?>>
+								<option value="ical"<?php selected( $calendarp_current_feed['type'], 'ical' ); ?>>
 									<?php esc_html_e( 'iCal (.ics)', 'calendar-plus' ); ?>
 								</option>
-								<option value="rss"<?php selected( $current_feed['type'], 'rss' ); ?>>
+								<option value="rss"<?php selected( $calendarp_current_feed['type'], 'rss' ); ?>>
 									<?php esc_html_e( 'RSS (.rss)', 'calendar-plus' ); ?>
 								</option>
 							</select>
@@ -164,15 +182,15 @@ $settings = calendarp_get_settings();
 						<td>
 							<select id="remote-feed-author" name="remote_feed[author]">
 								<?php
-								$current_author = $current_feed['author'] ? $current_feed['author'] : $current_user->ID;
+								$calendarp_current_author = $calendarp_current_feed['author'] ? $calendarp_current_feed['author'] : $calendarp_current_user->ID;
 
-								/** @var WP_User $user */
-								foreach ( $users as $user ) {
+								/** Calendar render context. @var WP_User $user */
+								foreach ( $calendarp_users as $calendarp_user ) {
 									printf(
 										'<option value="%d"%s>%s</option>',
-										$user->ID,
-										selected( $user->ID, $current_author, false ),
-										esc_html( $user->display_name )
+										esc_attr( $calendarp_user->ID ),
+										selected( $calendarp_user->ID, $calendarp_current_author, false ),
+										esc_html( $calendarp_user->display_name )
 									);
 								}
 								?>
@@ -194,13 +212,13 @@ $settings = calendarp_get_settings();
 								</option>
 
 								<?php
-								/** @var WP_Term $category */
-								foreach ( $categories as $category ) {
+								/** Calendar render context. @var WP_Term $category */
+								foreach ( $calendarp_categories as $calendarp_category ) {
 									printf(
 										'<option value="%d"%s>%s</option>',
-										$category->term_id,
-										selected( $category->term_id, $current_feed['category'], false ),
-										esc_html( $category->name )
+										esc_attr( $calendarp_category->term_id ),
+										selected( $calendarp_category->term_id, $calendarp_current_feed['category'], false ),
+										esc_html( $calendarp_category->name )
 									);
 								}
 								?>
@@ -219,17 +237,18 @@ $settings = calendarp_get_settings();
 							<select id="remote-feed-status" name="remote_feed[status]">
 								<?php
 
-								$options = array(
+								$calendarp_options = array(
 									'publish' => __( 'Publish Immediately', 'calendar-plus' ),
 									'draft'   => __( 'Save as Draft', 'calendar-plus' ),
 									'pending' => __( 'Pending Review', 'calendar-plus' ),
 								);
 
-								foreach ( $options as $option => $label ) {
-									printf( '<option value="%s"%s>%s</option>',
-										esc_attr( $option ),
-										selected( $option, $current_feed['status'], false ),
-										esc_html( $label )
+								foreach ( $calendarp_options as $calendarp_option => $calendarp_label ) {
+									printf(
+										'<option value="%s"%s>%s</option>',
+										esc_attr( $calendarp_option ),
+										selected( $calendarp_option, $calendarp_current_feed['status'], false ),
+										esc_html( $calendarp_label )
 									);
 								}
 								?>
@@ -248,16 +267,17 @@ $settings = calendarp_get_settings();
 							<select id="remote-feed-exclude-past" name="remote_feed[exclude_past]">
 								<?php
 
-								$options = array(
+								$calendarp_options = array(
 									''   => __( 'No', 'calendar-plus' ),
 									'-1' => __( 'Yes', 'calendar-plus' ),
 								);
 
-								foreach ( $options as $option => $label ) {
-									printf( '<option value="%s"%s>%s</option>',
-										esc_attr( $option ),
-										selected( $option, $current_feed['exclude_past'], false ),
-										esc_html( $label )
+								foreach ( $calendarp_options as $calendarp_option => $calendarp_label ) {
+									printf(
+										'<option value="%s"%s>%s</option>',
+										esc_attr( $calendarp_option ),
+										selected( $calendarp_option, $calendarp_current_feed['exclude_past'], false ),
+										esc_html( $calendarp_label )
 									);
 								}
 								?>
@@ -275,21 +295,22 @@ $settings = calendarp_get_settings();
 						<td>
 							<select id="remote-feed-keep-updated" name="remote_feed[keep_updated]">
 								<?php
-								if( $current_feed['keep_updated'] === '' ) {
-									$current_feed['keep_updated'] = $current_feed['type'] === 'rss' ? '0' : '1';
+								if ( '' === $calendarp_current_feed['keep_updated'] ) {
+									$calendarp_current_feed['keep_updated'] = 'rss' === $calendarp_current_feed['type'] ? '0' : '1';
 								}
-								
 
-								$options = array(
-									'0'   => __( 'No', 'calendar-plus' ),
+
+								$calendarp_options = array(
+									'0' => __( 'No', 'calendar-plus' ),
 									'1' => __( 'Yes', 'calendar-plus' ),
 								);
 
-								foreach ( $options as $option => $label ) {
-									printf( '<option value="%s"%s>%s</option>',
-										esc_attr( $option ),
-										selected( $option, $current_feed['keep_updated'], false ),
-										esc_html( $label )
+								foreach ( $calendarp_options as $calendarp_option => $calendarp_label ) {
+									printf(
+										'<option value="%s"%s>%s</option>',
+										esc_attr( $calendarp_option ),
+										selected( $calendarp_option, $calendarp_current_feed['keep_updated'], false ),
+										esc_html( $calendarp_label )
 									);
 								}
 								?>
@@ -302,10 +323,13 @@ $settings = calendarp_get_settings();
 					</tbody>
 				</table>
 
-				<?php submit_button(
-					isset( $current_feed['id'] ) ? __( 'Update', 'calendar-plus' ) : __( 'Add new feed', 'calendar-plus' ),
-					'primary', $settings_prefix . '[submit-add-remote-feed]'
-				); ?>
+				<?php
+				submit_button(
+					isset( $calendarp_current_feed['id'] ) ? __( 'Update', 'calendar-plus' ) : __( 'Add new feed', 'calendar-plus' ),
+					'primary',
+					$calendarp_settings_prefix . '[submit-add-remote-feed]'
+				);
+				?>
 
 			</form>
 		</div>
@@ -319,14 +343,14 @@ $settings = calendarp_get_settings();
 				<tr>
 					<?php
 
-					$columns = array(
+					$calendarp_columns = array(
 						__( 'Feed Information', 'calendar-plus' ),
 						__( 'Last Synchronised', 'calendar-plus' ),
 						__( 'Feed Source', 'calendar-plus' ),
 					);
 
-					foreach ( $columns as $column ) {
-						printf( '<th scope="col" class="manage-column">%s</th>', esc_html( $column ) );
+					foreach ( $calendarp_columns as $calendarp_column ) {
+						printf( '<th scope="col" class="manage-column">%s</th>', esc_html( $calendarp_column ) );
 					}
 
 					?>
@@ -334,17 +358,22 @@ $settings = calendarp_get_settings();
 				</thead>
 				<tbody>
 				<?php
-				if ( empty( $feeds ) ) {
+				if ( empty( $calendarp_feeds ) ) {
 					?>
 					<tr>
-						<td colspan="<?php echo count( $columns ); ?>">
+						<td colspan="<?php echo count( $calendarp_columns ); ?>">
 							<?php esc_html_e( 'There are no active feeds.', 'calendar-plus' ); ?>
 						</td>
 					</tr>
 					<?php
 				} else {
-					foreach ( $feeds as $i => $feed ) {
-						$delete_url = add_query_arg( [ 'delete_remote_feed' => $i, '_wpnonce' => wp_create_nonce( $nonce_action ) ] );
+					foreach ( $calendarp_feeds as $calendarp_i => $calendarp_feed ) {
+						$calendarp_delete_url = add_query_arg(
+							array(
+								'delete_remote_feed' => $calendarp_i,
+								'_wpnonce'           => wp_create_nonce( $calendarp_nonce_action ),
+							)
+						);
 
 						?>
 
@@ -352,26 +381,30 @@ $settings = calendarp_get_settings();
 							<td>
 								<div class="row-actions alignright">
 									<span class="edit">
-										<a href="<?php echo esc_url( add_query_arg( 'edit_remote_feed', $i ) ); ?>"><?php
-											esc_html_e( 'Edit', 'calendar-plus' ); ?>
+										<a href="<?php echo esc_url( add_query_arg( 'edit_remote_feed', $calendarp_i ) ); ?>">
+										<?php
+											esc_html_e( 'Edit', 'calendar-plus' );
+										?>
 										</a>
 									</span>
 									|
 									<span class="delete">
-										<a href="<?php echo esc_url( $delete_url ); ?>"><?php
-											esc_html_e( 'Delete', 'calendar-plus' ); ?>
+										<a href="<?php echo esc_url( $calendarp_delete_url ); ?>">
+										<?php
+											esc_html_e( 'Delete', 'calendar-plus' );
+										?>
 										</a>
 									</span>
 								</div>
 
-								<strong><?php echo esc_html( $feed['name'] ); ?></strong>
+								<strong><?php echo esc_html( $calendarp_feed['name'] ); ?></strong>
 
 								<p class="ical-feed-meta-info">
 									<?php
-									$feed['status'] = isset( $feed['status'] ) ? $feed['status'] : 'publish';
+									$calendarp_feed['status'] = isset( $calendarp_feed['status'] ) ? $calendarp_feed['status'] : 'publish';
 
-									if ( 'draft' === $feed['status'] ) {
-										$strings = array(
+									if ( 'draft' === $calendarp_feed['status'] ) {
+										$calendarp_strings = array(
 											__( 'Save events as <span>drafts</span>.', 'calendar-plus' ),
 											/* translators: %s: author display name */
 											__( 'Save events as <span>drafts</span> on behalf of <span>%s</span>.', 'calendar-plus' ),
@@ -379,8 +412,8 @@ $settings = calendarp_get_settings();
 											__( 'Save events as <span>drafts</span> in the <span>%1$s</span> category on behalf of <span>%2$s</span>.', 'calendar-plus' ),
 										);
 
-									} elseif ( 'pending' === $feed['status'] ) {
-										$strings = array(
+									} elseif ( 'pending' === $calendarp_feed['status'] ) {
+										$calendarp_strings = array(
 											__( 'Save events as <span>pending review</span>.', 'calendar-plus' ),
 											/* translators: %s: author display name */
 											__( 'Save events as <span>pending review</span> on behalf of <span>%s</span>.', 'calendar-plus' ),
@@ -389,7 +422,7 @@ $settings = calendarp_get_settings();
 										);
 
 									} else {
-										$strings = array(
+										$calendarp_strings = array(
 											__( 'Publish events <span>immediately</span>.', 'calendar-plus' ),
 											/* translators: %s: author display name */
 											__( 'Publish events <span>immediately</span> on behalf of <span>%s</span>.', 'calendar-plus' ),
@@ -398,77 +431,81 @@ $settings = calendarp_get_settings();
 										);
 									}
 
-									$author = get_user_by( 'ID', $feed['author'] );
-									$category = '';
+									$calendarp_author   = get_user_by( 'ID', $calendarp_feed['author'] );
+									$calendarp_category = '';
 
-									if ( $feed['category'] ) {
+									if ( $calendarp_feed['category'] ) {
 
-										/** @var WP_Term $event_category */
-										foreach ( $categories as $event_category ) {
-											if ( $event_category->term_id === $feed['category'] ) {
-												$category = $event_category->name;
+										/** Calendar render context. @var WP_Term $event_category */
+										foreach ( $calendarp_categories as $calendarp_event_category ) {
+											if ( $calendarp_event_category->term_id === $calendarp_feed['category'] ) {
+												$calendarp_category = $calendarp_event_category->name;
 												break;
 											}
 										}
 									}
 
-									if ( $category && $author ) {
-										$string = sprintf( $strings[2], $event_category->name, $author->display_name );
-									} elseif ( $author ) {
-										$string = sprintf( $strings[1], $author->display_name );
+									if ( $calendarp_category && $calendarp_author ) {
+										$calendarp_string = sprintf( $calendarp_strings[2], $calendarp_event_category->name, $calendarp_author->display_name );
+									} elseif ( $calendarp_author ) {
+										$calendarp_string = sprintf( $calendarp_strings[1], $calendarp_author->display_name );
 									} else {
-										$string = $strings[0];
+										$calendarp_string = $calendarp_strings[0];
 									}
 
-									echo wp_kses( $string, [ 'span' => [] ] );
+									echo wp_kses( $calendarp_string, array( 'span' => array() ) );
 
 									?>
 								</p>
 
 							</td>
 							<td>
-								<p><?php
+								<p>
+								<?php
 
-									$last_sync = $feed['last_sync'];
+									$calendarp_last_sync = $calendarp_feed['last_sync'];
 
-									if ( empty( $last_sync ) ) {
-										esc_html_e( 'This feed has not been synchronised yet.', 'calendar-plus' );
-									} else {
+								if ( empty( $calendarp_last_sync ) ) {
+									esc_html_e( 'This feed has not been synchronised yet.', 'calendar-plus' );
+								} else {
 
-										switch ( $last_sync['status'] ) {
-											case 'request_error':
-												esc_html_e( 'There was an error retrieving the feed from the source', 'calendar-plus' );
-												break;
-											case 'import_error':
-												esc_html_e( 'There was an error parsing the feed', 'calendar-plus' );
-												break;
-											case 'error':
-											case 'request_error':
-											case 'parse_error':
-												esc_html_e( 'There was an error fetching and parsing the feed', 'calendar-plus' );
-												break;
-											case 'complete_empty':
-												esc_html_e( 'The feed contained no events', 'calendar-plus' );
-												break;
-											case 'complete':
-												/* translators: amount of events */
-												printf( esc_html__( 'Successfully imported %d events', 'calendar-plus' ),
-													is_array( $last_sync['events'] ) ? count( $last_sync['events'] ) : $last_sync['events']
-												);
-										}
-
-										echo '<br>';
-
-										/* translators: 1: formatted time, 2: formatted date */
-										printf( _x( 'at %1$s on %2$s.', 'time and date sep', 'calendar-plus' ),
-											date_i18n( get_option( 'time_format' ), $last_sync['time'] ),
-											date_i18n( get_option( 'date_format' ), $last_sync['time'] )
-										);
+									switch ( $calendarp_last_sync['status'] ) {
+										case 'request_error':
+											esc_html_e( 'There was an error retrieving the feed from the source', 'calendar-plus' );
+											break;
+										case 'import_error':
+											esc_html_e( 'There was an error parsing the feed', 'calendar-plus' );
+											break;
+										case 'error':
+										case 'request_error':
+										case 'parse_error':
+											esc_html_e( 'There was an error fetching and parsing the feed', 'calendar-plus' );
+											break;
+										case 'complete_empty':
+											esc_html_e( 'The feed contained no events', 'calendar-plus' );
+											break;
+										case 'complete':
+											/* translators: amount of events */
+											printf(
+												/* translators: %d: number of imported events. */                                                esc_html__( 'Successfully imported %d events', 'calendar-plus' ),
+												esc_html( is_array( $calendarp_last_sync['events'] ) ? count( $calendarp_last_sync['events'] ) : $calendarp_last_sync['events'] )
+											);
 									}
 
-									?></p>
+									echo '<br>';
+
+									/* translators: 1: formatted time, 2: formatted date */
+									printf(
+										esc_html( /* translators: 1: formatted time, 2: formatted date. */ _x( 'at %1$s on %2$s.', 'time and date sep', 'calendar-plus' ) ),
+										wp_kses_post( date_i18n( get_option( 'time_format' ), $calendarp_last_sync['time'] ) ),
+										wp_kses_post( date_i18n( get_option( 'date_format' ), $calendarp_last_sync['time'] ) )
+									);
+								}
+
+								?>
+									</p>
 							</td>
-							<td><?php echo esc_url( $feed['source'] ); ?></td>
+							<td><?php echo esc_url( $calendarp_feed['source'] ); ?></td>
 						</tr>
 
 						<?php
@@ -483,15 +520,15 @@ $settings = calendarp_get_settings();
 				<?php
 
 				settings_fields( calendarp_get_settings_slug() );
-				if ( isset( $settings['feed_sync_interval'] ) ) {
-					$current_interval = $settings['feed_sync_interval'];
-				} elseif ( isset( $settings['ical_sync_interval'] ) ) {
-					$current_interval = $settings['ical_sync_interval'];
+				if ( isset( $calendarp_settings['feed_sync_interval'] ) ) {
+					$calendarp_current_interval = $calendarp_settings['feed_sync_interval'];
+				} elseif ( isset( $calendarp_settings['ical_sync_interval'] ) ) {
+					$calendarp_current_interval = $calendarp_settings['ical_sync_interval'];
 				} else {
-					$current_interval = 'hourly';
+					$calendarp_current_interval = 'hourly';
 				}
 
-				$interval_options = array(
+				$calendarp_interval_options = array(
 					'hourly'     => __( 'every hour', 'calendar-plus' ),
 					'twicedaily' => __( 'twice every day', 'calendar-plus' ),
 					'daily'      => __( 'once every day', 'calendar-plus' ),
@@ -504,10 +541,10 @@ $settings = calendarp_get_settings();
 						<?php esc_html_e( 'Check for new events', 'calendar-plus' ); ?>
 					</label>
 
-					<select id="feed-sync-interval" name="<?php echo $settings_prefix; ?>[feed_sync_interval]">
-						<?php foreach ( $interval_options as $interval => $label ) { ?>
-							<option value="<?php echo esc_attr( $interval ); ?>"<?php selected( $interval, $current_interval ); ?>>
-								<?php echo esc_html( $label ); ?>
+					<select id="feed-sync-interval" name="<?php echo esc_attr( $calendarp_settings_prefix ); ?>[feed_sync_interval]">
+						<?php foreach ( $calendarp_interval_options as $calendarp_interval => $calendarp_label ) { ?>
+							<option value="<?php echo esc_attr( $calendarp_interval ); ?>"<?php selected( $calendarp_interval, $calendarp_current_interval ); ?>>
+								<?php echo esc_html( $calendarp_label ); ?>
 							</option>
 						<?php } ?>
 					</select>
@@ -516,7 +553,7 @@ $settings = calendarp_get_settings();
 					submit_button(
 						esc_html__( 'Update interval settings', 'calendar-plus' ),
 						'secondary',
-						$settings_prefix . '[submit-feed-sync-interval]',
+						$calendarp_settings_prefix . '[submit-feed-sync-interval]',
 						false
 					);
 					?>

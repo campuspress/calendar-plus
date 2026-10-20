@@ -1,4 +1,9 @@
 <?php
+/**
+ * Calendar Plus: public/templates/archive-event.php.
+ *
+ * @package Calendar_Plus
+ */
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
@@ -14,7 +19,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 		<?php do_action( 'calendarp_before_page_title' ); ?>
 
-		<h1 class="<?php echo apply_filters( 'calendarp_page_archive_event_title_class', 'page-title' ); ?>"><?php echo esc_html( calendarp_get_template_title() ); ?></h1>
+		<h1 class="<?php echo esc_attr( apply_filters( 'calendarp_page_archive_event_title_class', 'page-title' ) ); ?>"><?php echo esc_html( calendarp_get_template_title() ); ?></h1>
 
 		<?php do_action( 'calendarp_after_page_title' ); ?>
 
@@ -23,7 +28,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 			<?php do_action( 'calendarp_before_events_loop' ); ?>
 
 			<?php
-            while ( have_posts() ) :
+			while ( have_posts() ) :
 				the_post();
 				?>
 
@@ -35,7 +40,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 		<?php else : ?>
 
-			<p class="calendarp-warning"><?php _e( 'No events were found.', 'calendar-plus' ); ?></p>
+			<p class="calendarp-warning"><?php esc_html_e( 'No events were found.', 'calendar-plus' ); ?></p>
 
 		<?php endif; ?>
 

@@ -1,0 +1,11 @@
+/** TEC import preview. */
+.calendarp-tec-preview { table-layout: fixed; }
+.calendarp-tec-preview th:first-child { width: 6%; }
+.calendarp-tec-preview td { vertical-align: top; overflow-wrap: anywhere; }
+.calendarp-tec-preview select { max-width: 100%; }
+.calendarp-tec-preview dt { font-weight: 600; }
+.calendarp-tec-preview dd { margin: 0 0 0.75em; white-space: pre-wrap; }
+.calendarp-tec-preview summary { cursor: pointer; }
+
+.calendarp-tec-preview dl { display: grid; grid-template-columns: minmax(10em, 1fr) minmax(0, 3fr); gap: 0.25em 0.75em; }
+.calendarp-tec-body-preview { max-height: 32rem; overflow: auto; padding: 1rem; border: 1px solid #c3c4c7; background: #fff; }

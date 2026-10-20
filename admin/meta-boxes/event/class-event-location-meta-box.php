@@ -1,23 +1,44 @@
 <?php
+/**
+ * Calendar Plus: admin/meta-boxes/event/class-event-location-meta-box.php.
+ *
+ * @package Calendar_Plus
+ */
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
+
+/** Calendar component: Calendar_Plus_Event_Location_Metabox. */
 class Calendar_Plus_Event_Location_Metabox extends Calendar_Plus_Meta_Box {
 
+	/**
+	 * Initialize this calendar component.
+	 */
 	public function __construct() {
-		$this->meta_box_slug = 'calendar-event-location';
-		$this->meta_box_label = __( 'Event Location', 'calendar-plus' );
-		$this->meta_box_context = 'side';
+		$this->meta_box_slug     = 'calendar-event-location';
+		$this->meta_box_label    = __( 'Event Location', 'calendar-plus' );
+		$this->meta_box_context  = 'side';
 		$this->meta_box_priority = 'high';
-		$this->post_type = 'calendar_event';
+		$this->post_type         = 'calendar_event';
 
 		add_action( 'wp_ajax_search_event_location', array( $this, 'search_location' ) );
 		parent::__construct();
 	}
 
+	/**
+	 * Handle render.
+	 *
+	 * @param mixed $post Post.
+	 *
+	 * @return mixed Calendar operation result.
+	 */
 	public function render( $post ) {
-		$event = calendarp_get_event( $post );
+		$event         = calendarp_get_event( $post );
 		$meta_box_slug = $this->meta_box_slug;
 
-		$location_id = $event->location_id;
+		$location_id       = $event->location_id;
 		$_current_location = calendarp_get_location( $location_id );
 
 		$current_location = new stdClass();
@@ -25,46 +46,69 @@ class Calendar_Plus_Event_Location_Metabox extends Calendar_Plus_Meta_Box {
 
 			$posts = get_posts(
 				array(
-					'post_type'	          => 'calendar_location',
-					'supress_filters'     => true,
+					'post_type'           => 'calendar_location',
+					'suppress_filters'    => false,
 					'ignore_sticky_posts' => true,
 					'posts_per_page'      => 1,
-					'post__in'            => array( $_current_location->ID )
+					'post__in'            => array( $_current_location->ID ),
 				)
 			);
 
-			$results			= $this->get_javascript_location( $posts );
-			$current_location	= $results[0];
+			$results          = $this->get_javascript_location( $posts );
+			$current_location = $results[0];
 		}
 
-		$current_location = json_encode( $current_location );
+		$current_location = wp_json_encode( $current_location, JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT );
 
 		include_once calendarp_get_plugin_dir() . 'admin/views/event-location-meta-box.php';
 	}
 
+	/**
+	 * Save data.
+	 *
+	 * @param int $event_id Event id.
+	 *
+	 * @return mixed Calendar operation result.
+	 */
 	public function save_data( $event_id ) {
-		if ( ! $event = calendarp_get_event( $event_id ) ) {
+		if ( ! $this->can_save( $event_id ) ) {
 			return;
 		}
 
-		$input = $_POST['event_location'];
+		$event = calendarp_get_event( $event_id );
+		if ( ! $event ) {
+			return;
+		}
 
-		$value = isset( $input['_location_id'] ) && calendarp_is_location( absint( $input['_location_id'] ) ) ?
+		$input = calendarp_form_input( 'event_location', array() );
+
+		$value = isset( $input['_location_id'] ) && is_scalar( $input['_location_id'] ) && calendarp_is_location( absint( $input['_location_id'] ) ) ?
 			absint( $input['_location_id'] ) : '';
 
 		update_post_meta( $event->ID, '_location_id', $value );
 	}
 
+	/**
+	 * Handle search location.
+	 *
+	 * @return mixed Calendar operation result.
+	 */
 	public function search_location() {
+		check_ajax_referer( 'calendarp-admin', 'nonce' );
+		if ( ! current_user_can( 'manage_calendar_plus' ) || ! current_user_can( 'edit_calendar_events' ) ) {
+			wp_send_json_error( null, 403 );
+		}
 
 		$posts = get_posts(
 			array(
-				's'                     => $_REQUEST['s'],
-				'post_type'             => 'calendar_location',
-				'supress_filters'       => true,
-				'ignore_sticky_posts'   => true,
-				'orderby'               => 'title',
-				'order'                 => 'ASC',
+				's'                   => calendarp_form_input( 's', '', 'get' ),
+				'post_type'           => 'calendar_location',
+				'suppress_filters'    => false,
+				'ignore_sticky_posts' => true,
+				'orderby'             => 'title',
+				'order'               => 'ASC',
+				'posts_per_page'      => 10,
+				'post_status'         => 'publish',
 			)
 		);
 
@@ -75,10 +119,9 @@ class Calendar_Plus_Event_Location_Metabox extends Calendar_Plus_Meta_Box {
 	}
 
 	/**
-	 * Sets the structure of a location query to work with it under JS
+	 * Sets the structure of a location query to work with it under JS.
 	 *
-	 * @param WP_Query $query
-	 *
+	 * @param array $posts Posts.
 	 * @return array
 	 */
 	private function get_javascript_location( array $posts ) {
@@ -88,17 +131,23 @@ class Calendar_Plus_Event_Location_Metabox extends Calendar_Plus_Meta_Box {
 		foreach ( $posts as $post ) {
 
 			$results[] = array(
-				'id'        => $post->ID,
-				'title'     => apply_filters( 'the_title', $post->post_title, $post->ID ),
-				'slug'      => $post->post_name,
+				'id'    => $post->ID,
+				// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- Native WordPress content filter; its core name must be preserved.
+				'title' => apply_filters( 'the_title', $post->post_title, $post->ID ),
+				'slug'  => $post->post_name,
 			);
 		}
 		return $results;
 	}
 
+	/**
+	 * Set excerpt more on locations search.
+	 *
+	 * @param mixed $text Text.
+	 *
+	 * @return mixed Calendar operation result.
+	 */
 	public function set_excerpt_more_on_locations_search( $text ) {
 		return '&hellip;';
 	}
 }
-
-

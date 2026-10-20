@@ -1,12 +1,16 @@
 <?php
 /**
+ * Calendar Plus component context.
+ *
  * @package Calendar_Plus
  *
  * @wordpress-plugin
  * Plugin Name: Calendar+ (An Accessible Events Calendar)
  * Plugin URI:  https://campuspress.com/accessible-wordpress-calendar-plugin/
  * Description: Accessibility-ready complete calendar and events plugin. Import from Google Calendar, subscribe to events, and more.
- * Version:     2.2.18
+ * Version:     2.2.27
+ * Requires at least: 6.7
+ * Requires PHP: 8.0
  * Author:      CampusPress
  * Author URI:  https://campuspress.com
  * License:     GPL-2.0+
@@ -20,18 +24,20 @@ if ( ! defined( 'ABSPATH' ) ) {
 	return;
 }
 
+require_once plugin_dir_path( __FILE__ ) . 'eb-mods/eb-mods.php';
 require_once plugin_dir_path( __FILE__ ) . 'vendor/autoload.php';
 
 /**
- * Return the plugin version
+ * Return the plugin version.
+ *
  * @return string Plugin version
  */
 function calendarp_get_version() {
-	return '2.2.18';
+	return '2.2.27';
 }
 
 /**
- * Return the plugin URL
+ * Return the plugin URL.
  *
  * @return string Plugin URL
  */
@@ -40,7 +46,7 @@ function calendarp_get_plugin_url() {
 }
 
 /**
- * Return the plugin directory
+ * Return the plugin directory.
  *
  * @return string Plugin directory
  */
@@ -49,8 +55,8 @@ function calendarp_get_plugin_dir() {
 }
 
 /* Register hooks to run when the plugin is activated or deactivated */
-register_activation_hook( __FILE__, array( 'Calendar_Plus_Deactivator', 'deactivate' ) );
-register_deactivation_hook( __FILE__, array( 'Calendar_Plus_Activator', 'activate' ) );
+register_activation_hook( __FILE__, array( 'Calendar_Plus_Activator', 'activate' ) );
+register_deactivation_hook( __FILE__, array( 'Calendar_Plus_Deactivator', 'deactivate' ) );
 
 if ( defined( 'DOING_AJAX' ) && DOING_AJAX ) {
 	require plugin_dir_path( __FILE__ ) . 'includes/ajax.php';
@@ -62,6 +68,8 @@ if ( defined( 'DOING_AJAX' ) && DOING_AJAX ) {
  * Since everything within the plugin is registered via hooks,
  * then kicking off the plugin from this point in the file does
  * not affect the page life cycle.
+ *
+ * @return mixed Calendar operation result.
  */
 function calendar_plus() {
 	return Calendar_Plus::get_instance();
@@ -69,19 +77,5 @@ function calendar_plus() {
 
 calendar_plus();
 
-// Load hooks
-include_once 'includes/hooks/calendar-plus-hooks.php';
-
-/**
- * Enables automatic updates from GitHub
- */
-use YahnisElsts\PluginUpdateChecker\v5\PucFactory;
-if ( wp_next_scheduled('wp_update_plugins') ) {
-	$calendar_plus_update_checker = PucFactory::buildUpdateChecker(
-		'https://github.com/campuspress/calendar-plus',
-		__FILE__,
-		'calendar-plus'
-	);
-
-	$calendar_plus_update_checker->getVcsApi()->enableReleaseAssets();
-}
+// Load hooks.
+require_once 'includes/hooks/calendar-plus-hooks.php';

@@ -1,13 +1,20 @@
 <?php
 /**
- * @author: WPMUDEV, Ignacio Cruz (igmoweb)
- * @version:
+ * Calendar Plus: public/integration/themes/extra.php.
+ *
+ * @author WPMUDEV, Ignacio Cruz (igmoweb)
+ * @package Calendar_Plus
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
+/**
+ * Handle calendarp before content.
+ *
+ * @return mixed Calendar operation result.
+ */
 function calendarp_before_content() {
 	?>
 		<div id="main-content">
@@ -16,33 +23,50 @@ function calendarp_before_content() {
 	<?php
 }
 
+/**
+ * Handle calendarp after content.
+ *
+ * @return mixed Calendar operation result.
+ */
 function calendarp_after_content() {
 	echo '';
 }
 
-add_action( 'calendarp_sidebar', function() {
-	?>
-    </div></div></div>
-    <?php
-}, 50 );
+add_action(
+	'calendarp_sidebar',
+	function () {
+		?>
+	</div></div></div>
+		<?php
+	},
+	50
+);
 
 
-add_action( 'calendarp_before_events_loop', function() {
-	?>
+add_action(
+	'calendarp_before_events_loop',
+	function () {
+		?>
 	<div class="et_pb_extra_column_main">
-	<?php
-});
+		<?php
+	}
+);
 
 
-add_action( 'calendarp_after_events_loop', function() {
-	?>
+add_action(
+	'calendarp_after_events_loop',
+	function () {
+		?>
 	</div>
-	<?php
-});
+		<?php
+	}
+);
 
 
-add_action( 'wp_head', function() {
-	?>
+add_action(
+	'wp_head',
+	function () {
+		?>
 	<style>
 		.calendarp {
 			width:100%;
@@ -52,5 +76,6 @@ add_action( 'wp_head', function() {
 			margin-bottom:0.5rem;
 		}
 	</style>
-	<?php
-});
+		<?php
+	}
+);

@@ -1,14 +1,18 @@
 <?php
+/**
+ * Calendar Plus: includes/helpers/helpers-locations.php.
+ *
+ * @package Calendar_Plus
+ */
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
 /**
- * Retrieve a single location
+ * Retrieve a single location.
  *
- * @param int|Calendar_Plus_Location|WP_Post $location
- *
+ * @param int|Calendar_Plus_Location|WP_Post $location Location.
  * @return bool|Calendar_Plus_Location
  */
 function calendarp_get_location( $location ) {
@@ -16,18 +20,21 @@ function calendarp_get_location( $location ) {
 }
 
 /**
- * Search events locations by name
+ * Search events locations by name.
  *
- * @param $location_name
- *
+ * @param mixed $location_name Location name.
  * @return bool|Calendar_Plus_Location|null
  */
 function calendarp_find_location( $location_name ) {
-	$location_post = get_page_by_title(
-		$location_name,
-		OBJECT,
-		'calendar_location'
+	$matches       = get_posts(
+		array(
+			'post_type'      => 'calendar_location',
+			'title'          => $location_name,
+			'posts_per_page' => 1,
+			'post_status'    => 'publish',
+		)
 	);
+	$location_post = $matches ? $matches[0] : null;
 
 	if ( $location_post ) {
 		return calendarp_get_location( $location_post );
@@ -37,10 +44,9 @@ function calendarp_find_location( $location_name ) {
 }
 
 /**
- * Determine whether an object is a valid location
+ * Determine whether an object is a valid location.
  *
- * @param int|Calendar_Plus_Location|WP_Post $location
- *
+ * @param int|Calendar_Plus_Location|WP_Post $location Location.
  * @return bool
  */
 function calendarp_is_location( $location ) {
@@ -53,10 +59,9 @@ function calendarp_is_location( $location ) {
 }
 
 /**
- * Get all locations
+ * Get all locations.
  *
- * @param array $args Array of arguments
- *
+ * @param array $args Array of arguments.
  * @return array Array of Calendar_Plus_Location Objects
  */
 function calendarp_get_locations( $args = array() ) {
@@ -64,9 +69,9 @@ function calendarp_get_locations( $args = array() ) {
 	$defaults = array(
 		's' => false,
 	);
-	$args = wp_parse_args( $args, $defaults );
+	$args     = wp_parse_args( $args, $defaults );
 
-	$args['post_type'] = 'calendar_location';
+	$args['post_type']           = 'calendar_location';
 	$args['ignore_sticky_posts'] = true;
 
 	$locations = get_posts( $args );
@@ -77,10 +82,9 @@ function calendarp_get_locations( $args = array() ) {
 }
 
 /**
- * Displays or returns a dropdown of locations
+ * Displays or returns a dropdown of locations.
  *
- * @param array $args Array of arguments
- *
+ * @param array $args Array of arguments.
  * @return string HTML code
  */
 function calendarp_locations_dropdown( $args = array() ) {
@@ -111,26 +115,29 @@ function calendarp_locations_dropdown( $args = array() ) {
 
 	$locations = calendarp_get_locations( array( 'posts_per_page' => -1 ) );
 
-	/** @var Calendar_Plus_Location $location */
+	/** Calendar render context. @var Calendar_Plus_Location $location */
 	foreach ( $locations as $location ) {
 		$content .= sprintf(
 			'<option value="%d"%s>%s</option>',
-			$location->ID, selected( $args['selected'], $location->ID, false ), get_the_title( $location->ID )
+			$location->ID,
+			selected( $args['selected'], $location->ID, false ),
+			get_the_title( $location->ID )
 		);
 	}
 
 	$content .= '</select>';
 
 	if ( $args['echo'] ) {
-		echo $content;
+		echo wp_kses_post( $content );
 	}
 
 	return $content;
 }
 
 /**
- * @param int $location_id
+ * Handle calendarp get google map html.
  *
+ * @param int $location_id Location id.
  * @return string
  */
 function calendarp_get_google_map_html( $location_id ) {
@@ -146,7 +153,7 @@ function calendarp_get_google_map_html( $location_id ) {
 
 	$height = calendarp_get_setting( 'event_single_map_height' );
 
-	$html = '<div id="map_canvas" style="width=100%;height:' . $height . 'px"';
+	$html        = '<div id="map_canvas" style="width=100%;height:' . $height . 'px"';
 	$map_options = $location->gmaps_options;
 	foreach ( $map_options as $option => $value ) {
 		$html .= ' data-' . $option . '="' . $value . '"';
@@ -154,5 +161,4 @@ function calendarp_get_google_map_html( $location_id ) {
 	$html .= '></div>';
 
 	return $html;
-
 }

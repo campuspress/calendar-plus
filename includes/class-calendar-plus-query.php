@@ -1,16 +1,35 @@
 <?php
+/**
+ * Calendar Plus: includes/class-calendar-plus-query.php.
+ *
+ * @package Calendar_Plus
+ */
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
+
+/** Calendar component: Calendar_Plus_Query. */
 class Calendar_Plus_Query {
 
+	/**
+	 * Calendar component state.
+	 *
+	 * @var mixed
+	 */
 	public $query_vars;
 
+	/**
+	 * Initialize this calendar component.
+	 */
 	public function __construct() {
 
 		$this->query_vars = array( 'location' );
 
-		// "to" and "from" query vars can lead to heavy queries, lets only allow them if total dates is below the limit
-		$last_known_total_dates = (int) get_option( 'calendarp_last_known_total_dates', 0 );
-		if ( $last_known_total_dates < $this->get_total_dates_limit() ) {
+		// "to" and "from" query vars can lead to heavy queries, lets only allow them if total dates is below the limit.
+		$last_known_total_dates = calendarp_get_last_known_total_dates();
+		if ( $last_known_total_dates < calendarp_get_total_dates_limit() ) {
 			$this->query_vars[] = 'from';
 			$this->query_vars[] = 'to';
 		}
@@ -22,24 +41,28 @@ class Calendar_Plus_Query {
 
 
 	/**
-	 * @param WP_Query $query
+	 * Handle pre get posts.
+	 *
+	 * @param WP_Query $query Query.
+	 *
+	 * @return mixed Calendar operation result.
 	 */
 	public function pre_get_posts( $query ) {
-		if ( ! empty( $query->get( 'post__in' ) ) || $query->is_single() ) {
+		if ( $query->get( 'calendarp_native_posts' ) || ! empty( $query->get( 'post__in' ) ) || $query->is_single() ) {
 			return;
 		}
 
-		if ( $query->get( 'post_type' ) != 'calendar_event' && ! $query->is_tax( get_object_taxonomies( 'calendar_event' ) ) ) {
-			return;
-		}
-
-		// If this is a taxonomy archive and the post type isn't explicitly calendar_event.
-		if ( $query->is_tax( get_object_taxonomies( 'calendar_event' ) ) ) {
-			// if taxonomy is assigned to multiple post types, we are not forcing query filters
-			$assigned_to_multiple = calendarp_is_taxonomy_assigned_to_multiple( $query->get_queried_object() );
-
-			if ( $assigned_to_multiple ) {
+		// Only filter queries for the calendar_event post type or its dedicated taxonomies.
+		if ( $query->get( 'post_type' ) !== 'calendar_event' ) {
+			if ( ! $query->is_tax( get_object_taxonomies( 'calendar_event' ) ) ) {
 				return;
+			} else {
+				// if taxonomy is assigned to multiple post types, we are not forcing query filters.
+				$assigned_to_multiple = calendarp_is_taxonomy_assigned_to_multiple( $query->get_queried_object() );
+
+				if ( $assigned_to_multiple ) {
+					return;
+				}
 			}
 		}
 
@@ -63,8 +86,9 @@ class Calendar_Plus_Query {
 
 		$this->parse_query( $query );
 
-		if ( ! empty( $query->get( 'cat' ) ) && $term = get_term( $query->get( 'cat' ), 'calendar_event_category' ) ) {
-			// Redirect to taxonomy archive
+		$term = ! empty( $query->get( 'cat' ) ) ? get_term( $query->get( 'cat' ), 'calendar_event_category' ) : false;
+		if ( $term ) {
+			// Redirect to taxonomy archive.
 			$vars        = array( 'from', 'to', 's', 'location', 'post_type', 'calendarp_searchw', 'order' );
 			$redirect_to = get_term_link( $term->term_id, 'calendar_event_category' );
 			foreach ( $vars as $var ) {
@@ -74,14 +98,16 @@ class Calendar_Plus_Query {
 				}
 			}
 
-			wp_redirect( esc_url_raw( $redirect_to ) );
+			wp_safe_redirect( esc_url_raw( $redirect_to ) );
 			die();
 		}
 
-		// Meta query
+		// Meta query.
 		$meta_query = is_array( $query->get( 'meta_query' ) ) ? $query->get( 'meta_query' ) : array();
 
-		if ( isset( $_GET['location'] ) && absint( $_GET['location'] ) && $location = calendarp_get_location( absint( $_GET['location'] ) ) ) {
+		$location_id = absint( calendarp_form_input( 'location', '', 'get' ) );
+		$location    = $location_id ? calendarp_get_location( $location_id ) : false;
+		if ( $location ) {
 			$meta_query[] = array(
 				'key'     => '_location_id',
 				'value'   => $location->ID,
@@ -98,6 +124,14 @@ class Calendar_Plus_Query {
 		do_action( 'calendarp_query', $query, $this );
 	}
 
+	/**
+	 * Handle clauses.
+	 *
+	 * @param mixed $clauses Clauses.
+	 * @param mixed $query Query.
+	 *
+	 * @return mixed Calendar operation result.
+	 */
 	public function clauses( $clauses, $query ) {
 		global $wpdb;
 
@@ -108,7 +142,7 @@ class Calendar_Plus_Query {
 
 		// Cap LIMIT offset to prevent bots from deep-paginating past the total-dates threshold.
 		if ( $clauses['limits'] ) {
-			$max_offset     = $this->get_total_dates_limit();
+			$max_offset     = calendarp_get_total_dates_limit();
 			$posts_per_page = (int) $query->get( 'posts_per_page' );
 			$offset         = ( (int) $query->get( 'paged' ) - 1 ) * $posts_per_page;
 
@@ -117,20 +151,27 @@ class Calendar_Plus_Query {
 			}
 		}
 
-		// Generate all months between the dates
 		$from         = explode( '-', $query->get( 'from' ) );
 		$from_is_date = is_array( $from ) && count( $from ) === 3 && checkdate( $from[1], $from[2], $from[0] );
 
-		// Makes ordering based on event date
+		$first_date_generated = calendarp_get_first_date_generated();
+
+		// Don't check older 'from' than first date we have.
+		if ( $from_is_date && false !== $first_date_generated && strtotime( $first_date_generated ) > strtotime( implode( '-', $from ) ) ) {
+			$from = explode( '-', $first_date_generated );
+		}
+
+		// Makes ordering based on event date.
+		$order = $query->get( 'order' );
 		if (
-			( $order = $query->get( 'order' ) ) &&
+			$order &&
 			'desc' === strtolower( $order )
 		) {
 			$clauses['orderby'] = 'cal.from_date DESC';
 
 			// For DESC order if no to date is set, set to yesterday, so only past events are included.
 			if ( ! $query->get( 'to' ) ) {
-				$to = date( 'Y-m-d', strtotime( 'yesterday' ) );
+				$to = gmdate( 'Y-m-d', strtotime( 'yesterday' ) );
 				$to = explode( '-', $to );
 			}
 		} else {
@@ -139,7 +180,7 @@ class Calendar_Plus_Query {
 
 		if ( $query->get( 'to' ) ) {
 			if ( 'today' === $query->get( 'to' ) ) {
-				$to = date( 'Y-m-d', strtotime( 'today' ) );
+				$to = gmdate( 'Y-m-d', strtotime( 'today' ) );
 				$to = explode( '-', $to );
 			} else {
 				$to = explode( '-', $query->get( 'to' ) );
@@ -157,7 +198,7 @@ class Calendar_Plus_Query {
 		}
 
 		if ( ! $from_is_date && ! $to_is_date ) {
-			$date        = date( 'Y-m-d', strtotime( 'today' ) );
+			$date        = gmdate( 'Y-m-d', strtotime( 'today' ) );
 			$where_not[] = $wpdb->prepare( 'cal.until_date < %s', $date );
 		}
 
@@ -167,14 +208,29 @@ class Calendar_Plus_Query {
 		return $clauses;
 	}
 
+	/**
+	 * Parse query.
+	 *
+	 * @param mixed $query Query.
+	 *
+	 * @return mixed Calendar operation result.
+	 */
 	public function parse_query( $query ) {
 		foreach ( $this->query_vars as $key ) {
-			if ( isset( $_REQUEST[ $key ] ) ) {
-				$query->query_vars[ $key ] = $_REQUEST[ $key ];
+			if ( null !== calendarp_form_input( $key, null, 'request' ) ) {
+				$query->query_vars[ $key ] = calendarp_form_input( $key, '', 'request' );
 			}
 		}
 	}
 
+	/**
+	 * Conditionally strip calc found rows.
+	 *
+	 * @param mixed $sql Sql.
+	 * @param mixed $query Query.
+	 *
+	 * @return mixed Calendar operation result.
+	 */
 	public function maybe_strip_calc_found_rows( $sql, $query ) {
 		remove_filter( 'posts_request', array( $this, 'maybe_strip_calc_found_rows' ), 10 );
 
@@ -183,7 +239,7 @@ class Calendar_Plus_Query {
 		}
 
 		$last_changed = wp_cache_get_last_changed( 'calendarp:events' );
-		if ( false !== wp_cache_get_salted( $this->found_posts_cache_key( $query ), 'calendarp:events', $last_changed ) ) {
+		if ( false !== calendarp_cache_get_salted( $this->found_posts_cache_key( $query ), 'calendarp:events', $last_changed ) ) {
 			add_filter( 'found_posts_query', array( $this, 'found_posts_query' ), 10, 2 );
 			return str_replace( 'SQL_CALC_FOUND_ROWS ', '', $sql );
 		}
@@ -191,11 +247,19 @@ class Calendar_Plus_Query {
 		return $sql;
 	}
 
+	/**
+	 * Handle found posts query.
+	 *
+	 * @param mixed $sql Sql.
+	 * @param mixed $query Query.
+	 *
+	 * @return mixed Calendar operation result.
+	 */
 	public function found_posts_query( $sql, $query ) {
 		remove_filter( 'found_posts_query', array( $this, 'found_posts_query' ), 10 );
 
-		$last_changed   = wp_cache_get_last_changed( 'calendarp:events' );
-		$cached = wp_cache_get_salted( $this->found_posts_cache_key( $query ), 'calendarp:events', $last_changed );
+		$last_changed = wp_cache_get_last_changed( 'calendarp:events' );
+		$cached       = calendarp_cache_get_salted( $this->found_posts_cache_key( $query ), 'calendarp:events', $last_changed );
 
 		if ( false !== $cached ) {
 			return 'SELECT ' . (int) $cached;
@@ -204,28 +268,39 @@ class Calendar_Plus_Query {
 		return $sql;
 	}
 
+	/**
+	 * Handle cap found posts.
+	 *
+	 * @param mixed $found_posts Found posts.
+	 * @param mixed $query Query.
+	 *
+	 * @return mixed Calendar operation result.
+	 */
 	public function cap_found_posts( $found_posts, $query ) {
 		remove_filter( 'found_posts', array( $this, 'cap_found_posts' ) );
 
-		$last_changed   = wp_cache_get_last_changed( 'calendarp:events' );
-		$cached = wp_cache_get_salted( $this->found_posts_cache_key( $query ), 'calendarp:events', $last_changed );
+		$last_changed = wp_cache_get_last_changed( 'calendarp:events' );
+		$cached       = calendarp_cache_get_salted( $this->found_posts_cache_key( $query ), 'calendarp:events', $last_changed );
 		if ( false !== $cached ) {
 			$found_posts = $cached;
 		} else {
-			wp_cache_set_salted( $this->found_posts_cache_key( $query ), $found_posts, 'calendarp:events', $last_changed );
+			calendarp_cache_set_salted( $this->found_posts_cache_key( $query ), $found_posts, 'calendarp:events', $last_changed );
 		}
 
-		return min( (int) $found_posts, $this->get_total_dates_limit() );
+		return min( (int) $found_posts, calendarp_get_total_dates_limit() );
 	}
 
+	/**
+	 * Handle found posts cache key.
+	 *
+	 * @param mixed $query Query.
+	 *
+	 * @return mixed Calendar operation result.
+	 */
 	private function found_posts_cache_key( $query ) {
 		$vars = $query->query_vars;
 		unset( $vars['paged'], $vars['offset'], $vars['no_found_rows'] );
 
-		return 'calendarp_found_' . md5( serialize( $vars ) );
-	}
-
-	private function get_total_dates_limit() {
-		return (int) apply_filters( 'calendarp_heavy_query_vars_total_dates_limit', 500 );
+		return 'calendarp_found_' . md5( wp_json_encode( $vars ) );
 	}
 }

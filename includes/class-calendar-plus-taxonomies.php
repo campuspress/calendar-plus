@@ -1,9 +1,22 @@
 <?php
+/**
+ * Calendar Plus: includes/class-calendar-plus-taxonomies.php.
+ *
+ * @package Calendar_Plus
+ */
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
+
+/** Calendar component: Calendar_Plus_Taxonomies. */
 class Calendar_Plus_Taxonomies {
 
 	/**
-	 * Trigger all the functions needed to register CPTs and taxonomies
+	 * Trigger all the functions needed to register CPTs and taxonomies.
+	 *
+	 * @return mixed Calendar operation result.
 	 */
 	public function register() {
 		$this->register_location_post_type();
@@ -15,7 +28,9 @@ class Calendar_Plus_Taxonomies {
 	}
 
 	/**
-	 * Registers the calendar_event Post Type
+	 * Registers the calendar_event Post Type.
+	 *
+	 * @return mixed Calendar operation result.
 	 */
 	public function register_event_post_type() {
 		$events_page_id = calendarp_get_setting( 'events_page_id' );
@@ -59,7 +74,6 @@ class Calendar_Plus_Taxonomies {
 			'map_meta_cap'        => true,
 			'show_in_rest'        => true,
 			'capability_type'     => 'calendar_event',
-			'show_in_rest'        => true,
 			'supports'            => array(
 				'title',
 				'editor',
@@ -68,7 +82,7 @@ class Calendar_Plus_Taxonomies {
 			),
 		);
 
-		if( wp_is_block_theme() ) {
+		if ( wp_is_block_theme() ) {
 			$args['rewrite'] = array( 'slug' => $path );
 		}
 
@@ -76,7 +90,9 @@ class Calendar_Plus_Taxonomies {
 	}
 
 	/**
-	 * Registers the calendar_event_category Post Type
+	 * Registers the calendar_event_category Post Type.
+	 *
+	 * @return mixed Calendar operation result.
 	 */
 	public function register_event_category_taxonomy() {
 
@@ -121,7 +137,9 @@ class Calendar_Plus_Taxonomies {
 	}
 
 	/**
-	 * Registers the calendar_event_tag Taxonomy
+	 * Registers the calendar_event_tag Taxonomy.
+	 *
+	 * @return mixed Calendar operation result.
 	 */
 	public function register_event_tag_taxonomy() {
 
@@ -166,7 +184,9 @@ class Calendar_Plus_Taxonomies {
 	}
 
 	/**
-	 * Registers the calendar_event_all_day private Taxonomy
+	 * Registers the calendar_event_all_day private Taxonomy.
+	 *
+	 * @return mixed Calendar operation result.
 	 */
 	public function register_event_type_taxonomy() {
 		$args = array(
@@ -185,7 +205,9 @@ class Calendar_Plus_Taxonomies {
 	}
 
 	/**
-	 * Registers the calendar_location Post Type
+	 * Registers the calendar_location Post Type.
+	 *
+	 * @return mixed Calendar operation result.
 	 */
 	public function register_location_post_type() {
 
@@ -230,6 +252,11 @@ class Calendar_Plus_Taxonomies {
 			register_post_type( 'calendar_location', $args );
 	}
 
+	/**
+	 * Register uid taxonomy.
+	 *
+	 * @return mixed Calendar operation result.
+	 */
 	public function register_uid_taxonomy() {
 
 		$args = array(

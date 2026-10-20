@@ -3,7 +3,6 @@
 		defaults: {
 			mapOptions: {},
 			markerOptions: {},
-			address: false,
 			marker: false,
 			center: false,
 			address: '',

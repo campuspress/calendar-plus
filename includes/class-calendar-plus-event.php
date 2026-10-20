@@ -1,4 +1,14 @@
 <?php
+/**
+ * Calendar Plus: includes/class-calendar-plus-event.php.
+ *
+ * @package Calendar_Plus
+ */
+
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 
 /**
  * Represents a calendar event post
@@ -30,17 +40,18 @@ class Calendar_Plus_Event {
 
 
 	/**
+	 * Calendar component state.
+	 *
 	 * @var bool|Calendar_Plus_Event_Rules_Formatter
 	 */
 	public $rules_formatter = false;
 
 	/**
-	 * Build an instance of this class
-	 *
-	 * @static
-	 * @access public
+	 * Build an instance of this class.
 	 *
 	 * @param int|Calendar_Plus_Event|WP_Post $event Event ID|object.
+	 * @static
+	 * @access public
 	 *
 	 * @return Calendar_Plus_Event|false Event object, false otherwise.
 	 */
@@ -52,7 +63,7 @@ class Calendar_Plus_Event {
 				return false;
 			}
 
-			if ( 'calendar_event' != $_event->post_type ) {
+			if ( 'calendar_event' !== $_event->post_type ) {
 				return false;
 			}
 
@@ -78,10 +89,9 @@ class Calendar_Plus_Event {
 	}
 
 	/**
-	 * Retrieve the value of a class property
+	 * Retrieve the value of a class property.
 	 *
 	 * @param string $key Key to get.
-	 *
 	 * @return mixed
 	 */
 	public function __get( $key ) {
@@ -89,8 +99,9 @@ class Calendar_Plus_Event {
 	}
 
 	/**
-	 * @param string $key
+	 * Retrieve meta.
 	 *
+	 * @param string $key Key.
 	 * @return mixed
 	 */
 	public function get_meta( $key ) {
@@ -116,7 +127,7 @@ class Calendar_Plus_Event {
 	}
 
 	/**
-	 * Check if the dates have been already generated for this event
+	 * Check if the dates have been already generated for this event.
 	 *
 	 * @return bool
 	 */
@@ -125,7 +136,7 @@ class Calendar_Plus_Event {
 	}
 
 	/**
-	 * Check if the event is a recurring one
+	 * Check if the event is a recurring one.
 	 *
 	 * @return bool
 	 */
@@ -134,7 +145,9 @@ class Calendar_Plus_Event {
 	}
 
 	/**
-	 * Return the event type (recurrent or timespan)
+	 * Return the event type (recurrent or timespan).
+	 *
+	 * @return mixed Calendar operation result.
 	 */
 	public function get_event_type() {
 		if ( has_term( calendarp_get_event_type_term_id( 'recurrent' ), 'calendar_event_type', $this->ID ) ) {
@@ -147,7 +160,7 @@ class Calendar_Plus_Event {
 	}
 
 	/**
-	 * Check if the event is an all day event
+	 * Check if the event is an all day event.
 	 *
 	 * @return bool
 	 */
@@ -156,7 +169,7 @@ class Calendar_Plus_Event {
 	}
 
 	/**
-	 * Check if the event has custom dates
+	 * Check if the event has custom dates.
 	 *
 	 * @return bool
 	 */
@@ -166,7 +179,7 @@ class Calendar_Plus_Event {
 
 
 	/**
-	 * Get the WP_Post object associated to this event
+	 * Get the WP_Post object associated to this event.
 	 *
 	 * @return array|bool|null|WP_Post
 	 */
@@ -175,7 +188,7 @@ class Calendar_Plus_Event {
 	}
 
 	/**
-	 * Return the event status
+	 * Return the event status.
 	 *
 	 * @return mixed
 	 */
@@ -184,7 +197,7 @@ class Calendar_Plus_Event {
 	}
 
 	/**
-	 * Return the Event iCal UID if it has one
+	 * Return the Event iCal UID if it has one.
 	 *
 	 * @return string|false
 	 */
@@ -197,7 +210,7 @@ class Calendar_Plus_Event {
 
 		$terms = wp_get_object_terms( $this->ID, 'calendar_event_uid' );
 		if ( $terms && ! is_wp_error( $terms ) ) {
-			/** @var WP_Term $uid */
+			/** Calendar component state. @var WP_Term $uid */
 			$uid = $terms[0];
 
 			return $uid->name;
@@ -207,9 +220,11 @@ class Calendar_Plus_Event {
 	}
 
 	/**
-	 * Set a new iCal UID for the event
+	 * Set a new iCal UID for the event.
 	 *
-	 * @param string|false $uid Set to false to remove UID from event
+	 * @param string|false $uid Set to false to remove UID from event.
+	 *
+	 * @return mixed Calendar operation result.
 	 */
 	public function set_uid( $uid ) {
 		if ( $uid ) {
@@ -220,7 +235,7 @@ class Calendar_Plus_Event {
 	}
 
 	/**
-	 * Return the event location object
+	 * Return the event location object.
 	 *
 	 * @return bool|Calendar_Plus_Location
 	 */
@@ -239,7 +254,7 @@ class Calendar_Plus_Event {
 	}
 
 	/**
-	 * Return the event location ID
+	 * Return the event location ID.
 	 *
 	 * @return int
 	 */
@@ -248,7 +263,7 @@ class Calendar_Plus_Event {
 	}
 
 	/**
-	 * Return the event rules formatter object
+	 * Return the event rules formatter object.
 	 *
 	 * @return Calendar_Plus_Event_Rules_Formatter
 	 */
@@ -263,7 +278,7 @@ class Calendar_Plus_Event {
 	}
 
 	/**
-	 * Return the list of the event rules
+	 * Return the list of the event rules.
 	 *
 	 * @return array
 	 */
@@ -284,9 +299,11 @@ class Calendar_Plus_Event {
 	}
 
 	/**
-	 * Update a set of formatted rules
+	 * Update a set of formatted rules.
 	 *
-	 * @param array $formatted_rules
+	 * @param array $formatted_rules Formatted rules.
+	 *
+	 * @return mixed Calendar operation result.
 	 */
 	public function update_rules( $formatted_rules ) {
 		$save_rules = array();
@@ -312,14 +329,14 @@ class Calendar_Plus_Event {
 				}
 			}
 
-			// We cannot have 'every' and 'dows' types
+			// We cannot have 'every' and 'dows' types.
 			if ( isset( $save_rules['dows'] ) && isset( $save_rules['every'] ) ) {
 				unset( $save_rules['every'] );
 			}
 
 			$meta_key = '_recurring_rules';
 		} elseif ( 'datespan' === $this->get_event_type() ) {
-			// Just one dates rule
+			// Just one dates rule.
 			if ( isset( $formatted_rules['datespan'] ) ) {
 				$dates = $formatted_rules['datespan'][0];
 				if ( $dates ) {
@@ -352,10 +369,9 @@ class Calendar_Plus_Event {
 	}
 
 	/**
-	 * Format a set of event rules
+	 * Format a set of event rules.
 	 *
-	 * @param array $rules
-	 *
+	 * @param array $rules Rules.
 	 * @return array
 	 */
 	public function format_rules( $rules ) {
@@ -365,10 +381,9 @@ class Calendar_Plus_Event {
 	}
 
 	/**
-	 * Format a single event rule
+	 * Format a single event rule.
 	 *
-	 * @param $rule
-	 *
+	 * @param mixed $rule Rule.
 	 * @return bool
 	 */
 	public function format_rule( $rule ) {
@@ -378,14 +393,18 @@ class Calendar_Plus_Event {
 	}
 
 	/**
-	 * Generates the event timetable
+	 * Generates the event timetable.
+	 *
+	 * @return mixed Calendar operation result.
 	 */
 	public function generate_dates() {
 		calendar_plus()->generator->generate_event_dates( $this->ID );
 	}
 
 	/**
-	 * Delete the event timetable
+	 * Delete the event timetable.
+	 *
+	 * @return mixed Calendar operation result.
 	 */
 	public function delete_dates() {
 		calendar_plus()->generator->delete_event_dates( $this->ID );
@@ -396,11 +415,10 @@ class Calendar_Plus_Event {
 	}
 
 	/**
-	 * Return the list of dates for this event for a given month
+	 * Return the list of dates for this event for a given month.
 	 *
-	 * @param int $month
-	 * @param int $year
-	 *
+	 * @param int $month Month.
+	 * @param int $year Year.
 	 * @return array
 	 */
 	public function get_month_dates( $month, $year ) {
@@ -409,7 +427,7 @@ class Calendar_Plus_Event {
 
 
 	/**
-	 * Get the dates list for this event
+	 * Get the dates list for this event.
 	 *
 	 * These are the dates generated by the rules but not inserted /yet) in the calendar table
 	 *
@@ -418,7 +436,7 @@ class Calendar_Plus_Event {
 	public function get_dates_list() {
 		$dates_list = array();
 		if ( 'general' === $this->get_event_type() ) {
-			// A regular event, formatted rules are the same than the dates list
+			// A regular event, formatted rules are the same than the dates list.
 			$formatted_rules = $this->get_rules();
 			$dates_list      = isset( $formatted_rules['standard'] ) ? $formatted_rules['standard'] : array();
 		} elseif ( 'recurrent' === $this->get_event_type() ) {
@@ -431,10 +449,14 @@ class Calendar_Plus_Event {
 
 		if ( ! empty( $formatted_rules['exclusions'] ) ) {
 			foreach ( $formatted_rules['exclusions'] as $exclusion_rule ) {
-				$excluded   = wp_list_filter( $dates_list, array(
-					'from_date'  => $exclusion_rule['date'],
-					'until_date' => $exclusion_rule['date'],
-				), 'OR' );
+				$excluded   = wp_list_filter(
+					$dates_list,
+					array(
+						'from_date'  => $exclusion_rule['date'],
+						'until_date' => $exclusion_rule['date'],
+					),
+					'OR'
+				);
 				$dates_list = array_diff_key( $dates_list, $excluded );
 			}
 		}
@@ -446,10 +468,9 @@ class Calendar_Plus_Event {
 
 
 	/**
-	 * Generate a list of dates
+	 * Generate a list of dates.
 	 *
-	 * @param  array $formatted_rules Formatted rules
-	 *
+	 * @param array $formatted_rules Formatted rules.
 	 * @return array List of dates with the following format
 	 *
 	 * array(
@@ -471,24 +492,24 @@ class Calendar_Plus_Event {
 	public static function get_recurrent_dates_list( $formatted_rules ) {
 		$dates_list = array();
 
-		// We need at least the from/until dates
+		// We need at least the from/until dates.
 		if ( empty( $formatted_rules['dates'] ) ) {
 			return array();
 		}
 
-		// We need at least one type of frequency
+		// We need at least one type of frequency.
 		if ( ! isset( $formatted_rules['dows'] ) && ! isset( $formatted_rules['every'] ) ) {
 			return array();
 		}
 
-		// We need at least one type of times
+		// We need at least one type of times.
 		if ( ! isset( $formatted_rules['times'] ) ) {
 			return array();
 		}
 
 		$dates_rules = $formatted_rules['dates'];
 
-		// Only one please
+		// Only one please.
 		$dates_rules = $dates_rules[0];
 
 		$from_datetime    = strtotime( $dates_rules['from'] );
@@ -496,7 +517,7 @@ class Calendar_Plus_Event {
 		$current_datetime = $from_datetime;
 		$all_dates        = array();
 		while ( $current_datetime <= $until_datetime ) {
-			$all_dates[]      = date( 'Y-m-d', $current_datetime );
+			$all_dates[]      = gmdate( 'Y-m-d', $current_datetime );
 			$current_datetime = strtotime( '+1 day', $current_datetime );
 		}
 
@@ -507,11 +528,11 @@ class Calendar_Plus_Event {
 		$frequency_type  = isset( $formatted_rules['dows'] ) ? 'dows' : 'every';
 		$frequency_rules = $formatted_rules[ $frequency_type ][0];
 
-		// Only one of these rules is accepted, with preference to DOWs
+		// Only one of these rules is accepted, with preference to DOWs.
 		if ( 'dows' === $frequency_type ) {
-			// Remove all dates that are not included in those days of the week
+			// Remove all dates that are not included in those days of the week.
 			foreach ( $all_dates as $key => $date ) {
-				$dow = date( 'N', strtotime( $date ) );
+				$dow = gmdate( 'N', strtotime( $date ) );
 				if ( ! array_key_exists( $dow, $frequency_rules ) ) {
 					unset( $all_dates[ $key ] );
 				}
@@ -522,14 +543,14 @@ class Calendar_Plus_Event {
 			}
 
 			$every = is_array( $frequency_rules['every'] ) ? $frequency_rules['every'] : absint( $frequency_rules['every'] );
-			$what  = in_array( $frequency_rules['what'], array( 'week', 'day', 'month', 'year', 'dow', 'dom' ) ) ? $frequency_rules['what'] : false;
+			$what  = in_array( $frequency_rules['what'], array( 'week', 'day', 'month', 'year', 'dow', 'dom' ), true ) ? $frequency_rules['what'] : false;
 
 			if ( ! $every || ! $what ) {
 				return array();
 			}
 
 			if ( 'day' === $what ) {
-				// We start on the first day of the list
+				// We start on the first day of the list.
 				$counter = 0;
 
 				foreach ( $all_dates as $key => $date ) {
@@ -537,11 +558,11 @@ class Calendar_Plus_Event {
 						unset( $all_dates[ $key ] );
 					}
 
-					$counter ++;
+					++$counter;
 				}
 			} elseif ( 'week' === $what ) {
 
-				$on = absint( date( 'N', $from_datetime ) );
+				$on = absint( gmdate( 'N', $from_datetime ) );
 
 				$current_datetime = strtotime( current( $all_dates ) );
 				$end_datetime     = strtotime( end( $all_dates ) );
@@ -549,7 +570,7 @@ class Calendar_Plus_Event {
 
 				$every_dates_list = array();
 				while ( $current_datetime <= $end_datetime ) {
-					$every_dates_list[] = date( 'Y-m-d', $current_datetime );
+					$every_dates_list[] = gmdate( 'Y-m-d', $current_datetime );
 					$current_datetime   = strtotime( '+' . $every . ' week', $current_datetime );
 				}
 
@@ -560,14 +581,14 @@ class Calendar_Plus_Event {
 				$end_datetime     = strtotime( end( $all_dates ) );
 				reset( $all_dates );
 
-				// We'll try to set this day of month for every date when possible
-				$day_of_month = date( 'j', $current_datetime );
+				// We'll try to set this day of month for every date when possible.
+				$day_of_month = gmdate( 'j', $current_datetime );
 
 				$every_dates_list = array();
 
 				while ( $current_datetime <= $end_datetime ) {
-					$current_month = date( 'n', $current_datetime );
-					$current_year  = date( 'Y', $current_datetime );
+					$current_month = gmdate( 'n', $current_datetime );
+					$current_year  = gmdate( 'Y', $current_datetime );
 
 					$days_in_month = calendarp_get_total_days_in_a_month( $current_month, $current_year );
 
@@ -584,13 +605,13 @@ class Calendar_Plus_Event {
 
 					$every_dates_list[] = $add_date;
 
-					// Add a month
-					for ( $i = 1; $i <= $every; $i ++ ) {
+					// Add a month.
+					for ( $i = 1; $i <= $every; $i++ ) {
 						$current_datetime = strtotime( 'first day of next month', $current_datetime );
 					}
 
-					$current_month = date( 'n', $current_datetime );
-					$current_year  = date( 'Y', $current_datetime );
+					$current_month = gmdate( 'n', $current_datetime );
+					$current_year  = gmdate( 'Y', $current_datetime );
 
 					$days_in_month = calendarp_get_total_days_in_a_month( $current_month, $current_year );
 
@@ -614,7 +635,7 @@ class Calendar_Plus_Event {
 				reset( $all_dates );
 
 				while ( $current_datetime <= $end_datetime ) {
-					$every_dates_list[] = date( 'Y-m-d', $current_datetime );
+					$every_dates_list[] = gmdate( 'Y-m-d', $current_datetime );
 					$current_datetime   = strtotime( '+ ' . $every . ' year', $current_datetime );
 				}
 
@@ -627,8 +648,8 @@ class Calendar_Plus_Event {
 				$every_dates_list = array();
 
 				while ( $current_datetime <= $end_datetime ) {
-					if ( in_array( date( 'N', $current_datetime ), $every ) ) {
-						$every_dates_list[] = date( 'Y-m-d', $current_datetime );
+					if ( in_array( gmdate( 'N', $current_datetime ), $every, true ) ) {
+						$every_dates_list[] = gmdate( 'Y-m-d', $current_datetime );
 					}
 					$current_datetime = strtotime( '+1 day', $current_datetime );
 				}
@@ -643,13 +664,13 @@ class Calendar_Plus_Event {
 				$every_dates_list = array();
 
 				while ( $current_datetime <= $end_datetime ) {
-					$day_of_week = date( 'N', $current_datetime );
+					$day_of_week = gmdate( 'N', $current_datetime );
 
-					// determine how many times this day of week has already occurred this month
-					$i = floor( ( date( 'd', $current_datetime ) - 1 ) / 7 ) + 1;
+					// determine how many times this day of week has already occurred this month.
+					$i = floor( ( gmdate( 'd', $current_datetime ) - 1 ) / 7 ) + 1;
 
-					if ( isset( $every[ $i ] ) && in_array( $day_of_week, $every[ $i ] ) ) {
-						$every_dates_list[] = date( 'Y-m-d', $current_datetime );
+					if ( isset( $every[ $i ] ) && in_array( $day_of_week, $every[ $i ], true ) ) {
+						$every_dates_list[] = gmdate( 'Y-m-d', $current_datetime );
 					}
 
 					$current_datetime = strtotime( '+1 day', $current_datetime );
@@ -667,7 +688,7 @@ class Calendar_Plus_Event {
 
 		$times_rules = $formatted_rules['times'][0];
 		if ( ! empty( $all_dates ) ) {
-			// Now add the time to every date
+			// Now add the time to every date.
 			$from_times  = array( $times_rules['from'] );
 			$until_times = array( $times_rules['until'] );
 
@@ -683,11 +704,11 @@ class Calendar_Plus_Event {
 					if ( $until_times[ $time_key ] ) {
 						$until_time             = $until_times[ $time_key ];
 						$new_date['until_time'] = $until_time;
-						// If until time is lower than from time that means that
-						// The end date is the next day
+						// If until time is lower than from time that means that.
+						// The end date is the next day.
 						if ( $until_time < $from_time ) {
 							$until_datetime         = strtotime( $new_date['until_date'] );
-							$next_day               = date( 'Y-m-d', strtotime( '+1 day', $until_datetime ) );
+							$next_day               = gmdate( 'Y-m-d', strtotime( '+1 day', $until_datetime ) );
 							$new_date['until_date'] = $next_day;
 						}
 					}
@@ -704,8 +725,16 @@ class Calendar_Plus_Event {
 	}
 
 
+	/**
+	 * Handle compare standard dates.
+	 *
+	 * @param mixed $a A.
+	 * @param mixed $b B.
+	 *
+	 * @return mixed Calendar operation result.
+	 */
 	public function compare_standard_dates( $a, $b ) {
-		if ( $a['from_date'] . ' ' . $a['from_time'] == $b['from_date'] . ' ' . $b['from_time'] ) {
+		if ( $a['from_date'] . ' ' . $a['from_time'] === $b['from_date'] . ' ' . $b['from_time'] ) {
 			return 0;
 		}
 
@@ -714,7 +743,7 @@ class Calendar_Plus_Event {
 
 
 	/**
-	 * Get the minimum date for a given event
+	 * Get the minimum date for a given event.
 	 *
 	 * @return bool|string
 	 */
@@ -725,7 +754,7 @@ class Calendar_Plus_Event {
 	}
 
 	/**
-	 * Get the maximum date for a given event
+	 * Get the maximum date for a given event.
 	 *
 	 * @return bool|string
 	 */
@@ -736,14 +765,14 @@ class Calendar_Plus_Event {
 	}
 
 	/**
-	 * Checks if the event can be read by the current user
+	 * Checks if the event can be read by the current user.
 	 *
 	 * Correctly handles posts with the inherit status
 	 *
 	 * @return bool Whether the post can be read.
 	 */
 	public function current_user_can_read() {
-		$post = $this->post;
+		$post      = $this->post;
 		$post_type = get_post_type_object( $post->post_type );
 
 		// Is the post readable?

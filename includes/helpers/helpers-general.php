@@ -1,18 +1,29 @@
 <?php
+/**
+ * Calendar Plus: includes/helpers/helpers-general.php.
+ *
+ * @package Calendar_Plus
+ */
+
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 
 /**
- * Retrieve countries dropdown markup
+ * Retrieve countries dropdown markup.
  *
- * @param array $args {
- *
+ * @param array $args {.
  * @type string $selected Selected country
  * @type string $show_empty Display an option with empty value
  * @type string $name select tag name
  * @type string $id select tag id
  * @type string $class select tag class
  * }
+ *
+ * @return mixed Calendar operation result.
  */
-function calendarp_countries_dropdown( $args ) {
+function calendarp_countries_dropdown( $args ) { // phpcs:ignore Universal.NamingConventions.NoReservedKeywordParameterNames.defaultFound -- Preserve this existing public API or native callback signature; compatibility includes parameter names and the historical class/property name.
 	$defaults = array(
 		'selected'   => '',
 		'show_empty' => true,
@@ -28,7 +39,7 @@ function calendarp_countries_dropdown( $args ) {
 	}
 
 	if ( ! $args['selected'] ) {
-		$settings = calendarp_get_settings();
+		$settings         = calendarp_get_settings();
 		$args['selected'] = $settings['country'];
 	}
 
@@ -37,19 +48,18 @@ function calendarp_countries_dropdown( $args ) {
 	?>
 	<select name="<?php echo esc_attr( $args['name'] ); ?>" id="<?php echo esc_attr( $args['id'] ); ?>" class="<?php echo esc_attr( $args['class'] ); ?>">
 		<?php if ( $args['show_empty'] ) : ?>
-			<option value="" <?php selected( empty( $args['selected'] ) ); ?>><?php _e( '-- Select a country --', 'calendar-plus' ); ?></option>
+			<option value="" <?php selected( empty( $args['selected'] ) ); ?>><?php esc_html_e( '-- Select a country --', 'calendar-plus' ); ?></option>
 		<?php endif; ?>
 
 		<?php foreach ( $countries as $country_key => $country ) : ?>
-			<option value="<?php echo $country_key; ?>" <?php selected( $country_key === $args['selected'] ); ?>><?php echo $country; ?></option>
+			<option value="<?php echo esc_attr( $country_key ); ?>" <?php selected( $country_key === $args['selected'] ); ?>><?php echo esc_html( $country ); ?></option>
 		<?php endforeach; ?>
 	</select>
 	<?php
-
 }
 
 /**
- * Return a list of available countries
+ * Return a list of available countries.
  *
  * @return array
  */
@@ -305,7 +315,7 @@ function calendarp_get_countries() {
 		'AE' => __( 'United Arab Emirates', 'calendar-plus' ),
 		'GB' => __( 'United Kingdom', 'calendar-plus' ),
 		'US' => __( 'United States', 'calendar-plus' ),
-		'ZZ' => __( 'Unknown or Invalid Region', 'calendar-plus' ),
+		'ZZ' => __( 'Unknown || Invalid Region', 'calendar-plus' ),
 		'UY' => __( 'Uruguay', 'calendar-plus' ),
 		'UZ' => __( 'Uzbekistan', 'calendar-plus' ),
 		'VU' => __( 'Vanuatu', 'calendar-plus' ),
@@ -323,7 +333,7 @@ function calendarp_get_countries() {
 }
 
 /**
- * Return the default events per page parameter
+ * Return the default events per page parameter.
  *
  * @return int
  */
@@ -331,6 +341,13 @@ function calendarp_get_events_per_page() {
 	return apply_filters( 'calendarp_events_per_page', 10 );
 }
 
+/**
+ * Handle calendarp hours selector.
+ *
+ * @param array $args Args.
+ *
+ * @return mixed Calendar operation result.
+ */
 function calendarp_hours_selector( $args = array() ) {
 	$defaults = array(
 		'selected' => '00',
@@ -339,8 +356,11 @@ function calendarp_hours_selector( $args = array() ) {
 		'id'       => false,
 	);
 
-	$args = wp_parse_args( $args, $defaults );
-	extract( $args );
+	$args     = wp_parse_args( $args, $defaults );
+	$selected = $args['selected'];
+	$echo     = $args['echo'];
+	$name     = $args['name'];
+	$id       = $args['id'];
 
 	if ( ! $id ) {
 		$id = $name;
@@ -357,12 +377,12 @@ function calendarp_hours_selector( $args = array() ) {
 		<?php if ( '24h' === $time_format ) : ?>
 			<?php for ( $i = 0; $i <= 24; $i++ ) : ?>
 				<?php $hour = str_pad( $i, 2, '0', STR_PAD_LEFT ); ?>
-				<option value="<?php echo $hour; ?>" <?php selected( $hour, $selected ); ?>><?php echo $hour; ?></option>
+				<option value="<?php echo esc_attr( $hour ); ?>" <?php selected( $hour, $selected ); ?>><?php echo esc_html( $hour ); ?></option>
 			<?php endfor; ?>
 		<?php else : ?>
 			<?php for ( $i = 1; $i <= 12; $i++ ) : ?>
 				<?php $hour = str_pad( $i, 2, '0', STR_PAD_LEFT ); ?>
-				<option value="<?php echo $hour; ?>" <?php selected( $hour, $selected ); ?>><?php echo absint( $hour ); ?></option>
+				<option value="<?php echo esc_attr( $hour ); ?>" <?php selected( $hour, $selected ); ?>><?php echo absint( $hour ); ?></option>
 			<?php endfor; ?>
 		<?php endif; ?>
 	</select>
@@ -373,6 +393,13 @@ function calendarp_hours_selector( $args = array() ) {
 	}
 }
 
+/**
+ * Handle calendarp minutes selector.
+ *
+ * @param array $args Args.
+ *
+ * @return mixed Calendar operation result.
+ */
 function calendarp_minutes_selector( $args = array() ) {
 	$defaults = array(
 		'selected' => '00',
@@ -381,8 +408,11 @@ function calendarp_minutes_selector( $args = array() ) {
 		'id'       => false,
 	);
 
-	$args = wp_parse_args( $args, $defaults );
-	extract( $args );
+	$args         = wp_parse_args( $args, $defaults );
+		$selected = $args['selected'];
+	$echo         = $args['echo'];
+	$name         = $args['name'];
+	$id           = $args['id'];
 
 	if ( ! $id ) {
 		$id = $name;
@@ -396,7 +426,7 @@ function calendarp_minutes_selector( $args = array() ) {
 	<select class="calendarp-time-selector calendarp-minutes-selector" name="<?php echo esc_attr( $name ); ?>" id="<?php echo esc_attr( $id ); ?>">
 		<?php for ( $i = 0; $i < 60; $i = $i + 5 ) : ?>
 			<?php $minute = str_pad( $i, 2, '0', STR_PAD_LEFT ); ?>
-			<option value="<?php echo $minute; ?>" <?php selected( $minute, $selected ); ?>><?php echo $minute; ?></option>
+			<option value="<?php echo esc_attr( $minute ); ?>" <?php selected( $minute, $selected ); ?>><?php echo esc_html( $minute ); ?></option>
 		<?php endfor; ?>
 	</select>
 	<?php
@@ -406,6 +436,13 @@ function calendarp_minutes_selector( $args = array() ) {
 	}
 }
 
+/**
+ * Handle calendarp am pm selector.
+ *
+ * @param array $args Args.
+ *
+ * @return mixed Calendar operation result.
+ */
 function calendarp_am_pm_selector( $args = array() ) {
 	$defaults = array(
 		'selected' => 'AM',
@@ -414,8 +451,11 @@ function calendarp_am_pm_selector( $args = array() ) {
 		'id'       => false,
 	);
 
-	$args = wp_parse_args( $args, $defaults );
-	extract( $args );
+	$args         = wp_parse_args( $args, $defaults );
+		$selected = $args['selected'];
+	$echo         = $args['echo'];
+	$name         = $args['name'];
+	$id           = $args['id'];
 
 	if ( ! $id ) {
 		$id = $name;
@@ -442,10 +482,9 @@ function calendarp_am_pm_selector( $args = array() ) {
 }
 
 /**
- * Renders a time selector
+ * Renders a time selector.
  *
- * @param  string $value [description]
- *
+ * @param array $args Args.
  * @return [type]        [description]
  */
 function calendarp_time_selector( $args = array() ) {
@@ -460,14 +499,21 @@ function calendarp_time_selector( $args = array() ) {
 		'am_pm_id'     => false,
 	);
 
-	$args = wp_parse_args( $args, $defaults );
-	extract( $args );
+	$args         = wp_parse_args( $args, $defaults );
+		$selected = $args['selected'];
+	$echo         = $args['echo'];
+	$hours_name   = $args['hours_name'];
+	$hours_id     = $args['hours_id'];
+	$minutes_name = $args['minutes_name'];
+	$minutes_id   = $args['minutes_id'];
+	$am_pm_name   = $args['am_pm_name'];
+	$am_pm_id     = $args['am_pm_id'];
 
 	$time_format = calendarp_get_setting( 'time_format' );
 
 	$selected = explode( ':', empty( $args['selected'] ) ? '00:00' : $args['selected'] );
-	$hours = $selected[0];
-	$minutes = $selected[1];
+	$hours    = $selected[0];
+	$minutes  = $selected[1];
 
 	if ( ! $args['echo'] ) {
 		ob_start();
@@ -487,39 +533,49 @@ function calendarp_time_selector( $args = array() ) {
 		}
 		$hours = str_pad( $hours, 2, '0', STR_PAD_LEFT );
 
-		calendarp_hours_selector( array(
-			'selected' => $hours,
-			'echo'     => true,
-			'name'     => $hours_name,
-			'id'       => $hours_id,
-		) );
+		calendarp_hours_selector(
+			array(
+				'selected' => $hours,
+				'echo'     => true,
+				'name'     => $hours_name,
+				'id'       => $hours_id,
+			)
+		);
 		echo '<span>:</span>';
-		calendarp_minutes_selector( array(
-			'selected' => $minutes,
-			'echo'     => true,
-			'name'     => $minutes_name,
-			'id'       => $minutes_id,
-		) );
-		calendarp_am_pm_selector( array(
-			'selected' => $am_pm,
-			'echo'     => true,
-			'name'     => $am_pm_name,
-			'id'       => $am_pm_id,
-		) );
+		calendarp_minutes_selector(
+			array(
+				'selected' => $minutes,
+				'echo'     => true,
+				'name'     => $minutes_name,
+				'id'       => $minutes_id,
+			)
+		);
+		calendarp_am_pm_selector(
+			array(
+				'selected' => $am_pm,
+				'echo'     => true,
+				'name'     => $am_pm_name,
+				'id'       => $am_pm_id,
+			)
+		);
 	} else {
-		calendarp_hours_selector( array(
-			'selected' => $hours,
-			'echo'     => true,
-			'name'     => $hours_name,
-			'id'       => $hours_id,
-		) );
+		calendarp_hours_selector(
+			array(
+				'selected' => $hours,
+				'echo'     => true,
+				'name'     => $hours_name,
+				'id'       => $hours_id,
+			)
+		);
 		echo '<span>:</span>';
-		calendarp_minutes_selector( array(
-			'selected' => $minutes,
-			'echo'     => true,
-			'name'     => $minutes_name,
-			'id'       => $minutes_id,
-		) );
+		calendarp_minutes_selector(
+			array(
+				'selected' => $minutes,
+				'echo'     => true,
+				'name'     => $minutes_name,
+				'id'       => $minutes_id,
+			)
+		);
 	}
 
 	if ( ! $echo ) {
@@ -527,10 +583,18 @@ function calendarp_time_selector( $args = array() ) {
 	}
 }
 
+/**
+ * Handle calendarp am pm to 24h.
+ *
+ * @param mixed $value Value.
+ * @param mixed $am_pm Am pm.
+ *
+ * @return mixed Calendar operation result.
+ */
 function calendarp_am_pm_to_24h( $value, $am_pm ) {
 	$value = absint( $value );
-	if ( 'pm' === $am_pm && 12 != $value ) {
-		$value = $value = $value + 12;
+	if ( 'pm' === $am_pm && 12 !== $value ) {
+		$value += 12;
 	} elseif ( 'am' === $am_pm && 12 === $value ) {
 		$value = 0;
 	}
@@ -541,33 +605,52 @@ function calendarp_am_pm_to_24h( $value, $am_pm ) {
 	return $value;
 }
 
+/**
+ * Handle calendarp 24h to timestamp.
+ *
+ * @param mixed $time Time.
+ *
+ * @return mixed Calendar operation result.
+ */
 function calendarp_24h_to_timestamp( $time ) {
-	$date = date( 'Y-m-d', current_time( 'timestamp' ) );
+	$date = gmdate( 'Y-m-d', calendarp_wall_time() );
 	$date = $date . ' ' . $time;
 
 	return strtotime( $date );
 }
 
+/**
+ * Handle calendarp get total days in a month.
+ *
+ * @param int $month Month.
+ * @param int $year Year.
+ *
+ * @return mixed Calendar operation result.
+ */
 function calendarp_get_total_days_in_a_month( $month, $year ) {
-	if ( $month < 1 or $month > 12 ) {
+	$month = absint( $month );
+	$year  = (string) absint( $year );
+	$month = absint( $month );
+	$year  = (string) absint( $year );
+	if ( $month < 1 || $month > 12 ) {
 		return 0;
-	} elseif ( ! is_numeric( $year ) or strlen( $year ) !== 4 ) {
-		$year = date( 'Y' );
+	} elseif ( ! is_numeric( $year ) || strlen( $year ) !== 4 ) {
+		$year = gmdate( 'Y' );
 	}
 
 	if ( defined( 'CAL_GREGORIAN' ) ) {
 		if ( function_exists( 'cal_days_in_month' ) ) {
 			return cal_days_in_month( CAL_GREGORIAN, $month, $year );
 		} else {
-			return 2 == $month ? ( $year % 4 ? 28 : ( $year % 100 ? 29 : ( $year % 400 ? 28 : 29 ) ) ) : ( ( $month - 1 ) % 7 % 2 ? 30 : 31 );
+			return 2 === $month ? ( $year % 4 ? 28 : ( $year % 100 ? 29 : ( $year % 400 ? 28 : 29 ) ) ) : ( ( $month - 1 ) % 7 % 2 ? 30 : 31 );
 		}
 	}
 
 	if ( $year >= 1970 ) {
-		return (int) date( 't', mktime( 12, 0, 0, $month, 1, $year ) );
+		return (int) gmdate( 't', mktime( 12, 0, 0, $month, 1, $year ) );
 	}
 
-	if ( 2 == $month ) {
+	if ( 2 === $month ) {
 		if ( 0 === $year % 400 || ( 0 === $year % 4 && 0 !== $year % 100 ) ) {
 			return 29;
 		}
@@ -578,9 +661,16 @@ function calendarp_get_total_days_in_a_month( $month, $year ) {
 	return $days_in_month[ $month - 1 ];
 }
 
+/**
+ * Handle calendarp get formatted date.
+ *
+ * @param mixed $date Date.
+ *
+ * @return mixed Calendar operation result.
+ */
 function calendarp_get_formatted_date( $date ) {
 	$_date = explode( '-', $date );
-	if ( count( $_date ) != 3 ) {
+	if ( count( $_date ) !== 3 ) {
 		return '';
 	}
 
@@ -593,20 +683,32 @@ function calendarp_get_formatted_date( $date ) {
 	return date_i18n( get_option( 'date_format' ), $timestamp );
 }
 
+/**
+ * Handle calendarp get formatted time.
+ *
+ * @param mixed $time Time.
+ *
+ * @return mixed Calendar operation result.
+ */
 function calendarp_get_formatted_time( $time ) {
 	$time = calendarp_24h_to_timestamp( $time );
 
 	return date_i18n( get_option( 'time_format' ), $time );
 }
 
+/**
+ * Handle calendarp enqueue google maps scripts.
+ *
+ * @return mixed Calendar operation result.
+ */
 function calendarp_enqueue_google_maps_scripts() {
 	$api_key = calendarp_get_setting( 'gmaps_api_key' );
 	if ( ! $api_key ) {
-		// this will trigger a controlled error in JS
+		// this will trigger a controlled error in JS.
 		$api_key = 'false';
 	}
 
-	$js = 'https://maps.googleapis.com/maps/api/js?libraries=places';
+	$js  = 'https://maps.googleapis.com/maps/api/js?libraries=places';
 	$js .= '&amp;key=' . $api_key;
 
 	$settings = calendarp_get_settings();
@@ -614,17 +716,27 @@ function calendarp_enqueue_google_maps_scripts() {
 		$js .= '&amp;language=' . $settings['country'];
 	}
 
-	add_filter( 'script_loader_tag', function ( $tag, $handle ) {
-		if ( 'gmaps-api' !== $handle ) {
-			return $tag;
-		}
+	add_filter(
+		'script_loader_tag',
+		function ( $tag, $handle ) {
+			if ( 'gmaps-api' !== $handle ) {
+				return $tag;
+			}
 
-		return str_replace( ' src', ' async defer src', $tag );
-	}, 10, 2 );
+			return str_replace( ' src', ' async defer src', $tag );
+		},
+		10,
+		2
+	);
 
-	wp_enqueue_script( 'gmaps-api', $js, [], calendarp_get_version(), true );
+	wp_enqueue_script( 'gmaps-api', $js, array(), calendarp_get_version(), true );
 }
 
+/**
+ * Handle calendarp enqueue public script and styles.
+ *
+ * @return mixed Calendar operation result.
+ */
 function calendarp_enqueue_public_script_and_styles() {
 
 	$suffix = ( defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG ) ? '' : '.min';
@@ -634,46 +746,64 @@ function calendarp_enqueue_public_script_and_styles() {
 	wp_enqueue_style(
 		'calendarp-jquery-ui-theme',
 		calendarp_get_plugin_url() . 'includes/css/jquery-ui/jquery-ui.min.css',
-		[], calendarp_get_version()
+		array(),
+		calendarp_get_version()
 	);
 
 	wp_enqueue_script( 'jquery-ui-datepicker' );
 	wp_enqueue_script( 'jquery-ui-tooltip' );
 
-    if ( is_singular( 'calendar_event' ) ) {
+	if ( is_singular( 'calendar_event' ) ) {
 
-        $event    = Calendar_Plus_Event::get_instance( get_the_ID() );
-        $location = $event->get_location();
+		$event    = Calendar_Plus_Event::get_instance( get_the_ID() );
+		$location = $event->get_location();
 
-        if ( $location && $location->has_map() ) {
-            calendarp_enqueue_google_maps_scripts();
-        }
-    }
+		if ( $location && $location->has_map() ) {
+			calendarp_enqueue_google_maps_scripts();
+		}
+	}
 
-	wp_localize_script( 'calendar-plus', 'calendar_i18n', [
-		'ajaxurl' => admin_url( 'admin-ajax.php' ),
-	] );
+	wp_localize_script(
+		'calendar-plus',
+		'calendar_i18n',
+		array(
+			'ajaxurl' => admin_url( 'admin-ajax.php' ),
+		)
+	);
 }
 
+/**
+ * Handle calendarp enqueue public styles.
+ *
+ * @return mixed Calendar operation result.
+ */
 function calendarp_enqueue_public_styles() {
 	wp_enqueue_style(
 		'calendar-plus-calendar',
 		calendarp_get_plugin_url() . 'public/css/calendar-plus.css',
-		[], calendarp_get_version()
+		array(),
+		calendarp_get_version()
 	);
 
 	wp_enqueue_script(
 		'calendar-plus-calendar',
 		calendarp_get_plugin_url() . 'public/js/calendar-plus.js',
-		[ 'jquery' ], calendarp_get_version(), true
+		array( 'jquery' ),
+		calendarp_get_version(),
+		true
 	);
 }
 
+/**
+ * Handle calendarp get default capabilities.
+ *
+ * @return mixed Calendar operation result.
+ */
 function calendarp_get_default_capabilities() {
 	return array(
 		'manage_calendar_plus',
 
-		// Events
+		// Events.
 		'edit_calendar_event',
 		'read_calendar_event',
 		'delete_calendar_event',
@@ -692,7 +822,7 @@ function calendarp_get_default_capabilities() {
 		'delete_calendar_event_terms',
 		'assign_calendar_event_terms',
 
-		// Locations
+		// Locations.
 		'edit_calendar_location',
 		'read_calendar_location',
 		'delete_calendar_location',
@@ -713,50 +843,55 @@ function calendarp_get_default_capabilities() {
 	);
 }
 
+/**
+ * Handle calendarp get assignable capabilities.
+ *
+ * @return mixed Calendar operation result.
+ */
 function calendarp_get_assignable_capabilities() {
 
 	return array(
 		'manage_calendar_plus'                => __( 'Manage Calendar Plus', 'calendar-plus' ),
 
-		// Events
+		// Events.
 		'publish_calendar_events'             => __( 'Publish Events', 'calendar-plus' ),
 		'read_private_calendar_events'        => __( 'Read Private Events', 'calendar-plus' ),
 
-		// Editing Events
+		// Editing Events.
 		'edit_calendar_events'                => __( 'Edit Events', 'calendar-plus' ),
 		'edit_others_calendar_events'         => __( 'Edit Others’ Events', 'calendar-plus' ),
 		'edit_private_calendar_events'        => __( 'Edit Private Events', 'calendar-plus' ),
 		'edit_published_calendar_events'      => __( 'Edit Published Events', 'calendar-plus' ),
 
-		// Deleting Events
+		// Deleting Events.
 		'delete_calendar_events'              => __( 'Delete Events', 'calendar-plus' ),
 		'delete_private_calendar_events'      => __( 'Delete Private Events', 'calendar-plus' ),
 		'delete_published_calendar_events'    => __( 'Delete Published Events', 'calendar-plus' ),
 		'delete_others_calendar_events'       => __( 'Delete Others’ Events', 'calendar-plus' ),
 
-		// Managing Event Terms
+		// Managing Event Terms.
 		'manage_calendar_event_terms'         => __( 'Manage Event Terms', 'calendar-plus' ),
 		'edit_calendar_event_terms'           => __( 'Edit Event Terms', 'calendar-plus' ),
 		'delete_calendar_event_terms'         => __( 'Delete Event Terms', 'calendar-plus' ),
 		'assign_calendar_event_terms'         => __( 'Assign Event Terms', 'calendar-plus' ),
 
-		// Locations
+		// Locations.
 		'publish_calendar_locations'          => __( 'Publish Locations', 'calendar-plus' ),
 		'read_private_calendar_locations'     => __( 'Read Private Locations', 'calendar-plus' ),
 
-		// Editing Locations
+		// Editing Locations.
 		'edit_calendar_locations'             => __( 'Edit Locations', 'calendar-plus' ),
 		'edit_others_calendar_locations'      => __( 'Edit Others’ Locations', 'calendar-plus' ),
 		'edit_private_calendar_locations'     => __( 'Edit Private Locations', 'calendar-plus' ),
 		'edit_published_calendar_locations'   => __( 'Edit Published Locations', 'calendar-plus' ),
 
-		// Deleting Locations
+		// Deleting Locations.
 		'delete_calendar_locations'           => __( 'Delete Locations', 'calendar-plus' ),
 		'delete_private_calendar_locations'   => __( 'Delete Private Locations', 'calendar-plus' ),
 		'delete_published_calendar_locations' => __( 'Delete Published Locations', 'calendar-plus' ),
 		'delete_others_calendar_locations'    => __( 'Delete Others’ Locations', 'calendar-plus' ),
 
-		// Managing Location Terms
+		// Managing Location Terms.
 		'manage_calendar_location_terms'      => __( 'Manage Location Terms', 'calendar-plus' ),
 		'edit_calendar_location_terms'        => __( 'Edit Location Terms', 'calendar-plus' ),
 		'delete_calendar_location_terms'      => __( 'Delete Location Terms', 'calendar-plus' ),
@@ -765,8 +900,12 @@ function calendarp_get_assignable_capabilities() {
 }
 
 /**
- * Checks if a user is removable from list of users
+ * Checks if a user is removable from list of users.
  * that are allowed to manage Calendar Plus
+ *
+ * @param int $user_id User id.
+ *
+ * @return mixed Calendar operation result.
  */
 function calendarp_is_user_removable( $user_id ) {
 	$user = get_userdata( $user_id );
@@ -778,10 +917,10 @@ function calendarp_is_user_removable( $user_id ) {
 	if ( is_multisite() && is_super_admin( $user_id ) ) {
 		$removable = false;
 	}
-	if ( in_array( 'administrator', $user->roles ) ) {
+	if ( in_array( 'administrator', $user->roles, true ) ) {
 		$removable = false;
 	}
-	if ( get_current_user_id() == $user->ID ) {
+	if ( get_current_user_id() === $user->ID ) {
 		$removable = false;
 	}
 
@@ -789,45 +928,39 @@ function calendarp_is_user_removable( $user_id ) {
 }
 
 /**
- * Return a list of users that are allowed to manage Calendar+
+ * Return a list of users that are allowed to manage Calendar+.
+ *
+ * @return mixed Calendar operation result.
  */
 function calendarp_get_allowed_users() {
-	$admins = get_users( array(
-		'role' => 'administrator',
-	) );
+	$admins = get_users(
+		array(
+			'role' => 'administrator',
+		)
+	);
 
-	$managers = get_users( array(
-		'role' => 'calendarp_events_manager',
-	) );
+	$managers = get_users(
+		array(
+			'role' => 'calendarp_events_manager',
+		)
+	);
 
 	return array_merge( $admins, $managers );
 }
 
 /**
- * Sets a cron to delete old dates from the calendar table
+ * Handle calendarp is date cell queried.
+ *
+ * @return mixed Calendar operation result.
  */
-function calendarp_set_old_dates_cron() {
-	if ( ! wp_next_scheduled( 'calendarp_init' ) ) {
-		wp_schedule_event( current_time( 'timestamp' ), 'daily', 'calendarp_init' );
-	}
-}
-
-/**
- * Unsets a cron to delete old dates from the calendar table
- */
-function calendarp_unset_old_dates_cron() {
-	wp_clear_scheduled_hook( 'calendarp_init' );
-}
-
 function calendarp_is_date_cell_queried() {
-	return ( isset( $_GET['event-date'] ) && calendarp_get_event_cell( (int) $_GET['event-date'] ) );
+	return ( null !== calendarp_form_input( 'event-date', null, 'get' ) && calendarp_get_event_cell( (int) calendarp_form_input( 'event-date', '', 'get' ) ) );
 }
 
 /**
- * Return the queried cell if it was queried through URL
+ * Return the queried cell if it was queried through URL.
  *
- * @param bool $event_id
- *
+ * @param bool $event_id Event id.
  * @return object|boolean
  */
 function calendarp_get_queried_date_cell( $event_id ) {
@@ -836,18 +969,18 @@ function calendarp_get_queried_date_cell( $event_id ) {
 		return false;
 	}
 
-	$date_id = isset( $_GET['event-date'] ) ? absint( $_GET['event-date'] ) : false;
+	$date_id = null !== calendarp_form_input( 'event-date', null, 'get' ) ? absint( calendarp_form_input( 'event-date', '', 'get' ) ) : false;
 	if ( $date_id ) {
-		// There's a date ID specified in URL, let's get it
+		// There's a date ID specified in URL, let's get it.
 		$date = calendarp_get_event_cell( $date_id );
-		if ( ! empty( $date->event_id ) && absint( $date->event_id ) != absint( $event_id ) ) {
+		if ( ! empty( $date->event_id ) && absint( $date->event_id ) !== absint( $event_id ) ) {
 			$date = false;
 		}
 	} else {
-		// Let's get the  first date found
+		// Let's get the  first date found.
 		$dates = $event->get_dates_list();
-		$date = current( $dates );
-		$date = (object) $date;
+		$date  = current( $dates );
+		$date  = (object) $date;
 	}
 
 	if ( ! $date ) {
@@ -858,7 +991,7 @@ function calendarp_get_queried_date_cell( $event_id ) {
 }
 
 /**
- * Checks whether we're in a REST API request
+ * Checks whether we're in a REST API request.
  *
  * @return bool
  */
@@ -867,25 +1000,23 @@ function calendarp_is_rest_api_request() {
 }
 
 /**
- * Returns formatted error message HTML
+ * Returns formatted error message HTML.
  *
  * Used to output block editor errors.
  *
  * @param string $msg Plain-text message string.
- *
  * @return string HTML message.
  */
 function calendarp_block_error_msg( $msg ) {
 	return '<div class="components-placeholder">' .
-		'<div class="components-placeholder__fieldset">' . esc_html( $msg ) .  '</div>' .
+		'<div class="components-placeholder__fieldset">' . esc_html( $msg ) . '</div>' .
 	'</div>';
 }
 
 /**
- * Returns true if a taxonomy is assigned to multiple post types
+ * Returns true if a taxonomy is assigned to multiple post types.
  *
  * @param WP_Term|WP_Post_Type|WP_Post|WP_User|null $queried_object The queried object.
- *
  * @return boolean
  */
 function calendarp_is_taxonomy_assigned_to_multiple( $queried_object ) {
@@ -904,4 +1035,58 @@ function calendarp_is_taxonomy_assigned_to_multiple( $queried_object ) {
 	}
 
 	return is_countable( $tax_object->object_type ) && count( $tax_object->object_type ) > 1;
+}
+
+/**
+ * Read a scalar || array of form text without accepting objects || nested scalar mismatches.
+ * Callers of write actions must verify a nonce and capability before using this helper.
+ * Public GET filters are read-only and intentionally work with anonymous, cached pages.
+ *
+ * @param string $key Input key.
+ * @param mixed  $default Expected scalar || array default.
+ * @param string $method post, get || request.
+ * @return mixed Sanitized input with the expected shape.
+ */
+function calendarp_form_input( $key, $default = '', $method = 'post' ) {
+	// phpcs:disable WordPress.Security.NonceVerification -- Verification belongs to the write-action caller; GET filters do not mutate state.
+	$source = 'get' === $method ? $_GET : ( 'request' === $method ? $_REQUEST : $_POST );
+	// phpcs:enable WordPress.Security.NonceVerification
+	if ( ! isset( $source[ $key ] ) || is_array( $default ) !== is_array( $source[ $key ] ) ) {
+		return $default;
+	}
+	$value = wp_unslash( $source[ $key ] );
+	return is_array( $value ) ? map_deep( $value, 'sanitize_text_field' ) : sanitize_text_field( $value );
+}
+
+/**
+ * Handle calendarp get allowed calendar html.
+ *
+ * @return mixed Calendar operation result.
+ */
+function calendarp_get_allowed_calendar_html() {
+	$allowed           = wp_kses_allowed_html( 'post' );
+	$attributes        = array_fill_keys( array( 'id', 'class', 'name', 'value', 'type', 'title', 'style', 'role', 'aria-*', 'data-*', 'disabled', 'checked', 'selected', 'multiple', 'min', 'max', 'step', 'tabindex' ), true );
+	$allowed['input']  = $attributes;
+	$allowed['button'] = $attributes;
+	$allowed['select'] = $attributes;
+	$allowed['option'] = $attributes;
+	$allowed['form']   = array(
+		'id'     => true,
+		'class'  => true,
+		'action' => true,
+		'method' => true,
+	);
+	return $allowed;
+}
+
+/**
+ * Return a wall-clock number for the legacy engine's separate date/time columns.
+ * This is deliberately an offset value for gmdate arithmetic, not an absolute Unix timestamp.
+ * New API/export paths use timezone-aware DateTime objects instead.
+ *
+ * @return int Current local wall-clock seconds used only by the native schedule engine.
+ */
+function calendarp_wall_time() {
+	$now = current_datetime();
+	return $now->getTimestamp() + $now->getOffset();
 }

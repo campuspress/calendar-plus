@@ -1,6 +1,18 @@
 <?php
+/**
+ * Calendar Plus: admin/views/event-details-meta-box.php.
+ *
+ * @package Calendar_Plus
+ */
+
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 
 /**
+ * Calendar render context.
+ *
  * @var $event           Calendar_Plus_Event
  * @var $exclusions      array
  * @var $standard_rules  array
@@ -10,18 +22,18 @@
  * @var $meta_box_slug   string
  */
 
-$event_type_options = array(
+$calendarp_event_type_options = array(
 	'regular'   => __( 'Regular event', 'calendar-plus' ),
 	'recurrent' => __( 'Recurring event', 'calendar-plus' ),
 	'datespan'  => __( 'Multi-day event', 'calendar-plus' ),
 );
 
-$duration_options = array( 'from', 'until' );
-$time_duration_labels = array( __( 'Starts at', 'calendar-plus' ), __( 'Ends at', 'calendar-plus' ) );
-$date_duration_labels = array( __( 'Starts on', 'calendar-plus' ), __( 'Ends on', 'calendar-plus' ) );
-$short_time_duration_labels = array( __( 'Starts at', 'calendar-plus' ), _x( 'to', 'time duration sep', 'calendar-plus' ) );
+$calendarp_duration_options           = array( 'from', 'until' );
+$calendarp_time_duration_labels       = array( __( 'Starts at', 'calendar-plus' ), __( 'Ends at', 'calendar-plus' ) );
+$calendarp_date_duration_labels       = array( __( 'Starts on', 'calendar-plus' ), __( 'Ends on', 'calendar-plus' ) );
+$calendarp_short_time_duration_labels = array( __( 'Starts at', 'calendar-plus' ), _x( 'to', 'time duration sep', 'calendar-plus' ) );
 
-$week_numbers = array(
+$calendarp_week_numbers = array(
 	1 => __( '1<sup>st</sup>', 'calendar-plus' ),
 	2 => __( '2<sup>nd</sup>', 'calendar-plus' ),
 	3 => __( '3<sup>rd</sup>', 'calendar-plus' ),
@@ -29,13 +41,13 @@ $week_numbers = array(
 	5 => __( '5<sup>th</sup>', 'calendar-plus' ),
 );
 
-$weekdays = array();
+$calendarp_weekdays = array();
 
-/** @var WP_Locale $wp_locale */
+/** Calendar render context. @var WP_Locale $wp_locale */
 global $wp_locale;
 
-for ( $day_index = 1; $day_index <= 7; $day_index++ ) {
-	$weekdays[ $day_index ] = $wp_locale->get_weekday_abbrev( $wp_locale->get_weekday( 7 === $day_index ? 0 : $day_index ) );
+for ( $calendarp_day_index = 1; $calendarp_day_index <= 7; $calendarp_day_index++ ) {
+	$calendarp_weekdays[ $calendarp_day_index ] = $wp_locale->get_weekday_abbrev( $wp_locale->get_weekday( 7 === $calendarp_day_index ? 0 : $calendarp_day_index ) );
 }
 
 ?>
@@ -44,13 +56,13 @@ for ( $day_index = 1; $day_index <= 7; $day_index++ ) {
 
 	<select name="event_details[_recurrence]" id="event-recurring">
 		<?php
-		foreach ( $event_type_options as $option => $label ) {
+		foreach ( $calendarp_event_type_options as $calendarp_option => $calendarp_label ) {
 
 			printf(
 				'<option value="%s"%s>%s</option>',
-				$option,
-				selected( $option, $event->get_event_type(), false ),
-				esc_html( $label )
+				esc_attr( $calendarp_option ),
+				selected( $calendarp_option, $event->get_event_type(), false ),
+				esc_html( $calendarp_label )
 			);
 
 		}
@@ -60,8 +72,8 @@ for ( $day_index = 1; $day_index <= 7; $day_index++ ) {
 	<div id="event-dates">
 		<?php if ( $calendar ) : ?>
 			<p>
-				<strong><?php _e( 'Rules', 'calendar-plus' ); ?>:</strong>
-				<code><?php echo calendarp_get_human_read_dates( $event->ID ); ?></code>
+				<strong><?php esc_html_e( 'Rules', 'calendar-plus' ); ?>:</strong>
+				<code><?php echo wp_kses_post( calendarp_get_human_read_dates( $event->ID ) ); ?></code>
 			</p>
 			<p>
 				<label for="edit-dates">
@@ -72,7 +84,8 @@ for ( $day_index = 1; $day_index <= 7; $day_index++ ) {
 						<?php
 
 						/* translators: 1: link to calendar admin menu, 2: title text */
-						printf( __( '(if you have set custom dates in <a href="%1$s" title="%2$s">Calendar Page</a> these will be deleted)', 'calendar-plus' ),
+						printf(
+							wp_kses_post( /* translators: 1: calendar admin URL, 2: link title. */ __( '(if you have set custom dates in <a href="%1$s" title="%2$s">Calendar Page</a> these will be deleted)', 'calendar-plus' ) ),
 							esc_url( admin_url( 'edit.php?post_type=calendar_event&page=calendar-plus-calendar' ) ),
 							esc_html__( 'Calendar page', 'calendar-plus' )
 						);
@@ -95,36 +108,36 @@ for ( $day_index = 1; $day_index <= 7; $day_index++ ) {
 				</label>
 			</p>
 
-			<?php foreach ( $standard_rules as $rule_n => $standard_date ) : ?>
+			<?php foreach ( $standard_rules as $calendarp_rule_n => $calendarp_standard_date ) : ?>
 
-				<div id="event-regular-date-<?php echo $rule_n + 1; ?>" class="event-regular-date-item" style="display: block;">
+				<div id="event-regular-date-<?php echo esc_html( $calendarp_rule_n + 1 ); ?>" class="event-regular-date-item" style="display: block;">
 					<h3>
 						<span class="dashicons dashicons-calendar-alt"></span>
 						<?php esc_html_e( 'Date', 'calendar-plus' ); ?> |
-						<a href="#" class="remove-link remove-regular-event" style="display: none;" data-regular-date-id="<?php echo $rule_n + 1; ?>">
+						<a href="#" class="remove-link remove-regular-event" style="display: none;" data-regular-date-id="<?php echo esc_attr( $calendarp_rule_n + 1 ); ?>">
 							<?php esc_html_e( 'Remove date', 'calendar-plus' ); ?>
 						</a>
 					</h3>
 
 					<p>
-						<label class="standard-from-date-label"><?php _e( 'Date', 'calendar-plus' ); ?></label>
+						<label class="standard-from-date-label"><?php esc_html_e( 'Date', 'calendar-plus' ); ?></label>
 						<input type="text" class="datepicker" name="event_details[from_date][]"
-						       value="<?php echo $standard_date['from_date']; ?>">
+								value="<?php echo esc_attr( $calendarp_standard_date['from_date'] ); ?>">
 					</p>
 
 					<p class="event-regular-time">
 						<?php
-						foreach ( $duration_options as $i => $option ) {
+						foreach ( $calendarp_duration_options as $calendarp_i => $calendarp_option ) {
 							?>
 
-							<label class="standard-<?php echo $option; ?>-time-label"><?php echo esc_html( $short_time_duration_labels[ $i ] ); ?></label>
+							<label class="standard-<?php echo esc_html( $calendarp_option ); ?>-time-label"><?php echo esc_html( $calendarp_short_time_duration_labels[ $calendarp_i ] ); ?></label>
 							<?php
 							calendarp_time_selector(
 								array(
-									'selected'     => $standard_date["{$option}_time"],
-									'hours_name'   => "event_details[{$option}_time_hour][]",
-									'minutes_name' => "event_details[{$option}_time_minute][]",
-									'am_pm_name'   => "event_details[{$option}_time_am_pm][]",
+									'selected'     => $calendarp_standard_date[ "{$calendarp_option}_time" ],
+									'hours_name'   => "event_details[{$calendarp_option}_time_hour][]",
+									'minutes_name' => "event_details[{$calendarp_option}_time_minute][]",
+									'am_pm_name'   => "event_details[{$calendarp_option}_time_am_pm][]",
 								)
 							);
 						}
@@ -148,22 +161,22 @@ for ( $day_index = 1; $day_index <= 7; $day_index++ ) {
 				</h3>
 
 				<p>
-					<label class="standard-from-date-label"><?php _e( 'Date', 'calendar-plus' ); ?></label>
+					<label class="standard-from-date-label"><?php esc_html_e( 'Date', 'calendar-plus' ); ?></label>
 					<input type="text" class="standard-dates-datepicker" name="event_details[from_date][]" value="">
 				</p>
 
 				<p class="event-regular-time">
 					<?php
-					foreach ( $duration_options as $i => $option ) {
+					foreach ( $calendarp_duration_options as $calendarp_i => $calendarp_option ) {
 						?>
 
-						<label class="standard-<?php echo $option; ?>-time-label"><?php echo esc_html( $short_time_duration_labels[ $i ] ); ?></label>
+						<label class="standard-<?php echo esc_html( $calendarp_option ); ?>-time-label"><?php echo esc_html( $calendarp_short_time_duration_labels[ $calendarp_i ] ); ?></label>
 						<?php
 						calendarp_time_selector(
 							array(
-								'hours_name'   => "event_details[{$option}_time_hour][]",
-								'minutes_name' => "event_details[{$option}_time_minute][]",
-								'am_pm_name'   => "event_details[{$option}_time_am_pm][]",
+								'hours_name'   => "event_details[{$calendarp_option}_time_hour][]",
+								'minutes_name' => "event_details[{$calendarp_option}_time_minute][]",
+								'am_pm_name'   => "event_details[{$calendarp_option}_time_am_pm][]",
 							)
 						);
 					}
@@ -176,19 +189,19 @@ for ( $day_index = 1; $day_index <= 7; $day_index++ ) {
 
 			<div id="event-dates-recurrent-dates" class="event-dates-recurrent-subsection">
 				<h3>
-					<span class="dashicons dashicons-calendar-alt"></span> <?php _e( 'Date range', 'calendar-plus' ); ?>
+					<span class="dashicons dashicons-calendar-alt"></span> <?php esc_html_e( 'Date range', 'calendar-plus' ); ?>
 				</h3>
 
 				<?php
-				$labels = array( _x( 'From', 'Details metabox: From date', 'calendar-plus' ), _x( 'To', 'Details metabox: To date', 'calendar-plus' ) );
+				$calendarp_labels = array( _x( 'From', 'Details metabox: From date', 'calendar-plus' ), _x( 'To', 'Details metabox: To date', 'calendar-plus' ) );
 
-				foreach ( $duration_options as $i => $option ) {
+				foreach ( $calendarp_duration_options as $calendarp_i => $calendarp_option ) {
 					?>
 
 					<p>
-						<label class="recurring-dates-<?php echo $option; ?>-label" for="recurring-<?php echo $option; ?>-date"><?php echo esc_html( $labels[ $i ] ); ?></label>
-						<input type="text" class="datepicker" id="recurring-<?php echo $option; ?>-date" name="event_details[recurring][<?php echo $option; ?>_date]"
-						       value="<?php echo esc_attr( $recurring_rules['dates'][ $option ] ); ?>">
+						<label class="recurring-dates-<?php echo esc_html( $calendarp_option ); ?>-label" for="recurring-<?php echo esc_html( $calendarp_option ); ?>-date"><?php echo esc_html( $calendarp_labels[ $calendarp_i ] ); ?></label>
+						<input type="text" class="datepicker" id="recurring-<?php echo esc_html( $calendarp_option ); ?>-date" name="event_details[recurring][<?php echo esc_html( $calendarp_option ); ?>_date]"
+								value="<?php echo esc_attr( $recurring_rules['dates'][ $calendarp_option ] ); ?>">
 					</p>
 
 				<?php } ?>
@@ -199,24 +212,24 @@ for ( $day_index = 1; $day_index <= 7; $day_index++ ) {
 					<span class="dashicons dashicons-update"></span> <?php esc_html_e( 'Recurrence', 'calendar-plus' ); ?>
 				</h3>
 
-				<?php $every = $recurring_rules['every']['every']; ?>
+				<?php $calendarp_every = $recurring_rules['every']['every']; ?>
 
 				<label class="recurring-every-label" for="recurring-frequency-every">
 					<?php echo esc_html_x( 'Every', 'Details metabox: Every number of days/weeks', 'calendar-plus' ); ?>
 				</label>
 
-				<?php $classes = 'recurring-every-day recurring-every-week recurring-every-month recurring-every-year'; ?>
-				<span class="recurring-every-container <?php echo $classes; ?>">
-					<input type="number" class="small-text recurring-every-field-<?php echo $classes; ?>" id="recurring-every"
-					       name="event_details[recurring][every]" value="<?php echo esc_attr( $every ); ?>">
+				<?php $calendarp_classes = 'recurring-every-day recurring-every-week recurring-every-month recurring-every-year'; ?>
+				<span class="recurring-every-container <?php echo esc_html( $calendarp_classes ); ?>">
+					<input type="number" class="small-text recurring-every-field-<?php echo esc_html( $calendarp_classes ); ?>" id="recurring-every"
+							name="event_details[recurring][every]" value="<?php echo esc_attr( $calendarp_every ); ?>">
 				</span>
 
 				<span class="recurring-every-container recurring-every-dow">
-				<?php foreach ( $weekdays as $day_index => $day_name ) : ?>
+				<?php foreach ( $calendarp_weekdays as $calendarp_day_index => $calendarp_day_name ) : ?>
 					<label>
 						<input type="checkbox" class="recurring-every-field recurring-every-field-dow" name="event_details[recurring][every][]"
-						       value="<?php echo $day_index; ?>"<?php checked( is_array( $every ) && in_array( $day_index, $every ) ); ?>>
-						<?php echo $day_name; ?>
+								value="<?php echo esc_attr( $calendarp_day_index ); ?>"<?php checked( is_array( $calendarp_every ) && in_array( $calendarp_day_index, $calendarp_every, true ) ); ?>>
+						<?php echo esc_html( $calendarp_day_name ); ?>
 					</label>
 				<?php endforeach; ?>
 				</span>
@@ -226,26 +239,26 @@ for ( $day_index = 1; $day_index <= 7; $day_index++ ) {
 
 						<?php
 
-						foreach ( $week_numbers as $week => $label ) {
-							$selected_days = isset( $every[ $week ] ) && is_array( $every[ $week ] ) ? $every[ $week ] : array();
+						foreach ( $calendarp_week_numbers as $calendarp_week => $calendarp_label ) {
+							$calendarp_selected_days = isset( $calendarp_every[ $calendarp_week ] ) && is_array( $calendarp_every[ $calendarp_week ] ) ? $calendarp_every[ $calendarp_week ] : array();
 
 							?>
 
 							<tr>
-								<th><?php echo $label; ?></th>
+								<th><?php echo esc_html( $calendarp_label ); ?></th>
 
-								<?php foreach ( $weekdays as $day_index => $day_name ) { ?>
+								<?php foreach ( $calendarp_weekdays as $calendarp_day_index => $calendarp_day_name ) { ?>
 									<td>
 										<label>
 											<input type="checkbox" class="recurring-every-field recurring-every-field-dom"
-											       name="event_details[recurring][every][<?php echo $week; ?>][]"
-											       value="<?php echo $day_index; ?>"
+													name="event_details[recurring][every][<?php echo esc_html( $calendarp_week ); ?>][]"
+													value="<?php echo esc_attr( $calendarp_day_index ); ?>"
 												<?php
-												checked( in_array( $day_index, $selected_days ) );
+												checked( in_array( $calendarp_day_index, $calendarp_selected_days, true ) );
 												?>
 											>
 											<?php
-											echo $day_name;
+											echo esc_html( $calendarp_day_name );
 											?>
 										</label>
 									</td>
@@ -261,7 +274,7 @@ for ( $day_index = 1; $day_index <= 7; $day_index++ ) {
 
 				<select name="event_details[recurring][what]" id="recurring-frequency-every">
 					<?php
-					$options = array(
+					$calendarp_options = array(
 						'day'  => __( 'Day(s)', 'calendar-plus' ),
 						'week' => __( 'Week(s)', 'calendar-plus' ),
 						'year' => __( 'Year(s)', 'calendar-plus' ),
@@ -269,30 +282,30 @@ for ( $day_index = 1; $day_index <= 7; $day_index++ ) {
 						'dom'  => __( 'Days of the month', 'calendar-plus' ),
 					);
 
-					foreach ( $options as $option => $label ) {
+					foreach ( $calendarp_options as $calendarp_option => $calendarp_label ) {
 						?>
-						<option value="<?php echo $option; ?>" <?php selected( $recurring_rules['every']['what'], $option ); ?>>
-							<?php echo esc_html( $label ); ?>
+						<option value="<?php echo esc_attr( $calendarp_option ); ?>" <?php selected( $recurring_rules['every']['what'], $calendarp_option ); ?>>
+							<?php echo esc_html( $calendarp_label ); ?>
 						</option>
 					<?php } ?>
 				</select>
 			</div>
 			<div id="event-dates-recurrent-time" class="event-dates-recurrent-subsection">
 				<h3>
-					<span class="dashicons dashicons-clock"></span> <?php _e( 'Time', 'calendar-plus' ); ?>
+					<span class="dashicons dashicons-clock"></span> <?php esc_html_e( 'Time', 'calendar-plus' ); ?>
 				</h3>
 
-				<?php foreach ( $duration_options as $i => $option ) { ?>
+				<?php foreach ( $calendarp_duration_options as $calendarp_i => $calendarp_option ) { ?>
 
 					<p class="recurring-times-from">
-						<label class="recurring-times-<?php echo $option; ?>-label" for="event_details[recurring][<?php echo $option; ?>_time_hour]"><?php echo esc_html( $time_duration_labels[ $i ] ); ?></label>
+						<label class="recurring-times-<?php echo esc_html( $calendarp_option ); ?>-label" for="event_details[recurring][<?php echo esc_html( $calendarp_option ); ?>_time_hour]"><?php echo esc_html( $calendarp_time_duration_labels[ $calendarp_i ] ); ?></label>
 						<?php
 						calendarp_time_selector(
 							array(
-								'selected'     => $recurring_rules['times'][ $option ],
-								'hours_name'   => "event_details[recurring][{$option}_time_hour]",
-								'minutes_name' => "event_details[recurring][{$option}_time_minute]",
-								'am_pm_name'   => "event_details[recurring][{$option}_time_am_pm]",
+								'selected'     => $recurring_rules['times'][ $calendarp_option ],
+								'hours_name'   => "event_details[recurring][{$calendarp_option}_time_hour]",
+								'minutes_name' => "event_details[recurring][{$calendarp_option}_time_minute]",
+								'am_pm_name'   => "event_details[recurring][{$calendarp_option}_time_am_pm]",
 							)
 						);
 						?>
@@ -302,21 +315,21 @@ for ( $day_index = 1; $day_index <= 7; $day_index++ ) {
 				<p>
 					<label>
 						<input type="checkbox" name="event_details[recurring][all_day_event]" id="event-dates-recurrent-time-all-day-event"<?php checked( $event->is_all_day_event() ); ?>>
-						<?php _e( 'All day event', 'calendar-plus' ); ?>
+						<?php esc_html_e( 'All day event', 'calendar-plus' ); ?>
 					</label>
 				</p>
 			</div>
 
 			<div id="event-dates-recurrent-exclusions" class="event-dates-recurrent-subsection">
 				<h3>
-					<span class="dashicons dashicons-dismiss"></span> <?php _e( 'Excluded dates', 'calendar-plus' ); ?>
+					<span class="dashicons dashicons-dismiss"></span> <?php esc_html_e( 'Excluded dates', 'calendar-plus' ); ?>
 				</h3>
 				<div id="event-dates-recurrent-exclusions-list">
 
-					<?php foreach ( $exclusions as $i => $exclusion ) : ?>
-						<div id="recurring-exclusions-<?php echo $i + 1; ?>" class="recurring-excluded-date">
-							<input type="text" class="recurring-exclusions-datepicker datepicker" name="event_details[recurring][exclusions][]" value="<?php echo esc_attr( $exclusion['date'] ); ?>">
-							<a href="#" class="remove-link remove-exclusions-date dashicons dashicons-no-alt" data-excluded-date-id="<?php echo $i + 1; ?>"></a>
+					<?php foreach ( $exclusions as $calendarp_i => $calendarp_exclusion ) : ?>
+						<div id="recurring-exclusions-<?php echo esc_html( $calendarp_i + 1 ); ?>" class="recurring-excluded-date">
+							<input type="text" class="recurring-exclusions-datepicker datepicker" name="event_details[recurring][exclusions][]" value="<?php echo esc_attr( $calendarp_exclusion['date'] ); ?>">
+							<a href="#" class="remove-link remove-exclusions-date dashicons dashicons-no-alt" data-excluded-date-id="<?php echo esc_attr( $calendarp_i + 1 ); ?>"></a>
 						</div>
 					<?php endforeach; ?>
 
@@ -326,7 +339,7 @@ for ( $day_index = 1; $day_index <= 7; $day_index++ ) {
 					<input type="text" class="recurring-exclusions-datepicker" name="event_details[recurring][exclusions][]" value="">
 					<a href="#" class="remove-link dashicons remove-exclusions-date dashicons-no-alt"></a>
 				</div>
-				<button class="button" id="event-dates-recurrent-exclusions-add"><?php _e( 'Add excluded date', 'calendar-plus' ); ?></button>
+				<button class="button" id="event-dates-recurrent-exclusions-add"><?php esc_html_e( 'Add excluded date', 'calendar-plus' ); ?></button>
 			</div>
 		</div>
 
@@ -334,32 +347,32 @@ for ( $day_index = 1; $day_index <= 7; $day_index++ ) {
 			<p>
 				<label>
 					<input type="checkbox" name="event_details[datespan][all_day_event]" id="event-dates-datespan-time-all-day-event"<?php checked( $event->is_all_day_event() ); ?>>
-					<?php _e( 'All day event', 'calendar-plus' ); ?>
+					<?php esc_html_e( 'All day event', 'calendar-plus' ); ?>
 				</label>
 			</p>
 
-			<?php foreach ( $duration_options as $i => $option ) { ?>
+			<?php foreach ( $calendarp_duration_options as $calendarp_i => $calendarp_option ) { ?>
 				<p>
-					<label for="event_details[datespan][<?php echo $option; ?>_date]" class="datespan-<?php echo $option; ?>-date-label"><?php echo esc_html( $date_duration_labels[ $i ] ); ?></label>
-					<input type="text" class="datepicker" id="event_details[datespan][<?php echo $option; ?>_date]" name="event_details[datespan][<?php echo $option; ?>_date]"
-					       value="<?php echo esc_attr( $datespan_rules["{$option}_date"] ); ?>">
+					<label for="event_details[datespan][<?php echo esc_html( $calendarp_option ); ?>_date]" class="datespan-<?php echo esc_html( $calendarp_option ); ?>-date-label"><?php echo esc_html( $calendarp_date_duration_labels[ $calendarp_i ] ); ?></label>
+					<input type="text" class="datepicker" id="event_details[datespan][<?php echo esc_html( $calendarp_option ); ?>_date]" name="event_details[datespan][<?php echo esc_html( $calendarp_option ); ?>_date]"
+							value="<?php echo esc_attr( $datespan_rules[ "{$calendarp_option}_date" ] ); ?>">
 				</p>
 			<?php } ?>
 
 			<p class="event-datespan-time">
 				<?php
-				foreach ( $duration_options as $i => $option ) {
+				foreach ( $calendarp_duration_options as $calendarp_i => $calendarp_option ) {
 					?>
 
-					<label class="datespan-<?php echo $option; ?>-time-label"><?php echo esc_html( $time_duration_labels[ $i ] ); ?></label>
+					<label class="datespan-<?php echo esc_html( $calendarp_option ); ?>-time-label"><?php echo esc_html( $calendarp_time_duration_labels[ $calendarp_i ] ); ?></label>
 
 					<?php
 					calendarp_time_selector(
 						array(
-							'selected'     => $datespan_rules["{$option}_time"],
-							'hours_name'   => "event_details[datespan][{$option}_time_hour]",
-							'minutes_name' => "event_details[datespan][{$option}_time_minute]",
-							'am_pm_name'   => "event_details[datespan][{$option}_time_am_pm]",
+							'selected'     => $datespan_rules[ "{$calendarp_option}_time" ],
+							'hours_name'   => "event_details[datespan][{$calendarp_option}_time_hour]",
+							'minutes_name' => "event_details[datespan][{$calendarp_option}_time_minute]",
+							'am_pm_name'   => "event_details[datespan][{$calendarp_option}_time_am_pm]",
 						)
 					);
 				}
@@ -378,7 +391,7 @@ wp_nonce_field( "calendarp_{$meta_box_slug}_meta_box", "calendarp_{$meta_box_slu
 
 <script>
 	jQuery(document).ready(function ($) {
-		var type = '<?php echo $event->get_event_type(); ?>';
+		var type = '<?php echo esc_attr( $event->get_event_type() ); ?>';
 		var args = {
 			selector: $('#event-recurring'),
 			type: 'general' === type ? 'regular' : type,

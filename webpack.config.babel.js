@@ -22,7 +22,7 @@ module.exports = (env) => {
 	let config = calendar_plus(env.production);
 
 	if (env.include.length > 0) {
-		config.filter((c) => env.include.includes(c.name));
+		config = config.filter((c) => env.include.includes(c.name));
 	}
 
 	const common_config = {

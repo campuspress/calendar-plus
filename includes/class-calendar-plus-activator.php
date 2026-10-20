@@ -1,9 +1,18 @@
 <?php
+/**
+ * Calendar Plus: includes/class-calendar-plus-activator.php.
+ *
+ * @package Calendar_Plus
+ */
+
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 
 /**
  * Fired during plugin activation
  *
- * @link       http://example.com
  * @since      0.1
  *
  * @package    calendarp
@@ -18,16 +27,18 @@
  * @since      0.1
  * @package    calendarp
  * @subpackage calendarp/includes
- * @author     Your Name <email@example.com>
+ * @author     CampusPress
  */
 class Calendar_Plus_Activator {
 
 	/**
-	 * Short Description. (use period)
+	 * Short Description. (use period).
 	 *
 	 * Long Description.
 	 *
 	 * @since    0.1
+	 *
+	 * @return mixed Calendar operation result.
 	 */
 	public static function activate() {
 		update_option( 'calendar-plus-version', calendarp_get_version() );
@@ -37,57 +48,40 @@ class Calendar_Plus_Activator {
 
 		calendar_plus()->taxonomies->register();
 
-		if ( apply_filters( 'calendarp_flush_rewrite_rules', true ) ) {
-			// This is not flushing in CampusPress, see campus-files/plugins-mods/calendar-plus.php
-			//flush_rewrite_rules();
-		}
-
 		self::create_roles();
-
-		calendarp_set_old_dates_cron();
 	}
 
+	/**
+	 * Create roles.
+	 *
+	 * @return mixed Calendar operation result.
+	 */
 	private static function create_roles() {
-		global $wp_roles;
+		$roles = wp_roles();
 
-		if ( ! $wp_roles ) {
-			$wp_roles = new WP_Roles();
-        }
-
-		if ( get_role( 'calendarp_events_manager' ) ) {
-			remove_role( 'calendarp_events_manager' );
-        }
-
-		add_role( 'calendarp_events_manager', __( 'Calendar Plus Manager', 'calendar-plus' ), array(
-			'read'                   => true,
-			'read_private_pages'     => true,
-			'read_private_posts'     => true,
-			'edit_posts'             => true,
-			'edit_pages'             => true,
-			'edit_published_posts'   => true,
-			'edit_published_pages'   => true,
-			'edit_private_pages'     => true,
-			'edit_private_posts'     => true,
-			'edit_others_pages'      => true,
-			'publish_posts'          => true,
-			'publish_pages'          => true,
-			'delete_posts'           => true,
-			'delete_pages'           => true,
-			'delete_private_pages'   => true,
-			'delete_private_posts'   => true,
-			'delete_published_pages' => true,
-			'delete_published_posts' => true,
-			'manage_categories'      => true,
-			'unfiltered_html'        => true,
-			'upload_files'           => true,
-		) );
-
-		$calendar_plus_capabilities = calendarp_get_default_capabilities();
-
-		foreach ( $calendar_plus_capabilities as $capability ) {
-			$wp_roles->add_cap( 'calendarp_events_manager', $capability );
-			$wp_roles->add_cap( 'administrator', $capability );
+		$new_role = ! get_role( 'calendarp_events_manager' );
+		if ( $new_role ) {
+			add_role(
+				'calendarp_events_manager',
+				__( 'Calendar Plus Manager', 'calendar-plus' ),
+				array(
+					'read'         => true,
+					'upload_files' => true,
+				)
+			);
 		}
 
+		$calendar_plus_capabilities = calendarp_get_default_capabilities();
+		$manager                    = $roles->get_role( 'calendarp_events_manager' );
+		$administrator              = $roles->get_role( 'administrator' );
+
+		foreach ( $calendar_plus_capabilities as $capability ) {
+			if ( $new_role && $manager ) {
+				$manager->add_cap( $capability );
+			}
+			if ( $administrator ) {
+				$administrator->add_cap( $capability );
+			}
+		}
 	}
 }

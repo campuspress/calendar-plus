@@ -1,4 +1,14 @@
 <?php
+/**
+ * Calendar Plus: includes/class-calendar-plus-location.php.
+ *
+ * @package Calendar_Plus
+ */
+
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 
 /**
  * Represents a calendar event location
@@ -28,12 +38,11 @@ class Calendar_Plus_Location {
 	public $post = false;
 
 	/**
-	 * Build an instance of this class
-	 *
-	 * @static
-	 * @access public
+	 * Build an instance of this class.
 	 *
 	 * @param int|Calendar_Plus_Location|WP_Post $location Location ID|object.
+	 * @static
+	 * @access public
 	 *
 	 * @return Calendar_Plus_Location|false Location object, false otherwise.
 	 */
@@ -45,7 +54,7 @@ class Calendar_Plus_Location {
 				return false;
 			}
 
-			if ( 'calendar_location' != $_event->post_type ) {
+			if ( 'calendar_location' !== $_event->post_type ) {
 				return false;
 			}
 
@@ -62,35 +71,37 @@ class Calendar_Plus_Location {
 	}
 
 	/**
-	 * Class constructor
+	 * Class constructor.
 	 *
 	 * @param int $location_id Location ID.
 	 */
 	public function __construct( $location_id ) {
-		$location = get_post( $location_id );
+		$location   = get_post( $location_id );
 		$this->post = $location;
-		$this->ID = $location->ID;
+		$this->ID   = $location->ID;
 	}
 
 	/**
-	 * Retrieve the value of a class property
+	 * Retrieve the value of a class property.
 	 *
-	 * @param $key
-	 *
+	 * @param mixed $key Key.
 	 * @return mixed
 	 */
 	public function __get( $key ) {
 		$value = get_post_meta( $this->ID, '_' . $key, true );
 
 		if ( 'gmaps_options' === $key ) {
-			$value = wp_parse_args( $value, array(
-				'lat'         => 0,
-				'long'        => 0,
-				'marker-lat'  => false,
-				'marker-long' => false,
-				'zoom'        => 2,
-				'address'     => '',
-			) );
+			$value = wp_parse_args(
+				$value,
+				array(
+					'lat'         => 0,
+					'long'        => 0,
+					'marker-lat'  => false,
+					'marker-long' => false,
+					'zoom'        => 2,
+					'address'     => '',
+				)
+			);
 		}
 
 		if ( 'location_type' === $key ) {
@@ -101,7 +112,8 @@ class Calendar_Plus_Location {
 	}
 
 	/**
-	 * Retrieve the post object associated with this location
+	 * Retrieve the post object associated with this location.
+	 *
 	 * @return bool|WP_Post
 	 */
 	public function get_post() {
@@ -109,13 +121,14 @@ class Calendar_Plus_Location {
 	}
 
 	/**
-	 * Retrieve the address for this location
+	 * Retrieve the address for this location.
+	 *
 	 * @return string
 	 */
 	public function get_full_address() {
-		$countries = calendarp_get_countries();
+		$countries    = calendarp_get_countries();
 		$full_address = get_the_title( $this->ID );
-		$settings = calendarp_get_settings();
+		$settings     = calendarp_get_settings();
 
 		if ( $this->address ) {
 			$full_address .= ', ' . $this->address;
@@ -141,7 +154,8 @@ class Calendar_Plus_Location {
 	}
 
 	/**
-	 * Determine whether this location has an associated map
+	 * Determine whether this location has an associated map.
+	 *
 	 * @return bool
 	 */
 	public function has_map() {

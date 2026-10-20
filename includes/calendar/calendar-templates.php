@@ -1,6 +1,21 @@
 <?php
+/**
+ * Calendar Plus: includes/calendar/calendar-templates.php.
+ *
+ * @package Calendar_Plus
+ */
+
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 
 
+
+/**
+ * Handle calendarp get calendar admin month template.
+ *
+ * @return mixed Calendar operation result.
+ */
 function calendarp_get_calendar_admin_month_template() {
 	return array(
 		'calendar_wrapper_start'        => '<div class="calendarp_calendar month-calendar"><div class="row">',
@@ -33,6 +48,11 @@ function calendarp_get_calendar_admin_month_template() {
 	);
 }
 
+/**
+ * Handle calendarp get calendar front month template.
+ *
+ * @return mixed Calendar operation result.
+ */
 function calendarp_get_calendar_front_month_template() {
 	return array(
 		'calendar_wrapper_start'        => '<div class="calendarp_calendar month-calendar">',
@@ -65,6 +85,11 @@ function calendarp_get_calendar_front_month_template() {
 }
 
 
+/**
+ * Handle calendarp get calendar front week template.
+ *
+ * @return mixed Calendar operation result.
+ */
 function calendarp_get_calendar_front_week_template() {
 	return array(
 		'calendar_wrapper_start'        => '<div class="calendarp_calendar {mode}-calendar">',
@@ -103,6 +128,11 @@ function calendarp_get_calendar_front_week_template() {
 	);
 }
 
+/**
+ * Handle calendarp get calendar admin week template.
+ *
+ * @return mixed Calendar operation result.
+ */
 function calendarp_get_calendar_admin_week_template() {
 	return array(
 		'calendar_wrapper_start'        => '<div class="calendarp_calendar {mode}-calendar">',
@@ -145,6 +175,11 @@ function calendarp_get_calendar_admin_week_template() {
 	);
 }
 
+/**
+ * Handle calendarp get calendar agenda template.
+ *
+ * @return mixed Calendar operation result.
+ */
 function calendarp_get_calendar_agenda_template() {
 	return array(
 		'calendar_wrapper_start'    => '<div class="calendarp_calendar agenda-calendar">',
@@ -170,6 +205,11 @@ function calendarp_get_calendar_agenda_template() {
 
 
 
+/**
+ * Handle calendarp get calendar event template.
+ *
+ * @return mixed Calendar operation result.
+ */
 function calendarp_get_calendar_event_template() {
 	return array(
 		'title_start'   => '<div class="event event-cell-{calendar_cell_id} event-date-id-{date_id}" data-date="{date_id}" style="background-color:{event_color};color:{text_color}" data-event-id="{event_id}" data-calendar-cell-id="{calendar_cell_id}">',
@@ -180,6 +220,11 @@ function calendarp_get_calendar_event_template() {
 	);
 }
 
+/**
+ * Handle calendarp get calendar event shortcode template.
+ *
+ * @return mixed Calendar operation result.
+ */
 function calendarp_get_calendar_event_shortcode_template() {
 	return array(
 		'title_start'   => '<div class="event event-cell-{calendar_cell_id} event-date-id-{date_id}" data-date="{date_id}" style="background-color:{event_color};color:{text_color}" data-event-id="{event_id}" data-calendar-cell-id="{calendar_cell_id}">',
@@ -190,6 +235,11 @@ function calendarp_get_calendar_event_shortcode_template() {
 	);
 }
 
+/**
+ * Handle calendarp get calendar event popup template.
+ *
+ * @return mixed Calendar operation result.
+ */
 function calendarp_get_calendar_event_popup_template() {
 	return array(
 		'popup_start'                                     => '<div class="calendar_popup" id="calendar-popup-cell-id-{calendar_cell_id}" data-cell-id="{calendar_cell_id}"><div class="calendar-popup-inner"><div class="close-popup"><span class="dashicons dashicons-no-alt"></span></div><div class="popup-content">',
@@ -214,10 +264,20 @@ function calendarp_get_calendar_event_popup_template() {
 	);
 }
 
+/**
+ * Handle calendarp get calendar event popup shortcode template.
+ *
+ * @return mixed Calendar operation result.
+ */
 function calendarp_get_calendar_event_popup_shortcode_template() {
 	return array();
 }
 
+/**
+ * Handle calendarp get times list.
+ *
+ * @return mixed Calendar operation result.
+ */
 function calendarp_get_times_list() {
 	return array( '00:00', '00:30', '01:00', '01:30', '02:00', '02:30', '03:00', '03:30', '04:00', '04:30', '05:00', '05:30', '06:00', '06:30', '07:00', '07:30', '08:00', '08:30', '09:00', '09:30', '10:00', '10:30', '11:00', '11:30', '12:00', '12:30', '13:00', '13:30', '14:00', '14:30', '15:00', '15:30', '16:00', '16:30', '17:00', '17:30', '18:00', '18:30', '19:00', '19:30', '20:00', '20:30', '21:00', '21:30', '22:00', '22:30', '23:00', '23:30' );
 }

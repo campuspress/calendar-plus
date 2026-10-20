@@ -1,13 +1,16 @@
 <?php
 /**
- * @author: WPMUDEV, Ignacio Cruz (igmoweb)
- * @version:
+ * Calendar Plus: includes/rest-api/class-calendar-plus-rest-exception.php.
+ *
+ * @author WPMUDEV, Ignacio Cruz (igmoweb)
+ * @package Calendar_Plus
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
+/** Calendar component: Calendar_Plus_REST_Exception. */
 class Calendar_Plus_REST_Exception extends Exception {
 
 	/**
@@ -27,10 +30,10 @@ class Calendar_Plus_REST_Exception extends Exception {
 	/**
 	 * Setup exception.
 	 *
-	 * @param string $code             Machine-readable error code.
-	 * @param string $message          User-friendly translated error message, e.g. 'Product ID is invalid'.
+	 * @param string $code Machine-readable error code.
+	 * @param string $message User-friendly translated error message, e.g. 'Product ID is invalid'.
 	 * @param int    $http_status_code Proper HTTP status code to respond with, e.g. 400.
-	 * @param array  $data             Extra error data.
+	 * @param array  $data Extra error data.
 	 */
 	public function __construct( $code, $message, $http_status_code = 400, $data = array() ) {
 		$this->error_code = $code;

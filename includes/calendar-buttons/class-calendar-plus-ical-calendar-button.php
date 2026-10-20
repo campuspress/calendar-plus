@@ -1,16 +1,26 @@
 <?php
 /**
- * @author: WPMUDEV, Ignacio Cruz (igmoweb)
- * @version:
+ * Calendar Plus: includes/calendar-buttons/class-calendar-plus-ical-calendar-button.php.
+ *
+ * @author WPMUDEV, Ignacio Cruz (igmoweb)
+ * @package Calendar_Plus
  */
-
 
 if ( ! defined( 'ABSPATH' ) || class_exists( 'Calendar_Plus_iCal_Calendar_Button' ) ) {
 	return;
 }
 
+/** Calendar component: Calendar_Plus_iCal_Calendar_Button. */
 class Calendar_Plus_iCal_Calendar_Button extends Calendar_Plus_Calendar_Button implements Calendar_Plus_External_Calendar_Button {
 
+
+	/**
+	 * Retrieve button link.
+	 *
+	 * @param array $args Args.
+	 *
+	 * @return mixed Calendar operation result.
+	 */
 	public function get_button_link( $args = array() ) {
 
 		$url = admin_url( 'admin-ajax.php', 'relative' );
@@ -34,6 +44,13 @@ class Calendar_Plus_iCal_Calendar_Button extends Calendar_Plus_Calendar_Button i
 		return $url;
 	}
 
+	/**
+	 * Retrieve event ids.
+	 *
+	 * @param array $args Args.
+	 *
+	 * @return mixed Calendar operation result.
+	 */
 	public static function get_event_ids( $args = array() ) {
 		$defaults = array(
 			'event'    => false,
@@ -44,7 +61,7 @@ class Calendar_Plus_iCal_Calendar_Button extends Calendar_Plus_Calendar_Button i
 
 		$args = wp_parse_args( $args, $defaults );
 
-		$event = calendarp_get_event( $args['event'] );
+		$event    = calendarp_get_event( $args['event'] );
 		$category = get_term( $args['category'], 'calendar_event_category' );
 		if ( ! $category || is_wp_error( $category ) ) {
 			$category = false;
@@ -68,6 +85,7 @@ class Calendar_Plus_iCal_Calendar_Button extends Calendar_Plus_Calendar_Button i
 		}
 
 		if ( $location ) {
+			// phpcs:ignore WordPress.DB.SlowDBQuery -- Native cached WordPress lookup of the selected Location mapping; SQL replacement would bypass native visibility/cache rules.
 			$query_args['meta_query'] = array(
 				array(
 					'key'   => '_location_id',
@@ -77,6 +95,7 @@ class Calendar_Plus_iCal_Calendar_Button extends Calendar_Plus_Calendar_Button i
 		}
 
 		if ( $category ) {
+			// phpcs:ignore WordPress.DB.SlowDBQuery -- Native cached WordPress taxonomy filter for the selected event category.
 			$query_args['tax_query'] = array(
 				array(
 					'taxonomy' => 'calendar_event_category',
@@ -91,6 +110,11 @@ class Calendar_Plus_iCal_Calendar_Button extends Calendar_Plus_Calendar_Button i
 		return $event_ids;
 	}
 
+	/**
+	 * Handle download file.
+	 *
+	 * @return mixed Calendar operation result.
+	 */
 	public static function download_file() {
 
 		$fields = array(
@@ -103,8 +127,8 @@ class Calendar_Plus_iCal_Calendar_Button extends Calendar_Plus_Calendar_Button i
 		$args = array();
 
 		foreach ( $fields as $arg_name => $query_var ) {
-			$args[ $arg_name ] = isset( $_GET[ $query_var ] ) ?
-				absint( $_GET[ $query_var ] ) : false;
+			$args[ $arg_name ] = null !== calendarp_form_input( $query_var, null, 'get' ) ?
+				absint( calendarp_form_input( $query_var, '', 'get' ) ) : false;
 		}
 
 		$event_ids = self::get_event_ids( $args );

@@ -1,3 +1,13 @@
 <?php
+/**
+ * Calendar Plus: modules/modules/bp-activity-auto-updates.php.
+ *
+ * @package Calendar_Plus
+ */
 
-// this file is empty
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
+
+// this file is empty.

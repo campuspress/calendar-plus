@@ -1,9 +1,28 @@
 <?php
+/**
+ * Calendar Plus: includes/shortcodes/class-calendar-plus-events-by-cat-shortcode.php.
+ *
+ * @package Calendar_Plus
+ */
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
+
+/** Calendar component: Calendar_Plus_Events_By_Category_Shortcode. */
 class Calendar_Plus_Events_By_Category_Shortcode {
 
+	/**
+	 * Calendar component state.
+	 *
+	 * @var mixed
+	 */
 	public $enqueue_scripts = false;
 
+	/**
+	 * Initialize this calendar component.
+	 */
 	public function __construct() {
 		add_shortcode( 'calendarp-events-by-category', array( $this, 'render' ) );
 		add_shortcode( 'calendarp-events-list', array( $this, 'render' ) );
@@ -11,9 +30,14 @@ class Calendar_Plus_Events_By_Category_Shortcode {
 		add_action( 'enqueue_block_editor_assets', array( $this, 'register_scripts' ) );
 		add_action( 'wp_enqueue_scripts', array( $this, 'enqueue_scripts' ) );
 
-		add_action('init', array($this,'register_block'));
+		add_action( 'init', array( $this, 'register_block' ) );
 	}
 
+	/**
+	 * Register scripts.
+	 *
+	 * @return mixed Calendar operation result.
+	 */
 	public function register_scripts() {
 		wp_register_style(
 			'calendarp-events-by-cat',
@@ -23,6 +47,11 @@ class Calendar_Plus_Events_By_Category_Shortcode {
 		);
 	}
 
+	/**
+	 * Enqueue scripts.
+	 *
+	 * @return mixed Calendar operation result.
+	 */
 	public function enqueue_scripts() {
 		if ( ! $this->enqueue_scripts ) {
 			return;
@@ -39,11 +68,18 @@ class Calendar_Plus_Events_By_Category_Shortcode {
 		wp_enqueue_style( 'calendarp-events-by-cat' );
 	}
 
+	/**
+	 * Handle render.
+	 *
+	 * @param array $atts Atts.
+	 *
+	 * @return mixed Calendar operation result.
+	 */
 	public function render( $atts ) {
 		$this->enqueue_scripts = true;
 		$this->enqueue_scripts();
 
-		$current_time = current_time( 'timestamp' );
+		$current_time = calendarp_wall_time();
 
 		$args = array();
 
@@ -75,9 +111,9 @@ class Calendar_Plus_Events_By_Category_Shortcode {
 		if (
 			isset( $atts['past_events'] ) &&
 			(
-				is_string( $atts['past_events'] ) &&
-				strtolower( $atts['past_events'] ) === 'true' ||
-				$atts['past_events'] === true
+				( is_string( $atts['past_events'] ) &&
+				'true' === strtolower( $atts['past_events'] ) ) ||
+				true === $atts['past_events']
 			)
 		) {
 			$args['order'] = 'DESC';
@@ -97,14 +133,14 @@ class Calendar_Plus_Events_By_Category_Shortcode {
 			);
 		}
 		$template_data = array(
-			'featured_image' => isset( $atts['featured_image'] ) && $atts['featured_image'],
+			'featured_image'   => isset( $atts['featured_image'] ) && $atts['featured_image'],
 			'display_location' => isset( $atts['display_location'] ) && $atts['display_location'],
-			'display_excerpt' => isset( $atts['display_excerpt'] ) && $atts['display_excerpt']
+			'display_excerpt'  => isset( $atts['display_excerpt'] ) && $atts['display_excerpt'],
 		);
 
-		if( isset( $atts['layout'] ) && $atts['layout'] === 'grid' ){
-			$layout = 'grid';
-			$template_data['columns'] = (int) $atts['columns'];
+		if ( isset( $atts['layout'] ) && 'grid' === $atts['layout'] ) {
+			$layout                       = 'grid';
+			$template_data['columns']     = (int) $atts['columns'];
 			$template_data['column_size'] = 12 / $template_data['columns'];
 		} else {
 			$layout = 'list';
@@ -116,7 +152,7 @@ class Calendar_Plus_Events_By_Category_Shortcode {
 
 		ob_start();
 
-		include( calendarp_locate_template( 'shortcodes/events-' . $layout . '.php' ) );
+		include calendarp_locate_template( 'shortcodes/events-' . $layout . '.php' );
 
 		$content = ob_get_clean();
 
@@ -133,80 +169,82 @@ class Calendar_Plus_Events_By_Category_Shortcode {
 			}
 
 			if ( isset( $atts['className'] ) ) {
-				$class =  !empty( $class ) ? $class . ' ' . $atts['className'] :  $atts['className'];
+				$class = ! empty( $class ) ? $class . ' ' . $atts['className'] : $atts['className'];
 			}
-			if( isset( $atts['layout'] ) && $atts['layout'] === 'grid' ){
-				$class  .= ' calendarp-events--grid columns';
+			if ( isset( $atts['layout'] ) && 'grid' === $atts['layout'] ) {
+				$class .= ' calendarp-events--grid columns';
 			}
 
-			if( $class ) {
+			if ( $class ) {
 				$content = '<div class="' . esc_attr( $class ) . '">' . $content . '</div>';
 			}
 		}
 
 		return apply_filters( 'calendarp_events_list_shortcode_content', $content, $event_groups, $atts );
 	}
-	
+
 	/**
-	 * Register block for this shortcode
+	 * Register block for this shortcode.
+	 *
+	 * @return mixed Calendar operation result.
 	 */
 	public function register_block() {
-		if(function_exists('register_block_type')) {
+		if ( function_exists( 'register_block_type' ) ) {
 			register_block_type(
 				'calendar-plus/events-list',
 				array(
 					'render_callback' => array( $this, 'blocks_content' ),
 					'attributes'      => array(
-						//Ref: https://github.com/WordPress/gutenberg/issues/16850#issuecomment-633203698
-						'className' => array(
+						// Ref: https://github.com/WordPress/gutenberg/issues/16850#issuecomment-633203698.
+						'className'        => array(
 							'default' => '',
-							'type'    => 'string'
+							'type'    => 'string',
 						),
-						'events' => array(
-							'type' => 'number',
+						'events'           => array(
+							'type'    => 'number',
 							'default' => 5,
 						),
-						'category' => array(
+						'category'         => array(
 							'type' => 'string',
 						),
-						'past_events' => array(
-							'type' => 'boolean',
-							'default' => false
+						'past_events'      => array(
+							'type'    => 'boolean',
+							'default' => false,
 						),
 						'display_location' => array(
 							'type'    => 'boolean',
 							'default' => false,
 						),
-						'display_excerpt' => array(
+						'display_excerpt'  => array(
 							'type'    => 'boolean',
 							'default' => false,
 						),
-						'featured_image' => array(
-							'type' => 'boolean',
-							'default' => false
+						'featured_image'   => array(
+							'type'    => 'boolean',
+							'default' => false,
 						),
-						'layout' => array(
-							'type' => 'string',
-							'default' => 'list'
+						'layout'           => array(
+							'type'    => 'string',
+							'default' => 'list',
 						),
-						'columns' => array(
-							'type' => 'number',
-							'default' => 2
-						)
+						'columns'          => array(
+							'type'    => 'number',
+							'default' => 2,
+						),
 					),
-					'editor_style' => 'calendarp-events-by-cat',
+					'editor_style'    => 'calendarp-events-by-cat',
 				)
 			);
 		}
 	}
 
 	/**
-	 * Render block on frontend
+	 * Render block on frontend.
 	 *
-	 * @param array $atts
-	 * @return void
+	 * @param array $atts Atts.
+	 * @return string
 	 */
-	public function blocks_content($atts) {
-		return $this->render($atts);
+	public function blocks_content( $atts ) {
+		return $this->render( $atts );
 	}
 }
