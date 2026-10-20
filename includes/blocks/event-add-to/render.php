@@ -1,8 +1,12 @@
 <?php
-require_once calendarp_get_plugin_dir() . 'public/helpers-templates.php';
-?>
+/**
+ * Context-aware event field.
+ *
+ * @package Calendar_Plus
+ */
 
-<div class="event-meta-item" style="overflow: hidden">
-    <?php _e( 'Add to', 'calendar-plus' ); ?>:
-    <?php calendarp_event_add_to_calendars_links( get_the_ID() ); ?>
-</div>
+if ( ! defined( 'ABSPATH' ) ) {
+	return;
+}
+// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Shared renderer escapes each field.
+echo Calendar_Plus_Event_Display::field( 'add-to', $attributes, $block );

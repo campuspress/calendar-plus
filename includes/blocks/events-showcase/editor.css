@@ -1,0 +1,51 @@
+/*
+ * Core List View windows and drag offsets assume 32px rows. Expand only a single
+ * selected Showcase field, within the overscan, and retain core geometry while
+ * dragging or selecting multiple rows. Never change the frontend or core files.
+ */
+body:not(.is-dragging-components-draggable)
+	.block-editor-list-view-tree:not(.is-dragging):not(
+		:has(.is-selected ~ .is-selected)
+	)
+	.block-editor-list-view-leaf.is-selected:has(.calendarp-showcase-field-icon)
+	.block-editor-list-view-block-contents {
+	height: auto;
+	min-height: 32px;
+	max-height: 128px;
+	overflow: auto;
+	white-space: normal;
+}
+
+body:not(.is-dragging-components-draggable)
+	.block-editor-list-view-tree:not(.is-dragging):not(
+		:has(.is-selected ~ .is-selected)
+	)
+	.block-editor-list-view-leaf.is-selected:has(.calendarp-showcase-field-icon)
+	.block-editor-list-view-block-select-button__label-wrapper {
+	min-width: 0;
+}
+
+body:not(.is-dragging-components-draggable)
+	.block-editor-list-view-tree:not(.is-dragging):not(
+		:has(.is-selected ~ .is-selected)
+	)
+	.block-editor-list-view-leaf.is-selected:has(.calendarp-showcase-field-icon)
+	.block-editor-list-view-block-select-button__title {
+	min-width: 0;
+}
+
+body:not(.is-dragging-components-draggable)
+	.block-editor-list-view-tree:not(.is-dragging):not(
+		:has(.is-selected ~ .is-selected)
+	)
+	.block-editor-list-view-leaf.is-selected:has(.calendarp-showcase-field-icon)
+	.block-editor-list-view-block-select-button__title
+	.components-truncate {
+	position: static;
+	transform: none;
+	white-space: normal;
+	text-overflow: clip;
+	overflow: visible;
+	overflow-wrap: anywhere;
+	line-height: 1.4;
+}

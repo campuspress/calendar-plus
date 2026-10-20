@@ -1,4 +1,9 @@
 <?php
+/**
+ * Calendar Plus: includes/class-calendar-plus-export-csv.php.
+ *
+ * @package Calendar_Plus
+ */
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
@@ -11,30 +16,33 @@ class Calendar_Plus_Export_CSV {
 
 	/**
 	 * List of events to export
+	 *
 	 * @var array
 	 */
 	private $events;
 
 	/**
 	 * Columns to include in the export file
+	 *
 	 * @var array
 	 */
 	private $columns;
 
 	/**
-	 * Class constructor
+	 * Class constructor.
 	 *
-	 * @param array $events  List of Calendar_Event instances to export
-	 * @param array $columns List of columns to include in the export file
+	 * @param array $events List of Calendar_Event instances to export.
+	 * @param array $columns List of columns to include in the export file.
 	 */
 	public function __construct( $events = array(), $columns = array() ) {
 
-		$this->events = empty( $events ) ? calendarp_get_events( array( 'posts_per_page' => - 1 ) ) : $events;
-		$this->columns = empty( $columns ) ? $this->get_supported_columns() : $columns;
+		$this->events  = $events;
+		$this->columns = empty( $columns ) ? $this->get_supported_columns() : array_values( array_intersect( $columns, $this->get_supported_columns() ) );
 	}
 
 	/**
-	 * Retrieve a list of columns supported by this class
+	 * Retrieve a list of columns supported by this class.
+	 *
 	 * @return array
 	 */
 	public static function get_supported_columns() {
@@ -55,7 +63,8 @@ class Calendar_Plus_Export_CSV {
 	}
 
 	/**
-	 * Retrieve the list of columns
+	 * Retrieve the list of columns.
+	 *
 	 * @return array
 	 */
 	public function get_columns() {
@@ -63,7 +72,8 @@ class Calendar_Plus_Export_CSV {
 	}
 
 	/**
-	 * Retrieve the list of events
+	 * Retrieve the list of events.
+	 *
 	 * @return array
 	 */
 	public function get_events() {
@@ -71,11 +81,10 @@ class Calendar_Plus_Export_CSV {
 	}
 
 	/**
-	 * Construct the value for a specific column and an event
+	 * Construct the value for a specific column and an event.
 	 *
-	 * @param string              $column
-	 * @param Calendar_Plus_Event $event
-	 *
+	 * @param string              $column Column.
+	 * @param Calendar_Plus_Event $event Event.
 	 * @return string
 	 */
 	private function get_column_data( $column, $event ) {
@@ -104,12 +113,15 @@ class Calendar_Plus_Export_CSV {
 
 			case 'tags':
 			case 'categories':
-				$valid_taxonomies = array( 'tags' => 'calendar_event_tag', 'categories' => 'calendar_event_category' );
-				$taxonomy = $valid_taxonomies[ $column ];
+				$valid_taxonomies = array(
+					'tags'       => 'calendar_event_tag',
+					'categories' => 'calendar_event_category',
+				);
+				$taxonomy         = $valid_taxonomies[ $column ];
 
 				$terms = wp_get_object_terms( $event->ID, $taxonomy, array( 'fields' => 'names' ) );
 
-				return join( ', ', $terms );
+				return is_wp_error( $terms ) ? '' : join( ', ', $terms );
 
 			case 'from_date':
 			case 'until_date':
@@ -135,19 +147,22 @@ class Calendar_Plus_Export_CSV {
 					break;
 				}
 
-				/** @var WP_Locale $wp_locale */
+				/** Calendar component state. @var WP_Locale $wp_locale */
 				global $wp_locale;
 
 				$rules = $event->get_rules();
 				$every = $rules['every'][0]['every'];
-				$what = $rules['every'][0]['what'];
+				$what  = $rules['every'][0]['what'];
 
-				// Deal with simple recurrence formats first
+				// Deal with simple recurrence formats first.
 
 				$formats = array(
-					'week'  => _n( '%d week', '%d weeks', $every, 'calendar-plus' ),
-					'month' => _n( '%d month', '%d months', $every, 'calendar-plus' ),
-					'year'  => _n( '%d year', '%d years', $every, 'calendar-plus' ),
+					'week'  => /* translators: %d: recurrence interval. */
+					_n( '%d week', '%d weeks', $every, 'calendar-plus' ),
+					'month' => /* translators: %d: recurrence interval. */
+					_n( '%d month', '%d months', $every, 'calendar-plus' ),
+					'year'  => /* translators: %d: recurrence interval. */
+					_n( '%d year', '%d years', $every, 'calendar-plus' ),
 				);
 
 				if ( isset( $formats[ $what ] ) ) {
@@ -158,7 +173,7 @@ class Calendar_Plus_Export_CSV {
 					break;
 				}
 
-				// Otherwise, more work is required to construct a string
+				// Otherwise, more work is required to construct a string.
 
 				if ( 'dom' === $what ) {
 					$ord_nums = array(
@@ -178,7 +193,7 @@ class Calendar_Plus_Export_CSV {
 				foreach ( $every as $nth => $dows ) {
 					foreach ( $dows as $dow ) {
 						$weekday = $wp_locale->get_weekday_abbrev( $wp_locale->get_weekday( $dow % 7 ) );
-						$days[] = isset( $ord_nums ) ? ( $ord_nums[ $nth ] . ' ' . $weekday ) : $weekday;
+						$days[]  = isset( $ord_nums ) ? ( $ord_nums[ $nth ] . ' ' . $weekday ) : $weekday;
 					}
 				}
 
@@ -189,10 +204,9 @@ class Calendar_Plus_Export_CSV {
 	}
 
 	/**
-	 * Build a row of data for an event
+	 * Build a row of data for an event.
 	 *
-	 * @param Calendar_Plus_Event $event
-	 *
+	 * @param Calendar_Plus_Event $event Event.
 	 * @return array
 	 */
 	private function generate_row( $event ) {
@@ -206,29 +220,72 @@ class Calendar_Plus_Export_CSV {
 	}
 
 	/**
-	 * Retrieve the filename of the export file
+	 * Retrieve the filename of the export file.
+	 *
 	 * @return string
 	 */
 	public function get_filename() {
-		$filename = sprintf( 'calendar_events.%s.csv', date( 'Y-m-d' ) );
+		$filename = sprintf( 'calendar_events.%s.csv', gmdate( 'Y-m-d' ) );
 		return sanitize_file_name( apply_filters( 'calendar_plus_export_filename', $filename, $this ) );
 	}
 
 	/**
 	 * Generate the export file
 	 */
-	public function export() {
-		header( 'Content-Type: application/csv' );
-		header( sprintf( 'Content-Disposition: attachment; filename="%s"', $this->get_filename() ) );
-
-		$handle = fopen( 'php://output', 'w' );
-		fputcsv( $handle, $this->columns );
-
-		foreach ( $this->get_events() as $event ) {
-			fputcsv( $handle, $this->generate_row( $event ) );
+	/**
+	 * Handle encode row.
+	 *
+	 * @param array $row Row.
+	 *
+	 * @return mixed Calendar operation result.
+	 */
+	public static function encode_row( array $row ) {
+		$cells = array();
+		foreach ( $row as $cell ) {
+			$cell = (string) $cell;
+			if ( preg_match( '/^[\x00-\x20]*[=+@-]/u', $cell ) ) {
+				$cell = "'" . $cell;
+			}
+			$cells[] = '"' . str_replace( '"', '""', $cell ) . '"';
 		}
+		return implode( ',', $cells ) . "\r\n";
+	}
 
-		fclose( $handle );
+	/**
+	 * Handle export.
+	 *
+	 * @return mixed Calendar operation result.
+	 */
+	public function export() {
+		if ( ! current_user_can( 'manage_calendar_plus' ) ) {
+			wp_die( esc_html__( 'You cannot export events.', 'calendar-plus' ), '', array( 'response' => 403 ) );
+		}
+		nocache_headers();
+		header( 'Content-Type: text/csv; charset=UTF-8' );
+		header( 'X-Content-Type-Options: nosniff' );
+		header( sprintf( 'Content-Disposition: attachment; filename="%s"', $this->get_filename() ) );
+		// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Download is text/csv, not HTML. Every cell is quoted and formula-neutralized by encode_row; HTML escaping would corrupt event data.
+		echo self::encode_row( $this->columns );
+		$page = 1;
+		do {
+			$events = $this->events ? $this->events : calendarp_get_events(
+				array(
+					'posts_per_page' => 100,
+					'paged'          => $page,
+					'orderby'        => 'ID',
+					'order'          => 'ASC',
+				)
+			);
+			foreach ( $events as $event ) {
+				if ( ! $event->current_user_can_read() ) {
+					continue;
+				}
+				// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- RFC 4180 text/csv stream, encoded cells and explicit download headers above.
+				echo self::encode_row( $this->generate_row( $event ) );
+			}
+			++$page;
+			$has_next = ! $this->events && 100 === count( $events );
+		} while ( $has_next );
 		exit;
 	}
 }

@@ -1,0 +1,115 @@
+{
+  "$schema": "https://schemas.wp.org/trunk/block.json",
+  "apiVersion": 3,
+  "name": "calendar-plus/showcase-field",
+  "version": "2.2.25",
+  "title": "Showcase Event Field",
+  "description": "A configurable image, summary, occurrence date, Location, link or visitor control.",
+  "category": "widgets",
+  "icon": "calendar-alt",
+  "textdomain": "calendar-plus",
+  "attributes": {
+    "field": {
+      "type": "string",
+      "default": "summary"
+    },
+    "label": {
+      "type": "string",
+      "default": ""
+    },
+    "placeholder": {
+      "type": "string",
+      "default": ""
+    },
+    "categoryLabel": {
+      "type": "string",
+      "default": ""
+    },
+    "dateLabel": {
+      "type": "string",
+      "default": ""
+    },
+    "allCategoriesLabel": {
+      "type": "string",
+      "default": ""
+    },
+    "words": {
+      "type": "number",
+      "default": 24
+    },
+    "imageFit": {
+      "type": "string",
+      "default": "contain"
+    },
+    "imageRatio": {
+      "type": "string",
+      "default": "landscape"
+    },
+    "imagePosition": {
+      "type": "string",
+      "default": "center"
+    },
+    "showTimezone": {
+      "type": "boolean",
+      "default": true
+    },
+    "showAddress": {
+      "type": "boolean",
+      "default": false
+    },
+    "showCategoryFilter": {
+      "type": "boolean",
+      "default": true
+    },
+    "showDateFilter": {
+      "type": "boolean",
+      "default": true
+    },
+    "showSearch": {
+      "type": "boolean",
+      "default": true
+    }
+  },
+  "supports": {
+    "html": false,
+    "color": {
+      "text": true,
+      "background": true,
+      "link": true,
+      "gradients": true
+    },
+    "spacing": {
+      "margin": true,
+      "padding": true,
+      "blockGap": true
+    },
+    "typography": {
+      "fontSize": true,
+      "lineHeight": true,
+      "textAlign": true,
+      "__experimentalFontFamily": true,
+      "__experimentalFontWeight": true,
+      "__experimentalFontStyle": true,
+      "__experimentalLetterSpacing": true,
+      "__experimentalTextTransform": true,
+      "__experimentalTextDecoration": true
+    },
+    "__experimentalBorder": {
+      "color": true,
+      "radius": true,
+      "style": true,
+      "width": true
+    },
+    "shadow": true
+  },
+  "editorScript": "calendarp-showcase-editor",
+  "editorStyle": "calendarp-showcase-editor",
+  "style": "calendarp-showcase",
+  "render": "file:./render.php",
+  "usesContext": [
+    "postId",
+    "postType",
+    "calendarp/occurrence",
+    "calendarp/showcase"
+  ]
+}

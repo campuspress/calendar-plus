@@ -1,7 +1,9 @@
 <?php
 /**
- * @author: WPMUDEV, Ignacio Cruz (igmoweb)
- * @version:
+ * Calendar Plus: includes/gcal/class-calendar-plus-gcal-logger.php.
+ *
+ * @author WPMUDEV, Ignacio Cruz (igmoweb)
+ * @package Calendar_Plus
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -9,15 +11,20 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 
+/** Calendar component: Calendar_Plus_Google_Calendar_Logger. */
 class Calendar_Plus_Google_Calendar_Logger extends Psr\Log\AbstractLogger {
 
 	/**
-	 * {@inheritdoc}
+	 * {@inheritdoc}.
+	 *
+	 * @param mixed $level Level.
+	 * @param mixed $message Message.
+	 * @param array $context Context.
+	 *
+	 * @return mixed Calendar operation result.
 	 */
 	public function log( $level, $message, array $context = array() ) {
-		if ( defined( 'WP_DEBUG_LOG' ) && WP_DEBUG_LOG ) {
-			error_log( '[Calendar+] ' . $message );
-		}
+		// Logging integrations may opt in to this hook; the plugin writes no debug logs.
+		do_action( 'calendarp_google_calendar_log', sanitize_key( $level ), sanitize_text_field( (string) $message ) );
 	}
-
 }

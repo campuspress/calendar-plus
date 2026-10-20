@@ -1,19 +1,41 @@
 <?php
+/**
+ * Calendar Plus: admin/meta-boxes/event/class-event-details-meta-box.php.
+ *
+ * @package Calendar_Plus
+ */
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
+
+/** Calendar component: Calendar_Plus_Event_Details_Metabox. */
 class Calendar_Plus_Event_Details_Metabox extends Calendar_Plus_Meta_Box {
 
+
+	/**
+	 * Initialize this calendar component.
+	 */
 	public function __construct() {
-		$this->meta_box_slug = 'calendar-event-details';
-		$this->meta_box_label = __( 'Event Details', 'calendar-plus' );
-		$this->meta_box_context = 'normal';
+		$this->meta_box_slug     = 'calendar-event-details';
+		$this->meta_box_label    = __( 'Event Details', 'calendar-plus' );
+		$this->meta_box_context  = 'normal';
 		$this->meta_box_priority = 'high';
-		$this->post_type = 'calendar_event';
+		$this->post_type         = 'calendar_event';
 		parent::__construct();
 
 		add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_scripts' ) );
 		add_filter( 'admin_body_class', array( $this, 'add_calendar_plus_body_class' ) );
 	}
 
+	/**
+	 * Add calendar plus body class.
+	 *
+	 * @param mixed $class Class.
+	 *
+	 * @return mixed Calendar operation result.
+	 */
 	public function add_calendar_plus_body_class( $class ) {
 		$screen = get_current_screen();
 		if ( 'calendar_event' === $screen->id ) {
@@ -23,6 +45,13 @@ class Calendar_Plus_Event_Details_Metabox extends Calendar_Plus_Meta_Box {
 		return $class;
 	}
 
+	/**
+	 * Enqueue scripts.
+	 *
+	 * @param mixed $hook Hook.
+	 *
+	 * @return mixed Calendar operation result.
+	 */
 	public function enqueue_scripts( $hook ) {
 		if ( ( 'post.php' === $hook || 'post-new.php' === $hook ) && 'calendar_event' === get_post_type() ) {
 			wp_enqueue_script( 'jquery-ui-datepicker' );
@@ -30,30 +59,44 @@ class Calendar_Plus_Event_Details_Metabox extends Calendar_Plus_Meta_Box {
 			wp_enqueue_style(
 				'calendarp-jquery-ui-theme',
 				calendarp_get_plugin_url() . 'includes/css/jquery-ui/jquery-ui.min.css',
-				[], calendarp_get_version()
+				array(),
+				calendarp_get_version()
 			);
 		}
 	}
 
 
+	/**
+	 * Handle render.
+	 *
+	 * @param mixed $post Post.
+	 *
+	 * @return mixed Calendar operation result.
+	 */
 	public function render( $post ) {
-		$event = calendarp_get_event( $post );
+		$event         = calendarp_get_event( $post );
 		$meta_box_slug = $this->meta_box_slug;
 
 		$formatted_rules = $event->get_rules();
 
 		$recurring_rules = array();
-		$regular_rules = array();
+		$regular_rules   = array();
 
 		if ( ! isset( $formatted_rules['dates'] ) ) {
-			$regular_rules['dates'] = array( 'from' => '', 'until' => '' );
-			$recurring_rules['dates'] = array( 'from' => '', 'until' => '' );
+			$regular_rules['dates']   = array(
+				'from'  => '',
+				'until' => '',
+			);
+			$recurring_rules['dates'] = array(
+				'from'  => '',
+				'until' => '',
+			);
 		} else {
-			$regular_rules['dates'] = $formatted_rules['dates'][0];
+			$regular_rules['dates']   = $formatted_rules['dates'][0];
 			$recurring_rules['dates'] = $formatted_rules['dates'][0];
 		}
 
-		$recurring_rules['dows'] = array(
+		$recurring_rules['dows']  = array(
 			'from'  => 1,
 			'until' => 7,
 		);
@@ -86,10 +129,17 @@ class Calendar_Plus_Event_Details_Metabox extends Calendar_Plus_Meta_Box {
 		}
 
 		if ( isset( $formatted_rules['times'] ) ) {
-			$regular_rules['times'] = $recurring_rules['times'] = $formatted_rules['times'][0];
+			$regular_rules['times']   = $formatted_rules['times'][0];
+			$recurring_rules['times'] = $formatted_rules['times'][0];
 		} else {
-			$regular_rules['times'] = array( 'from' => '00:00', 'until' => '00:00' );
-			$recurring_rules['times'] = array( 'from' => '00:00', 'until' => '00:00' );
+			$regular_rules['times']   = array(
+				'from'  => '00:00',
+				'until' => '00:00',
+			);
+			$recurring_rules['times'] = array(
+				'from'  => '00:00',
+				'until' => '00:00',
+			);
 		}
 
 		$standard_rules = isset( $formatted_rules['standard'] ) && is_array( $formatted_rules['standard'] ) ? $formatted_rules['standard'] : array();
@@ -100,19 +150,70 @@ class Calendar_Plus_Event_Details_Metabox extends Calendar_Plus_Meta_Box {
 			$datespan_rules = array_fill_keys( array( 'from_date', 'until_date', 'from_time', 'until_time' ), '' );
 		}
 
-		$calendar = $event->get_dates_list();
+		$calendar   = $event->get_dates_list();
 		$exclusions = empty( $formatted_rules['exclusions'] ) ? array() : $formatted_rules['exclusions'];
 
 		include_once calendarp_get_plugin_dir() . 'admin/views/event-details-meta-box.php';
 	}
 
-	public function save_data( $event_id ) {
+	/**
+	 * Reject nested values in scalar controls before the native rule formatter runs.
+	 *
+	 * @param array $input Sanitized event form values.
+	 * @return bool Whether the values have the native form shape.
+	 */
+	private function valid_form_shape( array $input ) {
+		$lists = array( 'from_date', 'from_time_hour', 'from_time_minute', 'from_time_am_pm', 'until_time_hour', 'until_time_minute', 'until_time_am_pm' );
+		foreach ( $input as $key => $value ) {
+			if ( in_array( $key, array( 'recurring', 'datespan' ), true ) ) {
+				if ( ! is_array( $value ) ) {
+					return false;
+				}
+				foreach ( $value as $field => $control ) {
+					if ( in_array( $field, array( 'every', 'exclusions' ), true ) ) {
+						if ( is_array( $control ) ) {
+							foreach ( $control as $part ) {
+								if ( is_array( $part ) && ( 'every' !== $field || array_filter( $part, 'is_array' ) ) ) {
+									return false;
+								}
+							}
+						}
+					} elseif ( ! is_scalar( $control ) ) {
+						return false;
+					}
+				}
+			} elseif ( in_array( $key, $lists, true ) ) {
+				if ( ! is_array( $value ) || array_filter( $value, 'is_array' ) ) {
+					return false;
+				}
+			} elseif ( ! is_scalar( $value ) ) {
+				return false;
+			}
+		}
+		return true;
+	}
 
-		if ( ! $event = calendarp_get_event( $event_id ) ) {
+	/**
+	 * Save data.
+	 *
+	 * @param int $event_id Event id.
+	 *
+	 * @return mixed Calendar operation result.
+	 */
+	public function save_data( $event_id ) {
+		if ( ! $this->can_save( $event_id ) ) {
 			return;
 		}
 
-		$input = $_POST['event_details'];
+		$event = calendarp_get_event( $event_id );
+		if ( ! $event ) {
+			return;
+		}
+
+		$input = calendarp_form_input( 'event_details', array() );
+		if ( ! isset( $input['_recurrence'] ) || ! is_string( $input['_recurrence'] ) || ! in_array( $input['_recurrence'], array( 'regular', 'recurrent', 'datespan' ), true ) || ! $this->valid_form_shape( $input ) ) {
+			return;
+		}
 
 		$calendar = calendarp_get_event_cells( $event->ID );
 		if ( empty( $input['edit_dates'] ) && ! empty( $calendar ) ) {
@@ -120,7 +221,7 @@ class Calendar_Plus_Event_Details_Metabox extends Calendar_Plus_Meta_Box {
 		}
 
 		$args = array(
-			'recurrence' => $input['_recurrence'],
+			'recurrence' => ( $input['_recurrence'] ?? 'regular' ),
 		);
 
 		if ( isset( $input['datespan'] ) ) {
@@ -167,10 +268,19 @@ class Calendar_Plus_Event_Details_Metabox extends Calendar_Plus_Meta_Box {
 	}
 }
 
+/**
+ * Handle calendar plus save event details.
+ *
+ * @param int   $event_id Event id.
+ * @param array $args Args.
+ *
+ * @return mixed Calendar operation result.
+ */
 function calendar_plus_save_event_details( $event_id, $args ) {
 
 	$event_id = absint( $event_id );
-	if ( ! $event = calendarp_get_event( $event_id ) ) {
+	$event    = calendarp_get_event( $event_id );
+	if ( ! $event ) {
 		return;
 	}
 
@@ -184,12 +294,12 @@ function calendar_plus_save_event_details( $event_id, $args ) {
 
 	$args = wp_parse_args( $args, $defaults );
 
-	// Recurrence
-	$type = in_array( $args['recurrence'], array( 'recurrent', 'datespan' ) ) ? $args['recurrence'] : '';
+	// Recurrence.
+	$type = in_array( $args['recurrence'], array( 'recurrent', 'datespan' ), true ) ? $args['recurrence'] : '';
 	calendarp_update_event_type( $event_id, $type );
 
 	if ( 'recurrent' === $event->get_event_type() ) {
-		// Event is recurrent
+		// Event is recurrent.
 		$errors = array();
 
 		$recurring_defaults = array(
@@ -204,11 +314,11 @@ function calendar_plus_save_event_details( $event_id, $args ) {
 			'all_day_event'     => false,
 			'exclusions'        => array(),
 		);
-		$recurring_input = wp_parse_args( $args['recurring'], $recurring_defaults );
+		$recurring_input    = wp_parse_args( $args['recurring'], $recurring_defaults );
 
 		$all_rules = array();
 
-		// 1. Dates
+		// 1. Dates.
 		$all_rules[] = array(
 			'rule_type' => 'dates',
 			'from'      => $recurring_input['from_date'],
@@ -221,7 +331,7 @@ function calendar_plus_save_event_details( $event_id, $args ) {
 			'what'      => $recurring_input['what'],
 		);
 
-		// 2. Times
+		// 2. Times.
 		if ( $recurring_input['all_day_event'] ) {
 			update_post_meta( $event_id, '_all_day', true );
 			$all_rules[] = array(
@@ -232,16 +342,16 @@ function calendar_plus_save_event_details( $event_id, $args ) {
 		} else {
 			delete_post_meta( $event_id, '_all_day' );
 
-			$from_hours = $recurring_input['from_time_hour'];
+			$from_hours   = $recurring_input['from_time_hour'];
 			$from_minutes = $recurring_input['from_time_minute'];
-			$from_am_pm = isset( $recurring_input['from_time_am_pm'] ) ? $recurring_input['from_time_am_pm'] : false;
+			$from_am_pm   = isset( $recurring_input['from_time_am_pm'] ) ? $recurring_input['from_time_am_pm'] : false;
 			if ( $from_am_pm ) {
 				$from_hours = calendarp_am_pm_to_24h( $from_hours, $from_am_pm );
 			}
 
-			$until_hours = $recurring_input['until_time_hour'];
+			$until_hours   = $recurring_input['until_time_hour'];
 			$until_minutes = $recurring_input['until_time_minute'];
-			$until_am_pm = isset( $recurring_input['until_time_am_pm'] ) ? $recurring_input['until_time_am_pm'] : false;
+			$until_am_pm   = isset( $recurring_input['until_time_am_pm'] ) ? $recurring_input['until_time_am_pm'] : false;
 			if ( $until_am_pm ) {
 				$until_hours = calendarp_am_pm_to_24h( $until_hours, $until_am_pm );
 			}
@@ -274,8 +384,8 @@ function calendar_plus_save_event_details( $event_id, $args ) {
 			'until_time_minute' => '',
 			'all_day_event'     => false,
 		);
-		$datespan_input = wp_parse_args( $args['datespan'], $datespan_defaults );
-		$all_rules = array();
+		$datespan_input    = wp_parse_args( $args['datespan'], $datespan_defaults );
+		$all_rules         = array();
 
 		if ( $datespan_input['all_day_event'] ) {
 			update_post_meta( $event_id, '_all_day', true );
@@ -289,16 +399,16 @@ function calendar_plus_save_event_details( $event_id, $args ) {
 		} else {
 			delete_post_meta( $event_id, '_all_day' );
 
-			$from_hours = $datespan_input['from_time_hour'];
+			$from_hours   = $datespan_input['from_time_hour'];
 			$from_minutes = $datespan_input['from_time_minute'];
-			$from_am_pm = isset( $datespan_input['from_time_am_pm'] ) ? $datespan_input['from_time_am_pm'] : false;
+			$from_am_pm   = isset( $datespan_input['from_time_am_pm'] ) ? $datespan_input['from_time_am_pm'] : false;
 			if ( $from_am_pm ) {
 				$from_hours = calendarp_am_pm_to_24h( $from_hours, $from_am_pm );
 			}
 
-			$until_hours = $datespan_input['until_time_hour'];
+			$until_hours   = $datespan_input['until_time_hour'];
 			$until_minutes = $datespan_input['until_time_minute'];
-			$until_am_pm = isset( $datespan_input['until_time_am_pm'] ) ? $datespan_input['until_time_am_pm'] : false;
+			$until_am_pm   = isset( $datespan_input['until_time_am_pm'] ) ? $datespan_input['until_time_am_pm'] : false;
 			if ( $until_am_pm ) {
 				$until_hours = calendarp_am_pm_to_24h( $until_hours, $until_am_pm );
 			}
@@ -314,7 +424,7 @@ function calendar_plus_save_event_details( $event_id, $args ) {
 
 		calendarp_generate_event_rules_and_dates( $event_id, $all_rules );
 	} else {
-		// Regular event
+		// Regular event.
 		if ( ! empty( $args['from_date'] ) && is_array( $args['from_date'] ) ) {
 
 			if ( $args['all_day_event'] ) {
@@ -338,16 +448,16 @@ function calendar_plus_save_event_details( $event_id, $args ) {
 						'until_time' => '23:59',
 					);
 				} else {
-					$from_hours = $args['from_time_hour'][ $key ];
+					$from_hours   = $args['from_time_hour'][ $key ];
 					$from_minutes = $args['from_time_minute'][ $key ];
-					$from_am_pm = isset( $args['from_time_am_pm'][ $key ] ) ? $args['from_time_am_pm'][ $key ] : false;
+					$from_am_pm   = isset( $args['from_time_am_pm'][ $key ] ) ? $args['from_time_am_pm'][ $key ] : false;
 					if ( $from_am_pm ) {
 						$from_hours = calendarp_am_pm_to_24h( $from_hours, $from_am_pm );
 					}
 
-					$until_hours = $args['until_time_hour'][ $key ];
+					$until_hours   = $args['until_time_hour'][ $key ];
 					$until_minutes = $args['until_time_minute'][ $key ];
-					$until_am_pm = isset( $args['until_time_am_pm'][ $key ] ) ? $args['until_time_am_pm'][ $key ] : false;
+					$until_am_pm   = isset( $args['until_time_am_pm'][ $key ] ) ? $args['until_time_am_pm'][ $key ] : false;
 					if ( $until_am_pm ) {
 						$until_hours = calendarp_am_pm_to_24h( $until_hours, $until_am_pm );
 					}
@@ -366,4 +476,3 @@ function calendar_plus_save_event_details( $event_id, $args ) {
 		calendarp_generate_event_rules_and_dates( $event_id, $all_rules );
 	}
 }
-

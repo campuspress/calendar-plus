@@ -1,0 +1,118 @@
+{
+  "$schema": "https://schemas.wp.org/trunk/block.json",
+  "apiVersion": 3,
+  "name": "calendar-plus/event-feed",
+  "version": "2.2.22",
+  "title": "Event Feed",
+  "description": "A responsive list of event occurrences with dates, summaries and images.",
+  "category": "widgets",
+  "icon": "calendar-alt",
+  "textdomain": "calendar-plus",
+  "attributes": {
+    "view": {
+      "type": "string",
+      "default": "upcoming"
+    },
+    "from": {
+      "type": "string",
+      "default": ""
+    },
+    "to": {
+      "type": "string",
+      "default": ""
+    },
+    "category": {
+      "type": "string",
+      "default": ""
+    },
+    "tag": {
+      "type": "string",
+      "default": ""
+    },
+    "search": {
+      "type": "string",
+      "default": ""
+    },
+    "order": {
+      "type": "string",
+      "default": ""
+    },
+    "perPage": {
+      "type": "number",
+      "default": 10
+    },
+    "summaryWords": {
+      "type": "number",
+      "default": 40
+    },
+    "headingLevel": {
+      "type": "number",
+      "default": 3
+    },
+    "imageFit": {
+      "type": "string",
+      "default": "contain"
+    },
+    "imageRatio": {
+      "type": "string",
+      "default": "landscape"
+    },
+    "imagePosition": {
+      "type": "string",
+      "default": "right"
+    },
+    "navigationId": {
+      "type": "string",
+      "default": ""
+    },
+    "showImage": {
+      "type": "boolean",
+      "default": true
+    },
+    "showLocation": {
+      "type": "boolean",
+      "default": true
+    },
+    "showSummary": {
+      "type": "boolean",
+      "default": true
+    },
+    "showDate": {
+      "type": "boolean",
+      "default": true
+    },
+    "showReadMore": {
+      "type": "boolean",
+      "default": true
+    },
+    "monthHeadings": {
+      "type": "boolean",
+      "default": true
+    },
+    "pastFallback": {
+      "type": "boolean",
+      "default": false
+    },
+    "showSearch": {
+      "type": "boolean",
+      "default": false
+    }
+  },
+  "supports": {
+    "align": [
+      "wide",
+      "full"
+    ],
+    "color": {
+      "text": true,
+      "background": true
+    },
+    "spacing": {
+      "margin": true,
+      "padding": true
+    }
+  },
+  "editorScript": "file:./editor.js",
+  "style": "calendarp-event-presentation",
+  "render": "file:./render.php"
+}

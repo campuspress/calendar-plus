@@ -1,44 +1,61 @@
 <?php
+/**
+ * Calendar Plus: admin/tinymce-shortcodes-i18n.php.
+ *
+ * @package Calendar_Plus
+ */
 
-$values = array();
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 
-$values['views'] = array(
+
+$calendarp_values = array();
+
+$calendarp_values['views'] = array(
 	'month'  => __( 'Month', 'calendar-plus' ),
 	'week'   => __( 'Week', 'calendar-plus' ),
 	'day'    => __( 'Day', 'calendar-plus' ),
 	'agenda' => __( 'Agenda', 'calendar-plus' ),
 );
 
-$term_args = array( 'fields' => 'id=>name', 'hide_empty' => false );
+$calendarp_term_args = array(
+	'fields'     => 'id=>name',
+	'hide_empty' => false,
+);
 
-$values['categories'] = get_terms( 'calendar_event_category', $term_args );
-$values['tags'] = get_terms( 'calendar_event_tag', $term_args );
+$calendarp_values['categories'] = get_terms( array_merge( $calendarp_term_args, array( 'taxonomy' => 'calendar_event_category' ) ) );
+$calendarp_values['tags']       = get_terms( array_merge( $calendarp_term_args, array( 'taxonomy' => 'calendar_event_tag' ) ) );
 
-foreach ( $values as $key => $array ) {
-	$mapped = array();
+foreach ( $calendarp_values as $calendarp_key => $calendarp_array ) {
+	$calendarp_mapped = array();
 
-	foreach ( $array as $term_id => $term_name ) {
-		$mapped[] = array( 'text' => $term_name, 'value' => $term_id );
+	foreach ( $calendarp_array as $calendarp_term_id => $calendarp_term_name ) {
+		$calendarp_mapped[] = array(
+			'text'  => $calendarp_term_name,
+			'value' => $calendarp_term_id,
+		);
 	}
 
-	$values[ $key ] = $mapped;
+	$calendarp_values[ $calendarp_key ] = $calendarp_mapped;
 }
 
-$strings = array(
+$calendarp_strings = array(
 	'calendar_title'                         => __( 'Insert Calendar', 'calendar-plus' ),
 	'category_field_info'                    => __( 'By default, events from all categories will be shown.', 'calendar-plus' ) . ' ' .
 												__( 'To only display events from specific categories, select them below.', 'calendar-plus' ),
 	'category_field_title'                   => __( 'Only display events from these categories', 'calendar-plus' ),
-	'category_field_values'                  => $values['categories'],
-	'tag_field_values'                       => $values['tags'],
+	'category_field_values'                  => $calendarp_values['categories'],
+	'tag_field_values'                       => $calendarp_values['tags'],
 	'default_view_title'                     => __( 'Default View', 'calendar-plus' ),
-	'default_view_values'                    => $values['views'],
+	'default_view_values'                    => $calendarp_values['views'],
 	'events_by_cat_title'                    => __( 'Events List', 'calendar-plus' ),
 	'events_by_cat_info'                     => __( 'By default, events from all categories and tags will be shown.', 'calendar-plus' ) . ' ' .
 												__( 'To only display events from specific categories or tags, select them below.', 'calendar-plus' ),
 	'events_by_cat_category_field_title'     => __( 'Only display posts from any of these categories', 'calendar-plus' ),
 	'events_by_cat_tag_field_title'          => __( 'Only display posts with any of these tags', 'calendar-plus' ),
 	'events_per_page'                        => sprintf(
+		/* translators: %d: default number of events per page. */
 		__( 'Events Per Page (Agenda Mode), %d by default', 'calendar-plus' ),
 		calendarp_get_events_per_page()
 	),
@@ -49,12 +66,13 @@ $strings = array(
 	'default_time_format'                    => get_option( 'time_format' ),
 );
 
-foreach ( $strings as $i => $string ) {
+foreach ( $calendarp_strings as $calendarp_i => $calendarp_string ) {
 
-	if ( is_string( $string ) && 'category_field_info' !== $i ) {
-		$strings[ $i ] = esc_js( $string );
+	if ( is_string( $calendarp_string ) && 'category_field_info' !== $calendarp_i ) {
+		$calendarp_strings[ $calendarp_i ] = esc_js( $calendarp_string );
 	}
 }
 
-$strings = array( _WP_Editors::$mce_locale => array( 'calendarp_l10n' => $strings ) );
-$strings = 'tinyMCE.addI18n(' . json_encode( $strings ) . ');';
+// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound -- Native WordPress static property name; plugin locals remain prefixed.
+$calendarp_strings = array( _WP_Editors::$mce_locale => array( 'calendarp_l10n' => $calendarp_strings ) );
+$calendarp_strings = 'tinyMCE.addI18n(' . wp_json_encode( $calendarp_strings ) . ');';

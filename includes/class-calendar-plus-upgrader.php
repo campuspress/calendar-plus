@@ -1,9 +1,18 @@
 <?php
+/**
+ * Calendar Plus: includes/class-calendar-plus-upgrader.php.
+ *
+ * @package Calendar_Plus
+ */
+
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 
 /**
  * Manages the upgrades for the plugin
  *
- * @link       http://example.com
  * @since      0.1
  *
  * @package    calendarp
@@ -15,23 +24,25 @@
  *
  * @package    calendarp
  * @subpackage calendarp/admin
- * @author     Your Name <email@example.com>
+ * @author     CampusPress
  */
 class Calendar_Plus_Upgrader {
 
 	/**
-	 * Upgrades the plugin if needed
+	 * Upgrades the plugin if needed.
+	 *
+	 * @return mixed Calendar operation result.
 	 */
 	public static function maybe_upgrade() {
 		$current_version = get_option( 'calendar-plus-version' );
-		$real_version = calendarp_get_version();
+		$real_version    = calendarp_get_version();
 
 		if ( $current_version === $real_version ) {
 			return;
 		}
 
 		if ( false === $current_version ) {
-			// If the version is not in DB, we'll trigger the activation
+			// If the version is not in DB, we'll trigger the activation.
 			Calendar_Plus_Activator::activate();
 			return;
 		}
@@ -63,6 +74,11 @@ class Calendar_Plus_Upgrader {
 		update_option( 'calendar-plus-version', calendarp_get_version() );
 	}
 
+	/**
+	 * Handle upgrade 2 0 alpha 1.
+	 *
+	 * @return mixed Calendar operation result.
+	 */
 	private static function upgrade_2_0_alpha_1() {
 		$recurrent_events = get_posts(
 			array(
@@ -70,6 +86,7 @@ class Calendar_Plus_Upgrader {
 				'post_type'      => 'calendar_event',
 				'posts_per_page' => -1,
 				'fields'         => 'ids',
+				// phpcs:ignore WordPress.DB.SlowDBQuery -- Native cached WordPress query for this exact metadata/taxonomy mapping; preserve object visibility and compatibility.
 				'meta_query'     => array(
 					array(
 						'key'     => '_recurrence',
@@ -86,16 +103,26 @@ class Calendar_Plus_Upgrader {
 		}
 	}
 
+	/**
+	 * Handle upgrade 2 0 alpha 2.
+	 *
+	 * @return mixed Calendar operation result.
+	 */
 	private static function upgrade_2_0_alpha_2() {
 		$model = Calendar_Plus_Model::get_instance();
 		$model->create_min_max_dates_table();
 	}
 
+	/**
+	 * Handle upgrade 2 0 alpha 3.
+	 *
+	 * @return mixed Calendar operation result.
+	 */
 	private static function upgrade_2_0_alpha_3() {
 		$model = Calendar_Plus_Model::get_instance();
 		$model->create_min_max_dates_table();
 
-		// Fill the min/max dates table
+		// Fill the min/max dates table.
 		$events_ids = get_posts(
 			array(
 				'post_status'    => array( 'any' ),
@@ -110,6 +137,11 @@ class Calendar_Plus_Upgrader {
 		}
 	}
 
+	/**
+	 * Handle upgrade 2 0 alpha 4.
+	 *
+	 * @return mixed Calendar operation result.
+	 */
 	private static function upgrade_2_0_alpha_4() {
 		$model = Calendar_Plus_Model::get_instance();
 		$model->create_calendar_table();

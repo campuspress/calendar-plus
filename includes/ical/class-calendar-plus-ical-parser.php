@@ -1,4 +1,9 @@
 <?php
+/**
+ * Calendar Plus: includes/ical/class-calendar-plus-ical-parser.php.
+ *
+ * @package Calendar_Plus
+ */
 
 use ICal\ICal;
 
@@ -12,14 +17,18 @@ if ( ! defined( 'ABSPATH' ) ) {
  * Acts as an abstract layer for \ICal\ICal
  */
 class Calendar_Plus_iCal_Parser {
+
+
 	/**
-	 * iCal file contents
+	 * ICal file contents
 	 *
 	 * @var array
 	 */
 	private $contents = array();
 
 	/**
+	 * Calendar component state.
+	 *
 	 * @var \ICal\ICal
 	 */
 	public $ical;
@@ -37,7 +46,7 @@ class Calendar_Plus_iCal_Parser {
 	 *
 	 * @var bool
 	 */
-	private $_import_recurring = false;
+	private $import_recurring = false;
 
 	/**
 	 * Whether or not to exclude past events.
@@ -45,37 +54,45 @@ class Calendar_Plus_iCal_Parser {
 	 *
 	 * @var int
 	 */
-	private $_exlude_past = false;
+	private $exlude_past = false;
 
 	/**
 	 * Calendar_Plus_iCal_Sync constructor.
 	 *
-	 * @param string $ical_contents content of an iCal file
-	 * @param bool $import_recurring Whether or not to import recurring event instances.
+	 * @param string $ical_contents content of an iCal file.
+	 * @param bool   $import_recurring Whether or not to import recurring event instances.
+	 * @param bool   $exlude_past Exlude past.
 	 */
 	public function __construct( $ical_contents, $import_recurring = false, $exlude_past = false ) {
-		$this->contents = $ical_contents;
-		$this->_import_recurring = ( bool ) $import_recurring;
-		$this->_exlude_past = intval( $exlude_past );
+		$this->contents         = $ical_contents;
+		$this->import_recurring = (bool) $import_recurring;
+		$this->exlude_past      = intval( $exlude_past );
 	}
 
 	/**
-	 * Parse the content of the iCal file
+	 * Parse the content of the iCal file.
+	 *
+	 * @return mixed Calendar operation result.
 	 */
 	private function init() {
-		$this->ical = new ICal( $this->contents, array(
-			'defaultSpan'           => 2,     // Default value
-			'defaultTimeZone'       => 'UTC',
-			'defaultWeekStart'      => 'MO',  // Default value
-			'skipRecurrence'        => true, // Default value
-			'useTimeZoneWithRRules' => false, // Default value
-		) );
+		$this->ical = new ICal(
+			$this->contents,
+			array(
+				'defaultSpan'           => 2,     // Default value.
+				'defaultTimeZone'       => 'UTC',
+				'defaultWeekStart'      => 'MO',  // Default value.
+				'skipRecurrence'        => true, // Default value.
+				'useTimeZoneWithRRules' => false, // Default value.
+			)
+		);
 	}
 
 	/**
-	 * Initializes the parser and get the parsed events
+	 * Initializes the parser and get the parsed events.
 	 *
-	 * @throws Exception
+	 * @throws Exception When the calendar data is invalid.
+	 *
+	 * @return mixed Calendar operation result.
 	 */
 	public function parse() {
 		$this->init();
@@ -83,27 +100,27 @@ class Calendar_Plus_iCal_Parser {
 	}
 
 	/**
-	 * Extract only needed information from events
+	 * Extract only needed information from events.
 	 *
 	 * @return array
 	 *
-	 * @throws Exception
+	 * @throws Exception When the calendar data is invalid.
 	 */
 	public function parse_events() {
 		$_events = $this->ical->events();
-		// This is the calendar timezone
+		// This is the calendar timezone.
 		$calendar_tz = new DateTimeZone( $this->ical->calendarTimeZone() );
 
 		if ( ! $calendar_tz ) {
 			throw new Exception(
-				__( 'iCal timezone cannot be parsed', 'calendarp' ),
+				esc_html( __( 'iCal timezone cannot be parsed', 'calendar-plus' ) ),
 				'wrong-timezone'
 			);
 		}
 
-		// And this is WordPress timezone
-		$local_tz = get_option('timezone_string');
-		if( ! $local_tz ) {
+		// And this is WordPress timezone.
+		$local_tz = get_option( 'timezone_string' );
+		if ( ! $local_tz ) {
 			$local_tz = get_option( 'gmt_offset' );
 			if ( ! $local_tz ) {
 				$local_tz = '+0';
@@ -114,7 +131,7 @@ class Calendar_Plus_iCal_Parser {
 
 		$local_tz = new DateTimeZone( $local_tz );
 		if ( ! $local_tz ) {
-			throw new Exception( __( 'Local timezone cannot be parsed', 'calendarp' ), 'wrong-timezone' );
+			throw new Exception( esc_html( __( 'Local timezone cannot be parsed', 'calendar-plus' ) ), 'wrong-timezone' );
 		}
 
 		$recurring_single_events = array();
@@ -123,17 +140,17 @@ class Calendar_Plus_iCal_Parser {
 				if ( ! isset( $recurring_single_events[ $event->uid ] ) ) {
 					$recurring_single_events[ $event->uid ] = array();
 				}
-				$exclude_date = self::cast_date_timezones( $event->dtstart, $calendar_tz, $local_tz );
-				$recurring_single_events[ $event->uid ][] = date( 'Y-m-d', $exclude_date );
+				$exclude_date                             = self::cast_date_timezones( $event->dtstart, $calendar_tz, $local_tz );
+				$recurring_single_events[ $event->uid ][] = gmdate( 'Y-m-d', $exclude_date );
 			}
 		}
 
 		$events = array();
 		foreach ( $_events as $_event ) {
-			if ( $_event->rrule && ! $this->_import_recurring ) {
+			if ( $_event->rrule && ! $this->import_recurring ) {
 				continue;
 			}
-			/** @var \ICal\Event $_event */
+			/** Calendar component state. @var \ICal\Event $_event */
 			$content = '';
 			if ( ! empty( $_event->x_alt_desc ) ) {
 				$content = wp_kses( $_event->x_alt_desc, wp_kses_allowed_html( 'post' ) );
@@ -147,18 +164,18 @@ class Calendar_Plus_iCal_Parser {
 
 			$cast_timezone = true;
 
-			//dtstart has to be set but, dtend not always.
+			// dtstart has to be set but, dtend not always.
 			$start_date_tz = $calendar_tz;
 			if ( $_event->dtstart_array ) {
 				$start_date_tz = $this->extract_timezone_from_ical_format( $_event->dtstart_array[3] );
-				$start_date_tz = $start_date_tz ?: $calendar_tz;
+				$start_date_tz = $start_date_tz ? $start_date_tz : $calendar_tz;
 
-				// dtstart can have only date instead of date-time
+				// dtstart can have only date instead of date-time.
 				if (
 					isset( $_event->dtstart_array[0]['VALUE'] ) &&
-					$_event->dtstart_array[0]['VALUE'] === 'DATE'
+					'DATE' === $_event->dtstart_array[0]['VALUE']
 				) {
-					// Set start time to begining
+					// Set start time to begining.
 					$_event->dtstart .= 'T';
 					$_event->all_day  = true;
 					$cast_timezone    = false;
@@ -172,55 +189,54 @@ class Calendar_Plus_iCal_Parser {
 			}
 
 			$end_date_tz = $calendar_tz;
-			if( isset( $_event->dtend ) && $_event->dtend ) {
+			if ( isset( $_event->dtend ) && $_event->dtend ) {
 				$end_date_tz = null;
 				if ( $_event->dtend_array ) {
 					$end_date_tz = $this->extract_timezone_from_ical_format( $_event->dtend_array[3] );
 
-					// DTEND property can have date instead of time
+					// DTEND property can have date instead of time.
 					if (
 						isset( $_event->dtend_array[0]['VALUE'] ) &&
-						$_event->dtend_array[0]['VALUE'] === 'DATE'
+						'DATE' === $_event->dtend_array[0]['VALUE']
 					) {
 						// Set end time to 23:59:59.
 						$_event->dtend .= 'T235959';
 					}
 				}
-				$end_date_tz = $end_date_tz ?: $calendar_tz;
+				$end_date_tz = $end_date_tz ? $end_date_tz : $calendar_tz;
 
 				if ( $_event->all_day && ! $cast_timezone ) {
 					$to = self::cast_previous_date_without_timezones( $_event->dtend );
 				} else {
 					$to = self::cast_date_timezones( $_event->dtend, $end_date_tz, $local_tz );
 				}
-			}
-			else {
+			} else {
 				$to = $from;
 			}
 
-			if( $this->_exlude_past === -1 ) {
+			if ( -1 === $this->exlude_past ) {
 
-				if( $to < time() && ! $_event->rrule ) {
+				if ( $to < time() && ! $_event->rrule ) {
 					continue;
 				}
 			}
 
 			$event_data = array(
-				'post_status'   => strtoupper( $_event->status ) === 'CANCELLED' ? 'trash' : 'publish',
-				'post_content'  => $content,
-				'post_title'    => wp_kses( $_event->summary, wp_kses_allowed_html( 'post' ) ),
-				'from'          => $from,
-				'to'            => $to,
-				'last_updated'  => self::cast_date_timezones( $_event->lastmodified, $calendar_tz, $local_tz ),
-				'uid'           => $this->get_event_uid( $_event ),
-				'location'      => $_event->location,
-				'categories'    => isset( $_event->categories ) ? array_map( 'trim', explode( ',', $_event->categories ) ) : array(),
-				'all_day'       => ! empty( $_event->all_day ),
+				'post_status'  => strtoupper( $_event->status ) === 'CANCELLED' ? 'trash' : 'publish',
+				'post_content' => $content,
+				'post_title'   => wp_kses( $_event->summary, wp_kses_allowed_html( 'post' ) ),
+				'from'         => $from,
+				'to'           => $to,
+				'last_updated' => self::cast_date_timezones( $_event->lastmodified, $calendar_tz, $local_tz ),
+				'uid'          => $this->get_event_uid( $_event ),
+				'location'     => $_event->location,
+				'categories'   => isset( $_event->categories ) ? array_map( 'trim', explode( ',', $_event->categories ) ) : array(),
+				'all_day'      => ! empty( $_event->all_day ),
 			);
 
 			if ( $_event->rrule ) {
-				$rules   = array();
-				$rrule   = $this->parse_rrule( $_event->rrule );
+				$rules = array();
+				$rrule = $this->parse_rrule( $_event->rrule );
 
 				$start_date = null;
 				if ( ! empty( $_event->dtstart ) ) {
@@ -234,7 +250,7 @@ class Calendar_Plus_iCal_Parser {
 					$end_date = $start_date;
 				}
 
-				if ( $this->_exlude_past === -1 && $end_date?->getTimestamp() < time() ) {
+				if ( -1 === $this->exlude_past && $end_date?->getTimestamp() < time() ) {
 					continue;
 				}
 
@@ -246,8 +262,8 @@ class Calendar_Plus_iCal_Parser {
 				}
 				$rules[] = $this->build_time_rule( $start_date, $end_time );
 
-				// Shift selected day of week when
-				// user time is day ahead of server time or before it
+				// Shift selected day of week when.
+				// user time is day ahead of server time or before it.
 				$day_offset = 0;
 				if ( isset( $start_date ) ) {
 					$from       = date_create( $_event->dtstart, $start_date_tz );
@@ -267,7 +283,7 @@ class Calendar_Plus_iCal_Parser {
 					foreach ( $recurring_single_events[ $_event->uid ] as $exclusion ) {
 						$rules[] = array(
 							'rule_type' => 'exclusions',
-							'date'      => $exclusion
+							'date'      => $exclusion,
 						);
 					}
 				}
@@ -281,27 +297,28 @@ class Calendar_Plus_iCal_Parser {
 
 	/**
 	 * Extract timezone from date-time property.
-	 * @param string $date_str Input format: TZID=America/New_York:20230101T000000
 	 *
+	 * @param string $date_str Input format: TZID=America/New_York:20230101T000000.
 	 * @return DateTimeZone|null
 	 */
 	private function extract_timezone_from_ical_format( string $date_str ): ?DateTimeZone {
 		$datetime = $this->ical->iCalDateToDateTime( $date_str );
 
-		return $datetime->getTimezone() ?: new \DateTimeZone('UTC');
+		$timezone = $datetime->getTimezone();
+		return $timezone ? $timezone : new \DateTimeZone( 'UTC' );
 	}
 
 
 	/**
-	 * Parse RRULE string
-	 * @param string $rule
+	 * Parse RRULE string.
 	 *
+	 * @param string $rule Rule.
 	 * @return string[]
 	 */
 	private function parse_rrule( string $rule ) {
 		$options = explode( ';', $rule );
 		foreach ( $options as $key => $option ) {
-			$option_data = mb_split( '=', $option );
+			$option_data                = mb_split( '=', $option );
 			$options[ $option_data[0] ] = trim( $option_data[1] );
 
 			unset( $options[ $key ] );
@@ -310,11 +327,11 @@ class Calendar_Plus_iCal_Parser {
 	}
 
 	/**
-	 * Create DateTime from ical format and changes timezone from event to local
-	 * @param string $date_str
-	 * @param DateTimeZone $event_tz
-	 * @param DateTimeZone $local_tz
+	 * Create DateTime from ical format and changes timezone from event to local.
 	 *
+	 * @param string       $date_str Date str.
+	 * @param DateTimeZone $event_tz Event tz.
+	 * @param DateTimeZone $local_tz Local tz.
 	 * @return DateTime|null
 	 */
 	private function create_date_from_ical_format( string $date_str, DateTimeZone $event_tz, DateTimeZone $local_tz ): ?DateTime {
@@ -336,10 +353,10 @@ class Calendar_Plus_iCal_Parser {
 	}
 
 	/**
-	 * Build date rule according to Calendar_Plus_Event_Rules_Dates_Formatter format
-	 * @param ?DateTime $start_date
-	 * @param ?DateTime $end_date
+	 * Build date rule according to Calendar_Plus_Event_Rules_Dates_Formatter format.
 	 *
+	 * @param DateTime $start_date Start date.
+	 * @param DateTime $end_date End date.
 	 * @return string[]
 	 */
 	private function build_date_rule( ?DateTime $start_date, ?DateTime $end_date ): array {
@@ -355,10 +372,10 @@ class Calendar_Plus_iCal_Parser {
 	}
 
 	/**
-	 * Build time rule according to Calendar_Plus_Event_Rules_Times_Formatter format
-	 * @param ?DateTime $start_date
-	 * @param ?DateTime $end_date
+	 * Build time rule according to Calendar_Plus_Event_Rules_Times_Formatter format.
 	 *
+	 * @param DateTime $start_date Start date.
+	 * @param DateTime $end_date End date.
 	 * @return string[]
 	 */
 	private function build_time_rule( ?DateTime $start_date, ?DateTime $end_date ): array {
@@ -375,11 +392,12 @@ class Calendar_Plus_iCal_Parser {
 	}
 
 	/**
-	 * Build RRULE array according to Calendar_Plus_Event_Rules_Every_Formatter format
-	 * @param array $options - RRULE options
-	 * @param int $day_offset - number of days to shift weekday. That's due to timezone difference.
-	 *                          value can be -1, 0 or 1
+	 * Build RRULE array according to Calendar_Plus_Event_Rules_Every_Formatter format.
 	 *
+	 *                            Value can be -1, 0 or 1
+	 *
+	 * @param array $options - RRULE options.
+	 * @param int   $day_offset - number of days to shift weekday. That's due to timezone difference.
 	 * @return string[]
 	 */
 	private function build_rrule( array $options, int $day_offset = 0 ) {
@@ -387,7 +405,7 @@ class Calendar_Plus_iCal_Parser {
 		$every = array( 'rule_type' => 'every' );
 
 		if ( isset( $options['BYDAY'] ) ) {
-			if ( $options['FREQ'] === 'WEEKLY' ) {
+			if ( 'WEEKLY' === $options['FREQ'] ) {
 				if ( isset( $options['INTERVAL'] ) ) {
 					$every['every'] = (int) $options['INTERVAL'];
 					$every['what']  = 'week';
@@ -395,12 +413,12 @@ class Calendar_Plus_iCal_Parser {
 					$every['what']  = 'dow';
 					$every['every'] = $this->convert_weekdays( $options['BYDAY'], $day_offset );
 				}
-			} elseif ( $options['FREQ'] === 'MONTHLY' ) {
-				$every['what'] = 'dom';
+			} elseif ( 'MONTHLY' === $options['FREQ'] ) {
+				$every['what']  = 'dom';
 				$every['every'] = $this->convert_multiple_weeks_days( $options['BYDAY'], $day_offset );
 			}
 		} else {
-			$every['what']  = $this->convert_period( $options['FREQ'] );
+			$every['what'] = $this->convert_period( $options['FREQ'] );
 			if ( isset( $options['INTERVAL'] ) ) {
 				$every['every'] = (int) $options['INTERVAL'];
 			} else {
@@ -412,48 +430,51 @@ class Calendar_Plus_iCal_Parser {
 	}
 
 	/**
-	 * Convert weekdays string into array of numeric representation of days of week
-	 * @param string $days_str
-	 * @param int $day_offset - number of days to shift weekday
+	 * Convert weekdays string into array of numeric representation of days of week.
 	 *
+	 * @param string $days_str Days str.
+	 * @param int    $day_offset - number of days to shift weekday.
 	 * @return int[]
 	 */
 	private function convert_weekdays( string $days_str, int $day_offset ) {
 		$days_of_week = mb_split( ',', $days_str );
-		return array_map( function ( $day ) use ( $day_offset ) {
-			$idx = array_search( $day, Calendar_Plus_iCal_Generator::WEEKDAY_CODES );
-			$idx += $day_offset;
+		return array_map(
+			function ( $day ) use ( $day_offset ) {
+				$idx  = array_search( $day, Calendar_Plus_iCal_Generator::WEEKDAY_CODES, true );
+				$idx += $day_offset;
 
-			$idx = ( $idx + 7 ) % 7;
-			if ( $idx === 0 ) {
-				$idx = 7;
-			}
-			return $idx;
-		}, $days_of_week );
+				$idx = ( $idx + 7 ) % 7;
+				if ( 0 === $idx ) {
+						$idx = 7;
+				}
+				return $idx;
+			},
+			$days_of_week
+		);
 	}
 
 	/**
-	 * Convert multiple weeks weekdays string into array of numeric
+	 * Convert multiple weeks weekdays string into array of numeric.
 	 * representation of days of week
-	 * @param $weekdays
-	 * @param $day_offset
 	 *
+	 * @param mixed $weekdays Weekdays.
+	 * @param mixed $day_offset Day offset.
 	 * @return array
 	 */
 	private function convert_multiple_weeks_days( $weekdays, $day_offset ) {
-		$every    = array();
-		$match  = array();
+		$every = array();
+		$match = array();
 		if ( preg_match( '/(\d+)([A-Z]+)/', $weekdays, $match ) ) {
-			$week = (int) $match[1];
+			$week           = (int) $match[1];
 			$every[ $week ] = $this->convert_weekdays( $match[2], $day_offset );
 		}
 		return $every;
 	}
 
 	/**
-	 * Convert RRULE period into Calendar_Plus_Event_Rules_Every_Formatter format value
-	 * @param string $period
+	 * Convert RRULE period into Calendar_Plus_Event_Rules_Every_Formatter format value.
 	 *
+	 * @param string $period Period.
 	 * @return string
 	 */
 	private function convert_period( string $period ) {
@@ -467,45 +488,46 @@ class Calendar_Plus_iCal_Parser {
 	}
 
 	/**
-	 * Parse exdate_array (parsed EXDATE property) values
-	 * @param array $dates
-	 * @param $local_tz
+	 * Parse exdate_array (parsed EXDATE property) values.
 	 *
+	 * @param array $dates Dates.
+	 * @param mixed $event_tz Event tz.
+	 * @param mixed $local_tz Local tz.
 	 * @return array
 	 */
 	private function parse_excluded_dates( array $dates, $event_tz, $local_tz ) {
-		$parsed = array();
-		for( $i = 0; $i < count( $dates ); $i += 2 ) {
-			$date = self::cast_date_timezones(
+		$parsed     = array();
+		$date_count = count( $dates );
+		for ( $i = 0; $i < $date_count; $i += 2 ) {
+			$date     = self::cast_date_timezones(
 				$dates[ $i + 1 ][0],
 				$event_tz,
 				$local_tz
 			);
-			$parsed[] = date( 'Y-m-d', $date );
+			$parsed[] = gmdate( 'Y-m-d', $date );
 		}
 		return $parsed;
 	}
 
 	/**
-	 * Gets event iCal object UID
+	 * Gets event iCal object UID.
 	 *
 	 * Used for recurring event instances importing
 	 *
-	 * @throws Exception
-	 *
 	 * @param object $event iCal event object instance.
+	 * @throws Exception When the calendar data is invalid.
 	 *
 	 * @return string Event UID
 	 */
 	public function get_event_uid( $event ) {
 		if ( ! is_object( $event ) ) {
 			throw new Exception(
-				__( 'Not an event object', 'calendar-plus' )
+				esc_html( __( 'Not an event object', 'calendar-plus' ) )
 			);
 		}
 
 		$uid = $event->uid;
-		if ( empty( $this->_import_recurring ) ) {
+		if ( empty( $this->import_recurring ) ) {
 			// We are set to not import recurring instances.
 			// UIDs remain constant.
 			return $uid;
@@ -517,40 +539,38 @@ class Calendar_Plus_iCal_Parser {
 		}
 
 		$recurrence = $uid . $event->sequence;
-		$idx = ! empty( $this->_recurring_increments[ $recurrence ] )
+		$idx        = ! empty( $this->_recurring_increments[ $recurrence ] )
 			? (int) $this->_recurring_increments[ $recurrence ]
 			: 1;
-		$uid .= '-' . $event->sequence . '-' . $idx;
+		$uid       .= '-' . $event->sequence . '-' . $idx;
 
 		$this->_recurring_increments[ $recurrence ] = $idx + 1;
 		return $uid;
 	}
 
 	/**
-	 * Transform a date from one timezone to another
+	 * Transform a date from one timezone to another.
 	 *
-	 * @param string $date
-	 * @param DateTimeZone $from_tz The $date timezone
-	 * @param DateTimeZone $to_tz The timezone that we want to cast to
-	 *
+	 * @param string       $date Date.
+	 * @param DateTimeZone $from_tz The $date timezone.
+	 * @param DateTimeZone $to_tz The timezone that we want to cast to.
 	 * @return int New timestamp
 	 */
 	private static function cast_date_timezones( $date, $from_tz, $to_tz ) {
-		// Set first the date with the iCal timezone
+		// Set first the date with the iCal timezone.
 		$date = date_create( $date, $from_tz );
 
-		// Now cast to local timezone
+		// Now cast to local timezone.
 		$date->setTimezone( $to_tz );
 
-		//Its not easy to get time zone based timestamp. Hack was needed.
+		// Its not easy to get time zone based timestamp. Hack was needed.
 		return strtotime( $date->format( 'Y-m-d H:i:s' ) );
 	}
 
 	/**
 	 * Transform a date to given format without changing timezones.
 	 *
-	 * @param string $date
-	 *
+	 * @param string $date Date.
 	 * @return int New timestamp
 	 */
 	private static function cast_date_without_timezones( $date ) {
@@ -560,15 +580,14 @@ class Calendar_Plus_iCal_Parser {
 			return '';
 		}
 
-		//Its not easy to get time zone based timestamp. Hack was needed.
+		// Its not easy to get time zone based timestamp. Hack was needed.
 		return strtotime( $date->format( 'Y-m-d H:i:s' ) );
 	}
 
 	/**
 	 * Casts a date to previous day without changing timezones.
 	 *
-	 * @param string $date
-	 *
+	 * @param string $date Date.
 	 * @return int New timestamp
 	 */
 	private static function cast_previous_date_without_timezones( $date ) {
@@ -578,7 +597,7 @@ class Calendar_Plus_iCal_Parser {
 			return '';
 		}
 
-		//Its not easy to get time zone based timestamp. Hack was needed.
+		// Its not easy to get time zone based timestamp. Hack was needed.
 		return strtotime( $date->format( 'Y-m-d H:i:s' ) . ' -1 day' );
 	}
 }

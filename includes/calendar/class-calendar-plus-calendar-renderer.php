@@ -1,14 +1,47 @@
 <?php
+/**
+ * Calendar Plus: includes/calendar/class-calendar-plus-calendar-renderer.php.
+ *
+ * @package Calendar_Plus
+ */
+
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 
 use Mexitek\PHPColors\Color;
 
 /**
+ * Calendar Plus component context.
+ *
  * @author Marosdee Uma, website:: www.danya-reload.com @ danya0365[at]live.com, danya0365[at]gmail.com, danya-planemo[at]live.com
  * @link  http://www.phpclasses.org/package/5434-PHP-Display-calendars-denoting-event-days.html
  * @copyright 2009
  * @version 1.5
  */
 class Calendar_Plus_Calendar_Renderer {
+	/**
+	 * Requested calendar page.
+	 *
+	 * @var mixed
+	 */
+	public $page;
+
+	/**
+	 * Number of events displayed per page.
+	 *
+	 * @var int
+	 */
+	public $events_per_page;
+
+	/**
+	 * Current calendar display mode.
+	 *
+	 * @var string
+	 */
+	public $mode;
+
 
 	/**
 	 * 0-6 date('w')
@@ -89,71 +122,106 @@ class Calendar_Plus_Calendar_Renderer {
 	 */
 	public $last_day_of_week;
 
+	/**
+	 * Calendar component state.
+	 *
+	 * @var mixed
+	 */
 	public $category = false;
 
 
 	/**
-	 * array of Day of Week Title
+	 * Array of Day of Week Title
 	 *
 	 * @var array
 	 */
 	private $day_of_week_title = array();
 
+	/**
+	 * Calendar component state.
+	 *
+	 * @var mixed
+	 */
 	private $events_calendar = array();
 
+	/**
+	 * Calendar component state.
+	 *
+	 * @var mixed
+	 */
 	public $cells_with_events = array();
 
 	/**
-	 * class constructor
+	 * Class constructor.
 	 *
+	 * @param array $events_calendar Events calendar.
 	 * @return void
 	 */
 	public function __construct( $events_calendar = array() ) {
 		global $wp_locale;
 
-		$this->today_day_of_week = date_i18n( 'w', current_time( 'timestamp' ) );
-		$this->today_day = date_i18n( 'j', current_time( 'timestamp' ) );
-		$this->today_week = $this->get_week( date_i18n( 'j', current_time( 'timestamp' ) ), date_i18n( 'n', current_time( 'timestamp' ) ), date_i18n( 'Y', current_time( 'timestamp' ) ) );
-		$this->today_month = date_i18n( 'n', current_time( 'timestamp' ) );
-		$this->today_year = date_i18n( 'Y', current_time( 'timestamp' ) );
-		$this->events_calendar = $events_calendar;
-		$this->page = isset( $_REQUEST['calendar_page'] ) ? $_REQUEST['calendar_page'] : 1;
-		$this->events_per_page = calendarp_get_events_per_page();
+		$this->today_day_of_week = date_i18n( 'w', calendarp_wall_time() );
+		$this->today_day         = date_i18n( 'j', calendarp_wall_time() );
+		$this->today_week        = $this->get_week( date_i18n( 'j', calendarp_wall_time() ), date_i18n( 'n', calendarp_wall_time() ), date_i18n( 'Y', calendarp_wall_time() ) );
+		$this->today_month       = date_i18n( 'n', calendarp_wall_time() );
+		$this->today_year        = date_i18n( 'Y', calendarp_wall_time() );
+		$this->events_calendar   = $events_calendar;
+		$this->page              = null !== calendarp_form_input( 'calendar_page', null, 'request' ) ? calendarp_form_input( 'calendar_page', '', 'request' ) : 1;
+		$this->events_per_page   = calendarp_get_events_per_page();
 
 		foreach ( $wp_locale->weekday_abbrev as $dow ) {
 			$this->day_of_week_title[] = $dow;
 		}
 
 		$this->mode = 'month';
-
 	}
 
 
+	/**
+	 * Set mode.
+	 *
+	 * @param mixed $mode Mode.
+	 *
+	 * @return mixed Calendar operation result.
+	 */
 	public function set_mode( $mode ) {
 		$this->mode = $mode;
 	}
 
+	/**
+	 * Set category.
+	 *
+	 * @param mixed $category Category.
+	 *
+	 * @return mixed Calendar operation result.
+	 */
 	public function set_category( $category ) {
 		$this->category = $category;
 	}
 
+	/**
+	 * Set events per page.
+	 *
+	 * @param mixed $events_per_page Events per page.
+	 *
+	 * @return mixed Calendar operation result.
+	 */
 	public function set_events_per_page( $events_per_page ) {
 		$this->events_per_page = $events_per_page;
 	}
 
 	/**
-	 * calculate number of week
+	 * Calculate number of week.
 	 *
-	 * @param integer $d (1-31)
-	 * @param integer $m (1-12)
-	 * @param integer $y (1970 or 2009)
-	 *
+	 * @param integer $d (1-31).
+	 * @param integer $m (1-12).
+	 * @param integer $y (1970 or 2009).
 	 * @return integer
 	 */
 	public function get_week( $d = 0, $m = 0, $y = 0 ) {
-		$day = date( 'j' );
-		$month = date( 'n' );
-		$year = date( 'Y' );
+		$day   = gmdate( 'j' );
+		$month = gmdate( 'n' );
+		$year  = gmdate( 'Y' );
 
 		if ( is_numeric( $d ) && $d > 0 ) {
 			$day = $d * 1;
@@ -165,30 +233,43 @@ class Calendar_Plus_Calendar_Renderer {
 			$year = $y * 1;
 		}
 
-		$first_week = date( 'w', mktime( 0, 0, 0, $month, 1, $year ) );
+		$first_week = gmdate( 'w', mktime( 0, 0, 0, $month, 1, $year ) );
 
 		return ceil( ( $day + $first_week ) / 7 );
 	}
 
+	/**
+	 * Set cells with events.
+	 *
+	 * @param array $dates Dates.
+	 *
+	 * @return mixed Calendar operation result.
+	 */
 	public function set_cells_with_events( $dates ) {
 		$this->cells_with_events = $dates;
 	}
 
 	/**
-	 * @param Calendar_Plus_Event $event
-	 * @param string              $date_id
-	 * @param bool                $show_time
-	 * @param array               $event_template
-	 * @param array               $event_popup_template
+	 * Retrieve event content.
 	 *
+	 * @param Calendar_Plus_Event $event Event.
+	 * @param string              $date_id Date id.
+	 * @param bool                $show_time Show time.
+	 * @param array               $event_template Event template.
+	 * @param array               $event_popup_template Event popup template.
 	 * @return string
-	 * @throws Exception
+	 * @throws Exception When the calendar data is invalid.
 	 */
 	public static function get_event_content(
-		 Calendar_Plus_Event $event, $date_id = '', $show_time = true, $event_template = array(), $event_popup_template = array() ) {
+		Calendar_Plus_Event $event,
+		$date_id = '',
+		$show_time = true,
+		$event_template = array(),
+		$event_popup_template = array()
+	) {
 
 		$event_color = $event->color;
-		$color = new Color( $event_color );
+		$color       = new Color( $event_color );
 
 		if ( $color->isLight() ) {
 			$text_color = '#' . $color->darken( 80 );
@@ -198,19 +279,19 @@ class Calendar_Plus_Calendar_Renderer {
 			$text_color = '#' . $color->complementary();
 		}
 
-		$event_content = array();
+		$event_content   = array();
 		$event_content[] = str_replace(
 			array( '{event_color}', '{calendar_cell_id}', '{event_id}', '{date_id}', '{text_color}' ),
 			array( $event->color, $event->dates_data['calendar_cell_id'], $event->ID, $date_id, $text_color ),
 			$event_template['title_start']
 		);
 
-		$time = calendarp_24h_to_timestamp( $event->dates_data['from_time'] );
+		$time   = calendarp_24h_to_timestamp( $event->dates_data['from_time'] );
 		$format = calendarp_get_setting( 'time_format' );
-		if ( 'AM/PM' == $format ) {
-			$time = date( 'h:i A', $time );
+		if ( 'AM/PM' === $format ) {
+			$time = gmdate( 'h:i A', $time );
 		} else {
-			$time = date( 'H:i', $time );
+			$time = gmdate( 'H:i', $time );
 		}
 		$event_content[] = str_replace(
 			array( '{event_time}', '{event_time_class}' ),
@@ -228,24 +309,24 @@ class Calendar_Plus_Calendar_Renderer {
 
 		$popup_content = array();
 		if ( $event_popup_template ) {
-			// Open the popup
+			// Open the popup.
 			$popup_content[] = str_replace( '{calendar_cell_id}', $event->dates_data['calendar_cell_id'], $event_popup_template['popup_start'] );
 
-			// The popup header
+			// The popup header.
 			$popup_content[] = str_replace(
 				array( '{event_color}', '{event_title}', '{text_color}' ),
 				array( $event->color, get_the_title( $event->ID ), $text_color ),
 				$event_popup_template['popup_content_header']
 			);
 
-			// The popup content
+			// The popup content.
 			$from_date = mysql2date( get_option( 'date_format' ), $event->dates_data['from_date'] );
 			if ( $event->is_all_day_event() ) {
 				$from_time = __( 'All day event', 'calendar-plus' );
-				$to_time = '';
+				$to_time   = '';
 			} else {
 				$from_time = mysql2date( get_option( 'time_format' ), $event->dates_data['from_date'] . ' ' . $event->dates_data['from_time'] );
-				$to_time = '- ' . mysql2date( get_option( 'time_format' ), $event->dates_data['from_date'] . ' ' . $event->dates_data['until_time'] );
+				$to_time   = '- ' . mysql2date( get_option( 'time_format' ), $event->dates_data['from_date'] . ' ' . $event->dates_data['until_time'] );
 			}
 
 			$from_time_selector = calendarp_time_selector(
@@ -278,7 +359,7 @@ class Calendar_Plus_Calendar_Renderer {
 			$popup_content[] = str_replace( array( '{event_time_start}', '{event_time_end}', '{event_starts_at_title}', '{event_finishes_at_title}' ), array( $from_time_selector, $to_time_selector, __( 'Starts at', 'calendar-plus' ), __( 'Finishes at', 'calendar-plus' ) ), $event_popup_template['popup_content_inner_editable_time'] );
 			$popup_content[] = $event_popup_template['popup_content_inner_editable_end'];
 
-			// The popup footer
+			// The popup footer.
 			$edit_button = '';
 			if ( ! $event->is_all_day_event() ) {
 				$edit_button = '<a class="button-primary edit-calendar-cell" data-cell-id="' . $event->dates_data['calendar_cell_id'] . '">' . __( 'Edit', 'calendar-plus' ) . '</a>';
@@ -290,7 +371,7 @@ class Calendar_Plus_Calendar_Renderer {
 			$popup_content[] = $event_popup_template['popup_content_inner_footer_content_start'];
 			$popup_content[] = str_replace(
 				array( '{edit_button}', '{delete_button}', '{edit_event_link}', '{edit_even_link_title}' ),
-				array( $edit_button, $delete_button, esc_url( get_edit_post_link( $event->ID ) ), esc_attr( 'Edit Event', 'calendar-plus' ), __( 'Edit Event', 'calendar-plus' ) ),
+				array( $edit_button, $delete_button, esc_url( get_edit_post_link( $event->ID ) ), esc_attr__( 'Edit Event', 'calendar-plus' ), __( 'Edit Event', 'calendar-plus' ) ),
 				$event_popup_template['popup_content_inner_footer_content']
 			);
 			$popup_content[] = $event_popup_template['popup_content_inner_footer_content_end'];
@@ -307,42 +388,51 @@ class Calendar_Plus_Calendar_Renderer {
 
 			$popup_content[] = $event_popup_template['popup_content_footer_end'];
 
-			// Close the popup
+			// Close the popup.
 			$popup_content[] = $event_popup_template['popup_end'];
 		}
 
 		$event_content[] = str_replace( '{event_popup}', implode( "\n", $popup_content ), $event_template['event_popup'] );
 
 		return implode( "\n", $event_content );
-
 	}
 
+	/**
+	 * Handle calendar mode selector.
+	 *
+	 * @return mixed Calendar operation result.
+	 */
 	public function calendar_mode_selector() {
 		?>
 		<form action="" method="get" class="custom">
-			<label for="calendar_mode"><?php _e( 'View', 'calendar-plus' ); ?>
+			<label for="calendar_mode"><?php esc_html_e( 'View', 'calendar-plus' ); ?>
 				<select name="calendar_mode" id="calendar_mode">
-					<option value="month" <?php selected( $this->mode, 'month' ); ?>><?php _e( 'Month', 'calendar-plus' ); ?></option>
-					<option value="week" <?php selected( $this->mode, 'week' ); ?>><?php _e( 'Week', 'calendar-plus' ); ?></option>
-					<option value="day" <?php selected( $this->mode, 'day' ); ?>><?php _e( 'Day', 'calendar-plus' ); ?></option>
-					<option value="agenda" <?php selected( $this->mode, 'agenda' ); ?>><?php _e( 'Agenda', 'calendar-plus' ); ?></option>
+					<option value="month" <?php selected( $this->mode, 'month' ); ?>><?php esc_html_e( 'Month', 'calendar-plus' ); ?></option>
+					<option value="week" <?php selected( $this->mode, 'week' ); ?>><?php esc_html_e( 'Week', 'calendar-plus' ); ?></option>
+					<option value="day" <?php selected( $this->mode, 'day' ); ?>><?php esc_html_e( 'Day', 'calendar-plus' ); ?></option>
+					<option value="agenda" <?php selected( $this->mode, 'agenda' ); ?>><?php esc_html_e( 'Agenda', 'calendar-plus' ); ?></option>
 				</select>
 			</label>
 		</form>
 		<?php
 	}
 
+	/**
+	 * Handle controls.
+	 *
+	 * @return mixed Calendar operation result.
+	 */
 	public function controls() {
 		global $wp_locale;
 
 		if ( 'month' === $this->mode ) {
-			$month = $this->today_month;
-			$year = $this->today_year;
-			$current_time = current_time( 'timestamp' );
+			$month              = $this->today_month;
+			$year               = $this->today_year;
+			$current_time       = calendarp_wall_time();
 			$current_month_link = add_query_arg(
 				array(
-					'calendar_year'  => date( 'Y', $current_time ),
-					'calendar_month' => date( 'm', $current_time ),
+					'calendar_year'  => gmdate( 'Y', $current_time ),
+					'calendar_month' => gmdate( 'm', $current_time ),
 				)
 			);
 			?>
@@ -352,19 +442,19 @@ class Calendar_Plus_Calendar_Renderer {
 						<div class="large-4 columns">
 							<select name="calendar_month" id="calendar-month-selector">
 								<?php foreach ( $wp_locale->month as $month_number => $month_name ) : ?>
-									<option value="<?php echo absint( $month_number ); ?>" <?php selected( absint( $month_number ), absint( $month ) ); ?>><?php echo $month_name; ?></option>
+									<option value="<?php echo absint( $month_number ); ?>" <?php selected( absint( $month_number ), absint( $month ) ); ?>><?php echo esc_html( $month_name ); ?></option>
 								<?php endforeach; ?>
 							</select>
 						</div>
 						<div class="large-4 columns">
 							<select name="calendar_year" id="calendar-year-selector">
 								<?php for ( $i = 2015; $i < 2030; $i++ ) : ?>
-									<option value="<?php echo absint( $i ); ?>" <?php selected( absint( $i ), absint( $year ) ); ?>><?php echo $i; ?></option>
+									<option value="<?php echo absint( $i ); ?>" <?php selected( absint( $i ), absint( $year ) ); ?>><?php echo esc_html( $i ); ?></option>
 								<?php endfor; ?>
 							</select>
 						</div>
 
-						<input type="hidden" name="calendar_mode" value="<?php echo $this->mode; ?>">
+						<input type="hidden" name="calendar_mode" value="<?php echo esc_attr( $this->mode ); ?>">
 						<p class="submit large-4 columns">
 							<input type="submit" name="submit" id="submit" class="button small" value="<?php esc_attr_e( 'View month', 'calendar-plus' ); ?>">
 						</p>
@@ -416,16 +506,16 @@ class Calendar_Plus_Calendar_Renderer {
 					<div class="large-12 columns">
 						<div class="panel clearfix">
 							<?php if ( $prev_url ) : ?>
-								<a href="<?php echo esc_url( $prev_url ); ?>" class="button small left" title="<?php esc_attr_e( 'Previous page', 'calendar-plus' ); ?>"><?php _e( '&laquo; Previous page ', 'calendar-plus' ); ?></a>
+								<a href="<?php echo esc_url( $prev_url ); ?>" class="button small left" title="<?php esc_attr_e( 'Previous page', 'calendar-plus' ); ?>"><?php esc_html_e( '&laquo; Previous page ', 'calendar-plus' ); ?></a>
 							<?php endif; ?>
 
 							<?php if ( $next_url ) : ?>
-								<a href="<?php echo esc_url( $next_url ); ?>" class="button small right" title="<?php esc_attr_e( 'Next page', 'calendar-plus' ); ?>"><?php _e( 'Next page &raquo;', 'calendar-plus' ); ?></a>
+								<a href="<?php echo esc_url( $next_url ); ?>" class="button small right" title="<?php esc_attr_e( 'Next page', 'calendar-plus' ); ?>"><?php esc_html_e( 'Next page &raquo;', 'calendar-plus' ); ?></a>
 							<?php endif; ?>
 						</div>
 					</div>
 				</form>
-			<?php
+				<?php
 			endif;
 
 		} elseif ( 'week' === $this->mode ) {
@@ -456,8 +546,8 @@ class Calendar_Plus_Calendar_Renderer {
 			?>
 			<form action="" id="calendarp-controls-form" class="columns large-7" method="get">
 				<div class="panel clearfix">
-					<a href="<?php echo esc_url( $prev_week_url ); ?>" class="button small left" title="<?php esc_attr_e( 'Previous week', 'calendar-plus' ); ?>"><?php _e( '&laquo; Prev week ', 'calendar-plus' ); ?></a>
-					<a href="<?php echo esc_url( $next_week_url ); ?>" class="button small right" title="<?php esc_attr_e( 'Next week', 'calendar-plus' ); ?>"><?php _e( 'Next week &raquo;', 'calendar-plus' ); ?></a>
+					<a href="<?php echo esc_url( $prev_week_url ); ?>" class="button small left" title="<?php esc_attr_e( 'Previous week', 'calendar-plus' ); ?>"><?php esc_html_e( '&laquo; Prev week ', 'calendar-plus' ); ?></a>
+					<a href="<?php echo esc_url( $next_week_url ); ?>" class="button small right" title="<?php esc_attr_e( 'Next week', 'calendar-plus' ); ?>"><?php esc_html_e( 'Next week &raquo;', 'calendar-plus' ); ?></a>
 				</div>
 			</form>
 			<?php
@@ -489,15 +579,24 @@ class Calendar_Plus_Calendar_Renderer {
 			?>
 			<form action="" id="calendarp-controls-form" class="columns large-6" method="get">
 				<div class="panel clearfix">
-					<a href="<?php echo esc_url( $prev_day_url ); ?>" class="button small left" title="<?php esc_attr_e( 'Previous day', 'calendar-plus' ); ?>"><?php _e( '&laquo; Prev day ', 'calendar-plus' ); ?></a>
-					<a href="<?php echo esc_url( $next_day_url ); ?>" class="button small right" title="<?php esc_attr_e( 'Next day', 'calendar-plus' ); ?>"><?php _e( 'Next day &raquo;', 'calendar-plus' ); ?></a>
+					<a href="<?php echo esc_url( $prev_day_url ); ?>" class="button small left" title="<?php esc_attr_e( 'Previous day', 'calendar-plus' ); ?>"><?php esc_html_e( '&laquo; Prev day ', 'calendar-plus' ); ?></a>
+					<a href="<?php echo esc_url( $next_day_url ); ?>" class="button small right" title="<?php esc_attr_e( 'Next day', 'calendar-plus' ); ?>"><?php esc_html_e( 'Next day &raquo;', 'calendar-plus' ); ?></a>
 				</div>
 			</form>
 			<?php
 		}
-
 	}
 
+	/**
+	 * Handle calendar slots.
+	 *
+	 * @param mixed $calendar_cells Calendar cells.
+	 * @param mixed $mode Mode.
+	 * @param bool  $event_template Event template.
+	 * @param bool  $popup_template Popup template.
+	 *
+	 * @return mixed Calendar operation result.
+	 */
 	public function calendar_slots( $calendar_cells, $mode, $event_template = false, $popup_template = false ) {
 		if ( 'week' === $mode || 'day' === $mode ) :
 			?>
@@ -509,7 +608,7 @@ class Calendar_Plus_Calendar_Renderer {
 							$date = $event['dates_data']['from_date'] . ' ' . $time . ':00';
 							$date = mysql2date( 'YmdHi', $date, false );
 							?>
-							<?php echo self::get_event_content( $event['event'], $date, false, $event_template, $popup_template ); ?>
+							<?php echo wp_kses( self::get_event_content( $event['event'], $date, false, $event_template, $popup_template ), calendarp_get_allowed_calendar_html() ); ?>
 						<?php endforeach; ?>
 					<?php endforeach; ?>
 				<?php endforeach; ?>
@@ -522,21 +621,20 @@ class Calendar_Plus_Calendar_Renderer {
 						$date = $event['dates_data']['from_date'];
 						$date = mysql2date( 'Ymd', $date, false );
 						?>
-						<?php echo self::get_event_content( $event['event'], $date, true, $event_template, $popup_template ); ?>
+						<?php echo wp_kses( self::get_event_content( $event['event'], $date, true, $event_template, $popup_template ), calendarp_get_allowed_calendar_html() ); ?>
 					<?php endforeach; ?>
 				<?php endforeach; ?>
 			</div>
-		<?php
+			<?php
 		endif;
-
 	}
 
 	/**
-	 * get Calendar Month
+	 * Get Calendar Month.
 	 *
-	 * @param integer $m (1-2)
-	 * @param integer $y (1970 or 2009)
-	 *
+	 * @param integer $m (1-2).
+	 * @param integer $y (1970 or 2009).
+	 * @param bool    $in_year_calendar In year calendar.
 	 * @return string output
 	 */
 	public function calendar_month( $m = 0, $y = 0, $in_year_calendar = false ) {
@@ -548,25 +646,25 @@ class Calendar_Plus_Calendar_Renderer {
 			$this->today_year = $y;
 		}
 
-		$this->total_day_in_month = date( 't', mktime( 0, 0, 0, $this->today_month, 1, $this->today_year ) );
-		$this->first_day_of_week = $this->_get_first_day_of_week();
-		$this->last_day_of_week = $this->_get_last_day_of_week();
+		$this->total_day_in_month = gmdate( 't', mktime( 0, 0, 0, $this->today_month, 1, $this->today_year ) );
+		$this->first_day_of_week  = $this->get_first_day_of_week();
+		$this->last_day_of_week   = $this->get_last_day_of_week();
 
 		$back_month = $this->today_month - 1;
-		$back_year = $this->today_year;
+		$back_year  = $this->today_year;
 
 		if ( $back_month < 1 ) {
 			$back_month = 12;
-			$back_year = $this->today_year - 1;
+			$back_year  = $this->today_year - 1;
 		}
 
-		$total_day_in_back_month = date( 't', mktime( 0, 0, 0, $back_month, 1, $back_year ) );
+		$total_day_in_back_month = gmdate( 't', mktime( 0, 0, 0, $back_month, 1, $back_year ) );
 		$start_day_in_back_month = ( $total_day_in_back_month - $this->first_day_of_week ) + 1;
 
-		// Days from previous month that will be present at the start of our current month
+		// Days from previous month that will be present at the start of our current month.
 		$days_from_back_month = $total_day_in_back_month - $start_day_in_back_month;
 
-		// Day from we start (can be negative if the previous month does not ends on saturday)
+		// Day from we start (can be negative if the previous month does not ends on saturday).
 		$day = -$days_from_back_month;
 
 		$template = is_admin() ? calendarp_get_calendar_admin_month_template() : calendarp_get_calendar_front_month_template();
@@ -575,11 +673,11 @@ class Calendar_Plus_Calendar_Renderer {
 
 		$heading = $this->get_month_name( $this->today_month ) . '&nbsp;' . $this->today_year;
 
-		// Wrapper start
+		// Wrapper start.
 		$return[] = $template['calendar_wrapper_start'];
 		$return[] = str_replace( '{heading}', $heading, $template['heading'] );
 
-		// Week days row
+		// Week days row.
 		$return[] = $template['week_days_table_wrapper_start'];
 		$return[] = $template['week_row_start'];
 		foreach ( $this->day_of_week_title as $dow ) {
@@ -588,54 +686,54 @@ class Calendar_Plus_Calendar_Renderer {
 		$return[] = $template['week_row_end'];
 		$return[] = $template['week_days_table_wrapper_end'];
 
-		// The calendar itself
-		// Calendar wrap start
+		// The calendar itself.
+		// Calendar wrap start.
 		$return[] = $template['cal_rows_wrapper_start'];
 
-		// Calendar Cells
+		// Calendar Cells.
 		$calendar_cells = $this->events_calendar->get_cells();
 		while ( $day <= $this->total_day_in_month ) {
-			// Row start
+			// Row start.
 			$return[] = $template['cal_row_start'];
 
 			for ( $i = 0; $i < 7; $i++ ) {
 
 				if ( $day > 0 && $day <= $this->total_day_in_month ) {
 
-					// Day of the current month
+					// Day of the current month.
 
 					$current_datetime = mktime( 0, 0, 0, $this->today_month, $day, $this->today_year );
-					$current_date = date( 'Ymd', $current_datetime );
+					$current_date     = gmdate( 'Ymd', $current_datetime );
 
-					$current_month = absint( date( 'm', current_time( 'timestamp' ) ) );
+					$current_month = absint( gmdate( 'm', calendarp_wall_time() ) );
 
 					$class = array();
 
-					if ( in_array( date( 'Y-m-d', $current_datetime ), $this->cells_with_events ) ) {
+					if ( in_array( gmdate( 'Y-m-d', $current_datetime ), $this->cells_with_events, true ) ) {
 						$class[] = 'with-events';
 					}
 
 					$daytime_id = str_replace( array( '-' ), array( '', '' ), $current_date );
 
-					if ( absint( $day ) == absint( $this->today_day ) && absint( $this->today_month ) === $current_month ) {
-						// Today cell
+					if ( absint( $day ) === absint( $this->today_day ) && absint( $this->today_month ) === $current_month ) {
+						// Today cell.
 						$class[] = 'today';
 					}
 
-					// Open the cell
+					// Open the cell.
 					$return[] = str_replace(
 						array( '{daytime_id}', '{cell_class}' ),
 						array( $daytime_id, implode( ' ', $class ) ),
 						$template['cal_cell_start']
 					);
 
-					// Cell content
+					// Cell content.
 					$return[] = str_replace( array( '{day}', '{content}' ), array( $day, '' ), $template['cal_cell_content'] );
 
-					// Close the cell
+					// Close the cell.
 					$return[] = $template['cal_cell_end'];
 				} else {
-					// Day on the previous or next month
+					// Day on the previous or next month.
 					$return[] = str_replace(
 						array( '{daytime_id}', '{cell_class}' ),
 						array( '', '' ),
@@ -645,23 +743,31 @@ class Calendar_Plus_Calendar_Renderer {
 					$return[] = $template['cal_cell_end'];
 				}
 
-				$day++;
+				++$day;
 			}
 
-			// Row end
+			// Row end.
 			$return[] = $template['cal_row_end'];
 		}
 
-		// Calendar wrap end
+		// Calendar wrap end.
 		$return[] = $template['cal_rows_wrapper_end'];
 
-		// Wrapper End
+		// Wrapper End.
 		$return[] = $template['calendar_wrapper_end'];
 
 		return implode( "\n", $return );
-
 	}
 
+	/**
+	 * Handle calendar agenda.
+	 *
+	 * @param string $d D.
+	 * @param string $m M.
+	 * @param string $y Y.
+	 *
+	 * @return mixed Calendar operation result.
+	 */
 	public function calendar_agenda( $d = '', $m = '', $y = '' ) {
 
 		if ( is_numeric( $d ) && $d > 0 && $m < 31 ) {
@@ -674,18 +780,22 @@ class Calendar_Plus_Calendar_Renderer {
 			$this->today_year = $y;
 		}
 
-		$day = str_pad( $this->today_day, 2, '0', STR_PAD_LEFT );
+		$day   = str_pad( $this->today_day, 2, '0', STR_PAD_LEFT );
 		$month = str_pad( $this->today_month, 2, '0', STR_PAD_LEFT );
 
 		$start_date = date_i18n( get_option( 'date_format' ), strtotime( "$y-$month-$day" ) );
-		$end_date = date_i18n( get_option( 'date_format' ), strtotime( '+1 month -1 day', strtotime( "$y-$month-$day" ) ) );
+		$end_date   = date_i18n( get_option( 'date_format' ), strtotime( '+1 month -1 day', strtotime( "$y-$month-$day" ) ) );
 
-		$heading = sprintf( __( '%1$s to %2$s', 'calendar-plus' ), $start_date, $end_date );
+		$heading = sprintf( /* translators: 1: formatted start date, 2: formatted end date. */
+			__( '%1$s to %2$s', 'calendar-plus' ),
+			$start_date,
+			$end_date
+		);
 
-		$return = array();
+		$return   = array();
 		$template = calendarp_get_calendar_agenda_template();
 
-		// Wrapper start
+		// Wrapper start.
 		$return[] = $template['calendar_wrapper_start'] . "\n";
 		$return[] = str_replace( '{heading}', '', $template['heading'] ) . "\n";
 
@@ -693,8 +803,8 @@ class Calendar_Plus_Calendar_Renderer {
 		ob_start();
 		foreach ( $all_cells as $date => $cell ) {
 			$month_name = date_i18n( 'M', strtotime( $date ) );
-			$day = date_i18n( 'd', strtotime( $date ) );
-			$dow = date_i18n( 'D', strtotime( $date ) );
+			$day        = date_i18n( 'd', strtotime( $date ) );
+			$dow        = date_i18n( 'D', strtotime( $date ) );
 
 			$cell_events = $cell->get_events();
 			if ( empty( $cell_events ) ) {
@@ -704,18 +814,18 @@ class Calendar_Plus_Calendar_Renderer {
 			?>
 			<div class="calendarp-date-item row">
 				<div class="calendarp-date large-3 columns text-center">
-					<div class="calendarp-date-month"><?php echo $month_name; ?></div>
-					<div class="calendarp-date-day"><?php echo $day; ?></div>
-					<div class="calendarp-date-dow"><?php echo $dow; ?></div>
+					<div class="calendarp-date-month"><?php echo esc_html( $month_name ); ?></div>
+					<div class="calendarp-date-day"><?php echo esc_html( $day ); ?></div>
+					<div class="calendarp-date-dow"><?php echo esc_html( $dow ); ?></div>
 				</div>
 				<div class="calendarp-events large-9 columns">
 					<?php foreach ( $cell_events as $event ) : ?>
 						<div class="calendar-event">
 							<h3>
-								<a href="<?php echo esc_url( get_permalink( $event->ID ) ); ?>"><?php echo get_the_title( $event->ID ); ?></a>
+								<a href="<?php echo esc_url( get_permalink( $event->ID ) ); ?>"><?php echo esc_html( get_the_title( $event->ID ) ); ?></a>
 							</h3>
 							<div class="calendarp-event-meta">
-								<?php echo calendarp_get_human_read_dates( $event->ID ); ?>
+								<?php echo wp_kses_post( calendarp_get_human_read_dates( $event->ID ) ); ?>
 							</div>
 						</div>
 					<?php endforeach; ?>
@@ -728,19 +838,18 @@ class Calendar_Plus_Calendar_Renderer {
 
 		$return[] = ob_get_clean();
 
-		// Wrapper end
+		// Wrapper end.
 		$return[] = $template['calendar_wrapper_end'] . "\n";
 
 		return implode( "\n", $return );
 	}
 
 	/**
-	 * get Calendar Week
+	 * Get Calendar Week.
 	 *
-	 * @param integer $d (1-6)
-	 * @param integer $m (1-12)
-	 * @param integer $y (1970 or 2009)
-	 *
+	 * @param integer $d (1-6).
+	 * @param integer $m (1-12).
+	 * @param integer $y (1970 or 2009).
 	 * @return string output
 	 */
 	public function calendar_week( $d = 0, $m = 0, $y = 0 ) {
@@ -755,48 +864,48 @@ class Calendar_Plus_Calendar_Renderer {
 		}
 
 		$current_datetime = mktime( 0, 0, 0, $this->today_month, $this->today_day, $this->today_year );
-		$current_dow = date( 'w', $current_datetime );
-		if ( 0 != $current_dow ) {
+		$current_dow      = gmdate( 'w', $current_datetime );
+		if ( 0 !== (int) $current_dow ) {
 			$start_datetime = strtotime( 'last Sunday', $current_datetime );
-			$end_datetime = strtotime( '+6 days', $start_datetime );
+			$end_datetime   = strtotime( '+6 days', $start_datetime );
 		} else {
 			$start_datetime = $current_datetime;
-			$end_datetime = strtotime( '+6 days', $start_datetime );
+			$end_datetime   = strtotime( '+6 days', $start_datetime );
 		}
 
-		$start_date = mysql2date( get_option( 'date_format' ), date( 'Y-m-d', $start_datetime ) );
-		$end_date = mysql2date( get_option( 'date_format' ), date( 'Y-m-d', $end_datetime ) );
+		$start_date = mysql2date( get_option( 'date_format' ), gmdate( 'Y-m-d', $start_datetime ) );
+		$end_date   = mysql2date( get_option( 'date_format' ), gmdate( 'Y-m-d', $end_datetime ) );
 
-		$days_list = array();
+		$days_list        = array();
 		$current_datetime = $start_datetime;
 		while ( $current_datetime <= $end_datetime ) {
-			$days_list[] = date( 'd', $current_datetime );
+			$days_list[]      = gmdate( 'd', $current_datetime );
 			$current_datetime = strtotime( '+1 day', $current_datetime );
 		}
 
 		$next_datetime = strtotime( '+1 day', $end_datetime );
 		$prev_datetime = strtotime( '-1 day', $start_datetime );
 
-		$this->next_day = date( 'd', $next_datetime );
-		$this->next_month = date( 'm', $next_datetime );
-		$this->next_year = date( 'Y', $next_datetime );
+		$this->next_day   = gmdate( 'd', $next_datetime );
+		$this->next_month = gmdate( 'm', $next_datetime );
+		$this->next_year  = gmdate( 'Y', $next_datetime );
 
-		$this->back_day = date( 'd', $prev_datetime );
-		$this->back_month = date( 'm', $prev_datetime );
-		$this->back_year = date( 'Y', $prev_datetime );
+		$this->back_day   = gmdate( 'd', $prev_datetime );
+		$this->back_month = gmdate( 'm', $prev_datetime );
+		$this->back_year  = gmdate( 'Y', $prev_datetime );
 
-		$template = is_admin() ? calendarp_get_calendar_admin_week_template() : calendarp_get_calendar_front_week_template();
+		$template       = is_admin() ? calendarp_get_calendar_admin_week_template() : calendarp_get_calendar_front_week_template();
 		$event_template = calendarp_get_calendar_event_template();
 		$calendar_cells = $this->events_calendar->get_cells();
-		$times = calendarp_get_times_list();
+		$times          = calendarp_get_times_list();
 
 		$return = array();
 
-		// Wrapper start
+		// Wrapper start.
 		$return[] = str_replace( '{mode}', 'week', $template['calendar_wrapper_start'] );
 		$return[] = str_replace( '{heading}', $start_date . ' - ' . $end_date, $template['heading'] );
 
-		// Week days row
+		// Week days row.
 		$return[] = $template['week_days_table_wrapper_start'];
 		$return[] = $template['week_row_start'];
 		$return[] = '<th class="times-col"></th>';
@@ -806,14 +915,14 @@ class Calendar_Plus_Calendar_Renderer {
 		$return[] = $template['week_row_end'];
 		$return[] = $template['week_days_table_wrapper_end'];
 
-		// The Calendar itself
-		// Calendar Wrap start
+		// The Calendar itself.
+		// Calendar Wrap start.
 		$return[] = $template['cal_rows_wrapper_start'];
 
-		// Calendar row start (only one for week calendar)
+		// Calendar row start (only one for week calendar).
 		$return[] = $template['cal_row_start'];
 
-		// The times column
+		// The times column.
 		$return[] = $template['cal_time_col_start'];
 		foreach ( $times as $time ) {
 			$return[] = str_replace( '{time}', $time, $template['cal_time_content'] );
@@ -822,21 +931,21 @@ class Calendar_Plus_Calendar_Renderer {
 
 		$current_datetime = $start_datetime;
 
-		// The days columns
+		// The days columns.
 		foreach ( $this->day_of_week_title as $dow ) {
 			$class = '';
-			$today = date( 'Y-m-d', current_time( 'timestamp' ) );
-			if ( date( 'Y-m-d', $current_datetime ) === $today ) {
+			$today = gmdate( 'Y-m-d', calendarp_wall_time() );
+			if ( gmdate( 'Y-m-d', $current_datetime ) === $today ) {
 				$class = 'today';
 			}
 
 			$return[] = str_replace( '{class}', $class, $template['cal_day_col_start'] );
 
 			foreach ( $times as $time ) {
-				$cell_id = str_replace( array( '-', ':' ), array( '', '' ), date( 'Y-m-d', $current_datetime ) . $time );
+				$cell_id  = str_replace( array( '-', ':' ), array( '', '' ), gmdate( 'Y-m-d', $current_datetime ) . $time );
 				$return[] = $template['cal_day_col_time_inner_start'];
 
-				// Cell content
+				// Cell content.
 				$return[] = str_replace( '{date_time_id}', $cell_id, $template['cal_day_col_events_wrap_start'] );
 				$return[] = str_replace( '{content}', date_i18n( get_option( 'date_format' ), $current_datetime ) . ' ' . $time, $template['cal_day_col_events_content'] );
 				$return[] = $template['cal_day_col_events_wrap_end'];
@@ -849,26 +958,24 @@ class Calendar_Plus_Calendar_Renderer {
 			$current_datetime = strtotime( '+1 day', $current_datetime );
 		}
 
-		// Calendar row end
+		// Calendar row end.
 		$return[] = $template['cal_row_end'];
 
-		// Calendar Wrap end
+		// Calendar Wrap end.
 		$return[] = $template['cal_rows_wrapper_end'];
 
-		// Wrapper End
+		// Wrapper End.
 		$return[] = $template['calendar_wrapper_end'];
 
 		return implode( "\n", $return );
-
 	}
 
 	/**
-	 * get Calendar Day
+	 * Get Calendar Day.
 	 *
-	 * @param integer $d (1-6)
-	 * @param integer $m (1-12)
-	 * @param integer $y (1970 or 2009)
-	 *
+	 * @param integer $d (1-6).
+	 * @param integer $m (1-12).
+	 * @param integer $y (1970 or 2009).
 	 * @return string output
 	 */
 	public function calendar_day( $d = 0, $m = 0, $y = 0 ) {
@@ -883,36 +990,36 @@ class Calendar_Plus_Calendar_Renderer {
 		}
 
 		$current_datetime = mktime( 0, 0, 0, $this->today_month, $this->today_day, $this->today_year );
-		$current_dow = date( 'w', $current_datetime );
+		$current_dow      = gmdate( 'w', $current_datetime );
 
 		$next_datetime = strtotime( '+1 day', $current_datetime );
 		$prev_datetime = strtotime( '-1 day', $current_datetime );
 
-		$this->next_day = date( 'd', $next_datetime );
-		$this->next_month = date( 'm', $next_datetime );
-		$this->next_year = date( 'Y', $next_datetime );
+		$this->next_day   = gmdate( 'd', $next_datetime );
+		$this->next_month = gmdate( 'm', $next_datetime );
+		$this->next_year  = gmdate( 'Y', $next_datetime );
 
-		$this->back_day = date( 'd', $prev_datetime );
-		$this->back_month = date( 'm', $prev_datetime );
-		$this->back_year = date( 'Y', $prev_datetime );
+		$this->back_day   = gmdate( 'd', $prev_datetime );
+		$this->back_month = gmdate( 'm', $prev_datetime );
+		$this->back_year  = gmdate( 'Y', $prev_datetime );
 
 		$template = is_admin() ? calendarp_get_calendar_admin_week_template() : calendarp_get_calendar_front_week_template();
-		$times = calendarp_get_times_list();
+		$times    = calendarp_get_times_list();
 
 		$return = array();
 
-		// Wrapper start
+		// Wrapper start.
 		$return[] = str_replace( '{mode}', 'day', $template['calendar_wrapper_start'] );
-		$return[] = str_replace( '{heading}', mysql2date( get_option( 'date_format' ), date( 'Y-m-d', $current_datetime ) ), $template['heading'] );
+		$return[] = str_replace( '{heading}', mysql2date( get_option( 'date_format' ), gmdate( 'Y-m-d', $current_datetime ) ), $template['heading'] );
 
-		// The Calendar itself
-		// Calendar Wrap start
+		// The Calendar itself.
+		// Calendar Wrap start.
 		$return[] = $template['cal_rows_wrapper_start'];
 
-		// Calendar row start (only one for day calendar)
+		// Calendar row start (only one for day calendar).
 		$return[] = $template['cal_row_start'];
 
-		// The times column
+		// The times column.
 		$return[] = $template['cal_time_col_start'];
 		foreach ( $times as $time ) {
 			$return[] = str_replace( '{time}', $time, $template['cal_time_content'] );
@@ -922,10 +1029,10 @@ class Calendar_Plus_Calendar_Renderer {
 		$return[] = str_replace( '{class}', '', $template['cal_day_col_start'] );
 
 		foreach ( $times as $time ) {
-			$cell_id = str_replace( array( '-', ':' ), array( '', '' ), date( 'Y-m-d', $current_datetime ) . $time );
+			$cell_id  = str_replace( array( '-', ':' ), array( '', '' ), gmdate( 'Y-m-d', $current_datetime ) . $time );
 			$return[] = $template['cal_day_col_time_inner_start'];
 
-			// Cell content
+			// Cell content.
 			$return[] = str_replace( '{date_time_id}', $cell_id, $template['cal_day_col_events_wrap_start'] );
 			$return[] = str_replace( '{content}', date_i18n( get_option( 'date_format' ), $current_datetime ) . ' ' . $time, $template['cal_day_col_events_content'] );
 			$return[] = $template['cal_day_col_events_wrap_end'];
@@ -935,81 +1042,61 @@ class Calendar_Plus_Calendar_Renderer {
 
 		$return[] = $template['cal_day_col_end'];
 
-		// Calendar row end
+		// Calendar row end.
 		$return[] = $template['cal_row_end'];
 
-		// Calendar Wrap end
+		// Calendar Wrap end.
 		$return[] = $template['cal_rows_wrapper_end'];
 
 		return implode( "\n", $return );
-
-		// Header weekdays row
-		$return[] = $template['week_row_start'];
-
-		// The time column
-		$return[] = str_replace( '{day_of_week}', '', $template['cal_cell_time_start'] );
-		$return[] = str_replace( array( '{time}' ), array( 'Time column' ), $template['cal_cell_time_content'] );
-		$return[] = str_replace( '{day_of_week}', '', $template['cal_cell_time_end'] );
-
-		// The days of week column
-		$return[] = str_replace( '{day_of_week}', $this->day_of_week_title[ $current_dow ] . ' ' . $this->today_day, $template['week_row_cell'] ) . "\n";
-		$return[] = $template['week_row_end'] . "\n";
-
-		// Fill the times list
-		$times = calendarp_get_times_list();
-
-		foreach ( $times as $time ) {
-			$return[] = $template['cal_row_start'];
-			$return[] = $template['cal_cell_time_start'];
-			$return[] = str_replace( array( '{time}' ), array( $time ), $template['cal_cell_time_content'] );
-			$return[] = $template['cal_cell_time_end'];
-
-			$current_date = date( 'Y-m-d', $current_datetime );
-			$return[] = str_replace( '{daytime_id}', str_replace( array( '-', ':' ), array( '', '' ), $current_date . $time ), $template['cal_cell_start'] );
-			$return[] = $template['cal_cell_end'];
-
-			$return[] = $template['cal_row_end'];
-		}
-
-		// Close the wrapper
-		$return[] = $template['calendar_wrapper_end'];
-
-		return implode( "\n", $return );
-
 	}
 
 	/**
-	 * calculate First Day Of Week
+	 * Calculate First Day Of Week.
 	 *
 	 * @return   integer
 	 */
-	private function _get_first_day_of_week() {
-		return date( 'w', mktime( 0, 0, 0, $this->today_month, 1, $this->today_year ) );
+	private function get_first_day_of_week() {
+		return gmdate( 'w', mktime( 0, 0, 0, $this->today_month, 1, $this->today_year ) );
 	}
 
 	/**
-	 * calculate Last Day Of Week
+	 * Calculate Last Day Of Week.
 	 *
 	 * @return   integer
 	 */
-	private function _get_last_day_of_week() {
-		return date( 'w', mktime( 0, 0, 0, $this->today_month, date( 't', mktime( 0, 0, 0, $this->today_month, 1, $this->today_year ) ), $this->today_year ) );
+	private function get_last_day_of_week() {
+		return gmdate( 'w', mktime( 0, 0, 0, $this->today_month, gmdate( 't', mktime( 0, 0, 0, $this->today_month, 1, $this->today_year ) ), $this->today_year ) );
 	}
 
 
+	/**
+	 * Retrieve month name.
+	 *
+	 * @param int $month Month.
+	 *
+	 * @return mixed Calendar operation result.
+	 */
 	public function get_month_name( $month ) {
 		global $wp_locale;
 
-		$month = str_pad( $month, 2, '0', STR_PAD_LEFT );
+		$month       = str_pad( $month, 2, '0', STR_PAD_LEFT );
 		$month_names = $wp_locale->month;
 
 		return ucfirst( $month_names[ $month ] );
 	}
 
+	/**
+	 * Retrieve short month name.
+	 *
+	 * @param int $month Month.
+	 *
+	 * @return mixed Calendar operation result.
+	 */
 	public function get_short_month_name( $month ) {
 		global $wp_locale;
 
-		$month = absint( $month ) - 1;
+		$month       = absint( $month ) - 1;
 		$month_names = array_values( $wp_locale->month_abbrev );
 
 		return $month_names[ $month ];

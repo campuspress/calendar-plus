@@ -1,17 +1,20 @@
 <?php
 /**
- * @author: WPMUDEV, Ignacio Cruz (igmoweb)
- * @version:
+ * Calendar Plus: includes/shortcodes/class-calendar-plus-event-shortcode.php.
+ *
+ * @author WPMUDEV, Ignacio Cruz (igmoweb)
+ * @package Calendar_Plus
  */
 
 if ( defined( 'ABSPATH' ) || ! class_exists( 'Calendar_Plus_Event_Shortcode' ) ) {
 	return;
 }
 
+/** Calendar component: Calendar_Plus_Event_Shortcode. */
 class Calendar_Plus_Event_Shortcode {
 
 	/**
-	 * Class constructor
+	 * Class constructor.
 	 */
 	public function __construct() {
 		add_shortcode( 'calendarp-event', array( $this, 'render' ) );
@@ -20,14 +23,14 @@ class Calendar_Plus_Event_Shortcode {
 	}
 
 	/**
-	 * Render the shortcode content
+	 * Render the shortcode content.
 	 *
-	 * @param array $atts Shortcode attributes
-	 *
+	 * @param array $atts Shortcode attributes.
 	 * @return string Shortcode output
 	 */
 	public function render( $atts ) {
-		if ( empty( $atts['event_id'] ) || ! $event = calendarp_get_event( $atts['event_id'] ) ) {
+		$event = empty( $atts['event_id'] ) ? false : calendarp_get_event( $atts['event_id'] );
+		if ( ! $event ) {
 			return calendarp_is_rest_api_request()
 				? calendarp_block_error_msg( __( 'Please, enter the event ID in Event Settings', 'calendar-plus' ) )
 				: '';
@@ -41,7 +44,7 @@ class Calendar_Plus_Event_Shortcode {
 
 		ob_start();
 
-		include( calendarp_locate_template( 'shortcodes/event-single.php' ) );
+		include calendarp_locate_template( 'shortcodes/event-single.php' );
 
 		wp_reset_postdata();
 
@@ -68,7 +71,9 @@ class Calendar_Plus_Event_Shortcode {
 	}
 
 	/**
-	 * Register block for this shortcode
+	 * Register block for this shortcode.
+	 *
+	 * @return mixed Calendar operation result.
 	 */
 	public function register_block() {
 		if ( function_exists( 'register_block_type' ) ) {
@@ -87,13 +92,12 @@ class Calendar_Plus_Event_Shortcode {
 	}
 
 	/**
-	 * Render block on frontend
+	 * Render block on frontend.
 	 *
-	 * @param array $atts
-	 * @return void
+	 * @param array $atts Atts.
+	 * @return string
 	 */
 	public function blocks_content( $atts ) {
 		return $this->render( $atts );
 	}
 }
-

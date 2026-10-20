@@ -1,5 +1,20 @@
 <?php
+/**
+ * Calendar Plus: public/integration/themes/twentytwelve.php.
+ *
+ * @package Calendar_Plus
+ */
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
+
+/**
+ * Handle calendarp before content.
+ *
+ * @return mixed Calendar operation result.
+ */
 function calendarp_before_content() {
 	$template = get_option( 'template' );
 	?>

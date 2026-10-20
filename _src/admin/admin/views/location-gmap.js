@@ -14,7 +14,7 @@ window.gm_authFailure = function (err) {
 			this.listenTo(this.model, 'change', this.updateMapFields);
 		},
 		render: function () {
-			if (typeof google.maps.Map === 'function') {
+			if (typeof google !== 'undefined' && google.maps && typeof google.maps.Map === 'function') {
 				let mapOptions = this.model.get('mapOptions');
 				let markerOptions = this.model.get('markerOptions');
 

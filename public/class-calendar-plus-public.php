@@ -1,9 +1,18 @@
 <?php
+/**
+ * Calendar Plus: public/class-calendar-plus-public.php.
+ *
+ * @package Calendar_Plus
+ */
+
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 
 /**
  * The public-facing functionality of the plugin.
  *
- * @link       http://example.com
  * @since      0.1
  *
  * @package    calendarp
@@ -18,7 +27,7 @@
  *
  * @package    calendarp
  * @subpackage calendarp/public
- * @author     Your Name <email@example.com>
+ * @author     CampusPress
  */
 class Calendar_Plus_Public {
 
@@ -42,6 +51,7 @@ class Calendar_Plus_Public {
 
 	/**
 	 * Template loader class that manage the custom templates
+	 *
 	 * @since    0.1
 	 * @access   protected
 	 * @var      Calendar_Plus_Template_Loader $template_loader
@@ -52,15 +62,14 @@ class Calendar_Plus_Public {
 	/**
 	 * Initialize the class and set its properties.
 	 *
+	 * @param string $plugin_name The name of the plugin.
+	 * @param string $version The version of this plugin.
 	 * @since    0.1
-	 *
-	 * @param      string $plugin_name The name of the plugin.
-	 * @param      string $version The version of this plugin.
 	 */
 	public function __construct( $plugin_name, $version ) {
 
 		$this->plugin_name = $plugin_name;
-		$this->version = $version;
+		$this->version     = $version;
 
 		$this->load_dependencies();
 
@@ -68,17 +77,40 @@ class Calendar_Plus_Public {
 
 		do_action( 'calendarp_public_loaded' );
 
-		if( ! wp_is_block_theme() ) {
+		if ( did_action( 'after_setup_theme' ) ) {
+			$this->initialize_template_loader();
+		} else {
+			add_action( 'after_setup_theme', array( $this, 'initialize_template_loader' ) );
+		}
+	}
+
+	/**
+	 * Select classic-theme integration after WordPress registers theme directories.
+	 *
+	 * @return void
+	 */
+	public function initialize_template_loader() {
+		if ( ! wp_is_block_theme() ) {
 			$this->template_loader = new Calendar_Plus_Template_Loader();
 		}
 	}
 
+	/**
+	 * Load dependencies.
+	 *
+	 * @return mixed Calendar operation result.
+	 */
 	private function load_dependencies() {
 		require_once calendarp_get_plugin_dir() . 'public/integration/integration.php';
 		require_once calendarp_get_plugin_dir() . 'public/helpers-templates.php';
 		require_once calendarp_get_plugin_dir() . 'public/templates-hooks.php';
 	}
 
+	/**
+	 * Enqueue scripts.
+	 *
+	 * @return mixed Calendar operation result.
+	 */
 	public function enqueue_scripts() {
 		if ( calendarp_is_calendarp() ) {
 			calendarp_enqueue_public_script_and_styles();

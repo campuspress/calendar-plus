@@ -37,8 +37,9 @@
 		showResults: function() {
 			if (this.$resultsWrapper.children().length) {
 				this.$resultsWrapper.css({
-					left: this.$searchInput.offset().left,
-					top: this.$searchInput.offset().top - this.$resultsWrapper.height() - 10
+					// left: this.$searchInput.offset().left,
+					// top: this.$searchInput.offset().top - this.$resultsWrapper.height() - 10
+					top: this.$searchInput.height() + 10
 				});
 				this.$resultsWrapper.show();
 			}
@@ -49,7 +50,7 @@
 		preSearchLocation: function (e) {
 			this.initTimer();
 
-			console.log(e.keyCode);
+
 		},
 		searchLocation: function () {
 			let model = this.model;
@@ -76,6 +77,7 @@
 				self.xhr = $.ajax({
 					url: CalendarPlusi18n.ajaxurl,
 					data: {
+						nonce: CalendarPlusi18n.nonce,
 						action: 'search_event_location',
 						s: model.get('searchString')
 					},
@@ -125,8 +127,9 @@
 			this.cleanSearch();
 			this.$resultsWrapper.append(results.render().el);
 			this.$resultsWrapper.css({
-				left: this.$searchInput.offset().left,
-				top: this.$searchInput.offset().top - this.$resultsWrapper.height() - 10
+				// left: this.$searchInput.offset().left,
+				// top: this.$searchInput.offset().top - this.$resultsWrapper.height() - 10
+				top: this.$searchInput.height() + 10
 			});
 			this.$resultsWrapper.show();
 		}

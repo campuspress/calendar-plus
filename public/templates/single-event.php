@@ -1,4 +1,9 @@
 <?php
+/**
+ * Calendar Plus: public/templates/single-event.php.
+ *
+ * @package Calendar_Plus
+ */
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
@@ -15,14 +20,14 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 	<div class="calendarp-breadcrumbs row">
 		<div class="columns large-12">
-			<?php echo calendarp_breadcrumbs(); ?>
+			<?php echo esc_html( calendarp_breadcrumbs() ); ?>
 		</div>
 	</div>
 
 	<?php if ( have_posts() ) : ?>
 
 		<?php
-        while ( have_posts() ) :
+		while ( have_posts() ) :
 			the_post();
 			?>
 

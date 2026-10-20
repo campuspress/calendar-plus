@@ -1,14 +1,24 @@
 {
-	"$schema": "https://schemas.wp.org/trunk/block.json",
-	"apiVersion": 3,
-	"name": "calendar-plus/event-date",
-	"title": "Event Date",
-	"description": "Displays dates of the event.",
-	"category": "theme",
-	"icon": "calendar",
-	"version": "1",
-	"keywords": [ "calendar", "event", "date", "time" ],
-	"textdomain": "calendar-plus",
-    "editorScript": "file:./editor.js",
-	"render": "file:./render.php"
+  "$schema": "https://schemas.wp.org/trunk/block.json",
+  "apiVersion": 3,
+  "name": "calendar-plus/event-date",
+  "title": "Event Date",
+  "description": "Displays dates of the event.",
+  "category": "theme",
+  "icon": "calendar",
+  "version": "2.2.22",
+  "keywords": [
+    "calendar",
+    "event",
+    "date",
+    "time"
+  ],
+  "textdomain": "calendar-plus",
+  "editorScript": "calendarp-event-fields-editor",
+  "render": "file:./render.php",
+  "usesContext": [
+    "postId",
+    "postType"
+  ],
+  "style": "calendarp-event-presentation"
 }

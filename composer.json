@@ -2,7 +2,7 @@
     "name": "campuspress/calendar-plus",
     "description": "Calendar+ WordPress Plugin",
     "type": "wordpress-plugin",
-    "license": "GPL",
+    "license": "GPL-2.0-or-later",
     "authors": [
         {
             "name": "CampusPress",
@@ -13,17 +13,19 @@
         "ext-calendar": "*",
         "composer/installers": "~1.0",
         "johngrogg/ics-parser": "^3.2",
-        "mexitek/phpcolors": "~1.0",
-        "yahnis-elsts/plugin-update-checker": "~5.7"
+        "mexitek/phpcolors": "~1.0"
     },
     "require-dev": {
-        "phpunit/phpunit": "3.7.*",
-        "wp-coding-standards/wpcs": "^1.2",
+        "wp-coding-standards/wpcs": "^3.3",
         "dealerdirect/phpcodesniffer-composer-installer": "^1"
     },
     "autoload": {
-        "classmap": ["admin", "includes", "modules", "public"],
-        "exclude-from-classmap": ["/vendor/yahnis-elsts/plugin-update-checker"]
+        "classmap": [
+            "admin",
+            "includes",
+            "modules",
+            "public"
+        ]
     },
     "config": {
         "allow-plugins": {

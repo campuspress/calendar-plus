@@ -6,6 +6,18 @@ Calendar+ is specifically developed to be friendly for visitors using screen-rea
 
 Site visitors can easily add events to their own Google Calendar, Outlook, or download an ical file. 
 
+## Review candidate 2.2.26 — October 2026
+
+The distributable includes editable Events Showcase grid/list blocks, Event Feed, optional block-theme templates, dependency-complete TEC WXR import with media and a separate source exporter. Review the accompanying developer review pack before production distribution.
+
+PHP runtime minimum is 8.0; WordPress minimum is 6.7. Use `composer install --no-dev` for runtime dependencies. Development checks use current WordPress Coding Standards 3.3; obsolete PHPUnit 3.7 dependencies and packaged legacy test files have been removed. The maintained tests are WordPress CLI integration tests in the external review pack, not the previous PHPUnit skeleton.
+
+For the changed Backbone admin bundle, run `npm ci --ignore-scripts --legacy-peer-deps` and `npm run build:admin` (pinned esbuild 0.25.12). Its source map is regenerated from `_src/admin/admin/admin.js` and its local imports. New block editor scripts are unbundled source using native `wp.*` packages and matching asset manifests. Other historical React/Sass bundles retain the legacy webpack workflow described below; modernizing those dependencies is a separate release task. Do not use the old `postinstall_disabled` instruction as a release build recipe.
+
+Run PHP checks with `vendor/bin/phpcs --standard=/path/to/review-pack/phpcs.xml .`. The ruleset excludes dependency vendor code and narrowly records historical file/API naming contracts. Security rules remain active; review all annotated native scheduling SQL/cache and template-output exceptions.
+
+The plugin still uses its existing two custom scheduling tables. CampusPress policy review is required for that inherited architecture and optional external integrations. No new importer table or remote updater is introduced. Google API SDK integration is dormant in the default bootstrap and its SDK is not bundled; unavailable SDK requests return errors. Authenticated OAuth behavior needs separate SDK/credentials validation and policy approval.
+
 ## More info
 
 Calendar Plus uses several technologies to generate the CSS/JS bundles:
@@ -120,3 +132,8 @@ Just run `npm run watch` and all bundles will be watched at the same time.
 #### Troubleshooting
 
 On Windows platforms it may be necessary to run `npm install --global --production windows-build-tools` before installing node modules.
+
+
+## Multisite review candidate 2.2.27
+
+Native schedule table names and cached settings now follow switch_to_blog() and restore_current_blog(), including nested switches. Public IPv4 validation and redirect checks protect media downloads. Safe reruns recover missing Gutenberg Image attachment IDs from exact owned media URLs. Native role objects reflect newly granted capabilities immediately. Admin, widget and module translations wait until init; classic-theme detection waits for theme setup. HTTP requests retain the WordPress timeout. The 100-subsite load and resilience test evidence is maintained outside this plugin.

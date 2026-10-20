@@ -1,4 +1,14 @@
 <?php
+/**
+ * Calendar Plus: includes/class-calendar-plus.php.
+ *
+ * @package Calendar_Plus
+ */
+
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 
 /**
  * The file that defines the core plugin class
@@ -6,7 +16,6 @@
  * A class definition that includes attributes and functions used across both the
  * public-facing side of the site and the dashboard.
  *
- * @link       http://example.com
  * @since      0.1
  *
  * @package    calendarp
@@ -108,6 +117,8 @@ class Calendar_Plus {
 	public $sidebar;
 
 	/**
+	 * Calendar component state.
+	 *
 	 * @var Calendar_Plus_Model
 	 */
 	public $model;
@@ -148,7 +159,7 @@ class Calendar_Plus {
 	public $google_calendar;
 
 	/**
-	 * Returns the unique instance of the main class of the plugin
+	 * Returns the unique instance of the main class of the plugin.
 	 *
 	 * @return Calendar_Plus object
 	 */
@@ -172,18 +183,18 @@ class Calendar_Plus {
 	public function __construct() {
 
 		$this->plugin_name = 'calendar-plus';
-		$this->version = calendarp_get_version();
+		$this->version     = calendarp_get_version();
 
 		$this->load_dependencies();
 
 		$this->i18n = new Calendar_Plus_i18n();
 		$this->i18n->set_domain( $this->get_plugin_name() );
 
-		$this->settings = new Calendar_Plus_Settings( $this->plugin_name );
-		$this->taxonomies = new Calendar_Plus_Taxonomies();
-		$this->query = new Calendar_Plus_Query();
-		$this->model = Calendar_Plus_Model::get_instance();
-		$this->generator = new Calendar_Plus_Dates_Generator();
+		$this->settings       = new Calendar_Plus_Settings( $this->plugin_name );
+		$this->taxonomies     = new Calendar_Plus_Taxonomies();
+		$this->query          = new Calendar_Plus_Query();
+		$this->model          = Calendar_Plus_Model::get_instance();
+		$this->generator      = new Calendar_Plus_Dates_Generator();
 		$this->modules_loader = new Calendar_Plus_Modules_Loader();
 
 		if ( is_admin() ) {
@@ -196,29 +207,38 @@ class Calendar_Plus {
 
 		$this->api = new Calendar_Plus_REST_API();
 
-		$this->widgets['search-widget'] = new Calendar_Plus_Search_Widget();
-		$this->widgets['event-categories-widget'] = new Calendar_Plus_Event_Categories_Widget();
-		$this->widgets['this-week-events-widget'] = new Calendar_Plus_This_Week_Events_Widget();
-		$this->widgets['this-month-events-widget'] = new Calendar_Plus_This_Month_Events_Widget();
-		$this->widgets['calendar-widget'] = new Calendar_Plus_Calendar_Widget();
+		add_action( 'init', array( $this, 'initialize_widgets' ), 0 );
 
-		$this->shortcodes['calendar'] = new Calendar_Plus_Calendar_Shortcode();
-		$this->shortcodes['calendar-old'] = new Calendar_Plus_Calendar_Shortcode_Old();
+		$this->shortcodes['calendar']      = new Calendar_Plus_Calendar_Shortcode();
+		$this->shortcodes['calendar-old']  = new Calendar_Plus_Calendar_Shortcode_Old();
 		$this->shortcodes['events-by-cat'] = new Calendar_Plus_Events_By_Category_Shortcode();
-		$this->shortcodes['single-event'] = new Calendar_Plus_Event_Shortcode();
-		$this->shortcodes['date'] = new Calendar_Plus_Date_Shortcode();
-		$this->shortcodes['location'] = new Calendar_Plus_Location_Shortcode();
+		$this->shortcodes['single-event']  = new Calendar_Plus_Event_Shortcode();
+		$this->shortcodes['date']          = new Calendar_Plus_Date_Shortcode();
+		$this->shortcodes['location']      = new Calendar_Plus_Location_Shortcode();
 
 		new Calendar_Plus_Blocks();
 
-		// Google Calendar
-		//      $this->google_calendar = new Calendar_Plus_Google_Calendar();
+		// Google Calendar.
+		// $this->google_calendar = new Calendar_Plus_Google_Calendar();.
 
 		if ( ! wp_next_scheduled( 'calendar_plus_delete_old_dates' ) ) {
-			wp_schedule_event( current_time( 'timestamp' ), 'daily', 'calendar_plus_delete_old_dates' );
+			wp_schedule_event( calendarp_wall_time(), 'daily', 'calendar_plus_delete_old_dates' );
 		}
 
 		do_action( 'calendarp_init' );
+	}
+
+	/**
+	 * Initialize widget objects after translations can load.
+	 *
+	 * @return void
+	 */
+	public function initialize_widgets() {
+		$this->widgets['search-widget']            = new Calendar_Plus_Search_Widget();
+		$this->widgets['event-categories-widget']  = new Calendar_Plus_Event_Categories_Widget();
+		$this->widgets['this-week-events-widget']  = new Calendar_Plus_This_Week_Events_Widget();
+		$this->widgets['this-month-events-widget'] = new Calendar_Plus_This_Month_Events_Widget();
+		$this->widgets['calendar-widget']          = new Calendar_Plus_Calendar_Widget();
 	}
 
 	/**
@@ -235,9 +255,11 @@ class Calendar_Plus {
 	 *
 	 * @since    0.1
 	 * @access   private
+	 *
+	 * @return mixed Calendar operation result.
 	 */
 	private function load_dependencies() {
-		$plugin_dir = calendarp_get_plugin_dir();
+		$plugin_dir   = calendarp_get_plugin_dir();
 		$includes_dir = $plugin_dir . 'includes/';
 
 		require_once $plugin_dir . 'modules/class-calendar-plus-modules-loader.php';
@@ -260,16 +282,26 @@ class Calendar_Plus {
 		require_once $includes_dir . 'widgets/class-calendar-plus-events-list-widget.php';
 	}
 
+	/**
+	 * Initialize.
+	 *
+	 * @return mixed Calendar operation result.
+	 */
 	public function init() {
 		$this->taxonomies->register();
 
-		// We may need to upgrade something
+		// We may need to upgrade something.
 		Calendar_Plus_Upgrader::maybe_upgrade();
 
 		add_action( 'wp_ajax_download_ical_file', array( 'Calendar_Plus_iCal_Calendar_Button', 'download_file' ) );
 		add_action( 'wp_ajax_nopriv_download_ical_file', array( 'Calendar_Plus_iCal_Calendar_Button', 'download_file' ) );
 	}
 
+	/**
+	 * Add image sizes.
+	 *
+	 * @return mixed Calendar operation result.
+	 */
 	public function add_image_sizes() {
 		$settings = calendarp_get_settings();
 		add_image_size( 'event_thumbnail', $settings['event_thumbnail_width'], $settings['event_thumbnail_height'], $settings['event_thumbnail_crop'] );
@@ -277,7 +309,7 @@ class Calendar_Plus {
 	}
 
 	/**
-	 * The name of the plugin used to uniquely identify it within the context of
+	 * The name of the plugin used to uniquely identify it within the context of.
 	 * WordPress and to define internationalization functionality.
 	 *
 	 * @return string The name of the plugin.
@@ -287,7 +319,7 @@ class Calendar_Plus {
 	}
 
 	/**
-	 * Retrieve the current plugin version
+	 * Retrieve the current plugin version.
 	 *
 	 * @return string
 	 */

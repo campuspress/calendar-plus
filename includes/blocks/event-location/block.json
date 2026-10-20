@@ -1,14 +1,33 @@
 {
-	"$schema": "https://schemas.wp.org/trunk/block.json",
-	"apiVersion": 3,
-	"name": "calendar-plus/event-location",
-	"title": "Event Location",
-	"description": "Displays location of the event.",
-	"category": "theme",
-	"icon": "calendar",
-	"version": "1",
-	"keywords": [ "calendar", "event", "location" ],
-	"textdomain": "calendar-plus",
-    "editorScript": "file:./editor.js",
-	"render": "file:./render.php"
+  "$schema": "https://schemas.wp.org/trunk/block.json",
+  "apiVersion": 3,
+  "name": "calendar-plus/event-location",
+  "title": "Event Location",
+  "description": "Displays location of the event.",
+  "category": "theme",
+  "icon": "calendar",
+  "version": "2.2.22",
+  "keywords": [
+    "calendar",
+    "event",
+    "location"
+  ],
+  "textdomain": "calendar-plus",
+  "editorScript": "calendarp-event-fields-editor",
+  "render": "file:./render.php",
+  "usesContext": [
+    "postId",
+    "postType"
+  ],
+  "style": "calendarp-event-presentation",
+  "attributes": {
+    "showName": {
+      "type": "boolean",
+      "default": false
+    },
+    "hideWhenInContent": {
+      "type": "boolean",
+      "default": false
+    }
+  }
 }

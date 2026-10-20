@@ -115,3 +115,9 @@
 		}
 	}
 }
+/* Responsive thumbnail frames also apply to existing list/grid blocks and shortcodes. */
+.calendarp-events-by-cat .calendarp-event-thumbnail { width: 100%; max-width: 40rem; aspect-ratio: 16 / 9; overflow: hidden; }
+.calendarp-events-by-cat .calendarp-event-thumbnail img { display: block; width: 100%; height: 100%; max-width: 100%; object-fit: contain; }
+.calendarp-events-by-cat.calendarp-events--grid .calendarp-grid-row { display: flex; flex-wrap: wrap; width: 100%; gap: 1.5rem; padding: 0; }
+.calendarp-events-by-cat.calendarp-events--grid .calendarp-grid-row > .calendarp.column { flex: 1 1 15rem; min-width: 0; padding: 0; }
+.calendarp-events-by-cat .calendarp-event-excerpt { overflow-wrap: anywhere; }

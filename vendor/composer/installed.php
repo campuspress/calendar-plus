@@ -1,9 +1,9 @@
 <?php return array(
     'root' => array(
         'name' => 'campuspress/calendar-plus',
-        'pretty_version' => 'dev-master',
-        'version' => 'dev-master',
-        'reference' => '27e0e1501fa7e5c5b25dd1725d6d675fcb5d6301',
+        'pretty_version' => '1.0.0+no-version-set',
+        'version' => '1.0.0.0',
+        'reference' => null,
         'type' => 'wordpress-plugin',
         'install_path' => __DIR__ . '/../../',
         'aliases' => array(),
@@ -11,9 +11,9 @@
     ),
     'versions' => array(
         'campuspress/calendar-plus' => array(
-            'pretty_version' => 'dev-master',
-            'version' => 'dev-master',
-            'reference' => '27e0e1501fa7e5c5b25dd1725d6d675fcb5d6301',
+            'pretty_version' => '1.0.0+no-version-set',
+            'version' => '1.0.0.0',
+            'reference' => null,
             'type' => 'wordpress-plugin',
             'install_path' => __DIR__ . '/../../',
             'aliases' => array(),
@@ -57,15 +57,6 @@
             'replaced' => array(
                 0 => '*',
             ),
-        ),
-        'yahnis-elsts/plugin-update-checker' => array(
-            'pretty_version' => 'v5.7',
-            'version' => '5.7.0.0',
-            'reference' => '275a96a2a18d03c34c87f35cb68673c8c49ac3b1',
-            'type' => 'library',
-            'install_path' => __DIR__ . '/../yahnis-elsts/plugin-update-checker',
-            'aliases' => array(),
-            'dev_requirement' => false,
         ),
     ),
 );

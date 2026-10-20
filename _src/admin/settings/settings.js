@@ -4,6 +4,7 @@
 	let usersList = document.getElementById('calendarp-users');
 	let allowUserButton = document.getElementById('allow-user-add');
 	let allowUserSelector = document.getElementById('allow-user');
+	if (!usersList) { return; }
 
 	/**
 	 * Make an AJAX call
@@ -41,13 +42,13 @@
 			// User has edit link
 			linkNode = document.createElement('a');
 			linkNode.href = user.link;
-			linkNode.innerHTML = user.name;
+			linkNode.textContent = user.name;
 			linkNode.title = user.linkTitle;
 			listNode.appendChild(linkNode);
 		}
 		else {
 			spanNode = document.createElement('span');
-			spanNode.innerHTML = user.name;
+			spanNode.textContent = user.name;
 			listNode.appendChild(spanNode);
 		}
 
@@ -80,7 +81,7 @@
 				if (allowUserButton.classList)
 					allowUserButton.classList.remove(className);
 				else
-					allowUserButton.className = el.className.replace(new RegExp('(^|\\b)' + className.split(' ').join('|') + '(\\b|$)', 'gi'), ' ');
+					allowUserButton.className = allowUserButton.className.replace(new RegExp('(^|\\b)' + className.split(' ').join('|') + '(\\b|$)', 'gi'), ' ');
 			}
 			else {
 				if (allowUserButton.classList) {

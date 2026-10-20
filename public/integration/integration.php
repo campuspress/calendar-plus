@@ -1,10 +1,20 @@
 <?php
+/**
+ * Calendar Plus: public/integration/integration.php.
+ *
+ * @package Calendar_Plus
+ */
 
-$stylesheet = get_stylesheet();
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 
-$file = calendarp_get_plugin_dir() . 'public/integration/themes/' . $stylesheet . '.php';
-if ( is_file( $file ) ) {
-	include_once( $file );
+
+$calendarp_stylesheet = get_stylesheet();
+
+$calendarp_file = calendarp_get_plugin_dir() . 'public/integration/themes/' . $calendarp_stylesheet . '.php';
+if ( is_file( $calendarp_file ) ) {
+	include_once $calendarp_file;
 }
 
 if ( ! function_exists( 'is_plugin_active' ) ) {

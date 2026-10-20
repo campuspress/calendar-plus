@@ -1,21 +1,42 @@
 <?php
+/**
+ * Calendar Plus: public/class-calendar-plus-template-loader.php.
+ *
+ * @package Calendar_Plus
+ */
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
+
+/** Calendar component: Calendar_Plus_Template_Loader. */
 class Calendar_Plus_Template_Loader {
 
+	/**
+	 * Initialize this calendar component.
+	 */
 	public function __construct() {
-		if( ! wp_is_block_theme() ) {
+		if ( ! wp_is_block_theme() ) {
 			add_action( 'template_include', array( $this, 'load_template' ) );
 		}
 	}
 
+	/**
+	 * Load template.
+	 *
+	 * @param mixed $template Template.
+	 *
+	 * @return mixed Calendar operation result.
+	 */
 	public function load_template( $template ) {
 		$events_page_id = calendarp_get_setting( 'events_page_id' );
-		$templates = array( 'calendar-plus.php' );
-		$file = '';
+		$templates      = array( 'calendar-plus.php' );
+		$file           = '';
 
 		// If this is a taxonomy archive.
 		if ( is_tax() ) {
-			// if taxonomy is assigned to multiple post types, we are not forcing Cal+ template
+			// if taxonomy is assigned to multiple post types, we are not forcing Cal+ template.
 			$assigned_to_multiple = calendarp_is_taxonomy_assigned_to_multiple( get_queried_object() );
 
 			if ( $assigned_to_multiple ) {
@@ -23,8 +44,8 @@ class Calendar_Plus_Template_Loader {
 			}
 		}
 
-		if ( is_single() && get_post_type() == 'calendar_event' ) {
-			$file = 'single-event.php';
+		if ( is_single() && get_post_type() === 'calendar_event' ) {
+			$file        = 'single-event.php';
 			$templates[] = $file;
 			$templates[] = calendarp_get_template_dir() . $file;
 		} elseif ( is_tax( get_object_taxonomies( 'calendar_event' ) ) ) {
@@ -35,7 +56,7 @@ class Calendar_Plus_Template_Loader {
 				$file = 'taxonomy-' . $term->taxonomy . '.php';
 			} else {
 				$file = 'archive-event.php';
-            }
+			}
 
 			$templates[] = 'taxonomy-' . $term->taxonomy . '-' . $term->slug . '.php';
 			$templates[] = calendarp_get_template_dir() . 'taxonomy-' . $term->taxonomy . '-' . $term->slug . '.php';
@@ -45,7 +66,7 @@ class Calendar_Plus_Template_Loader {
 			$templates[] = calendarp_get_template_dir() . $file;
 
 		} elseif ( is_post_type_archive( 'calendar_event' ) || ( $events_page_id && is_page( $events_page_id ) ) ) {
-			$file   = 'archive-event.php';
+			$file        = 'archive-event.php';
 			$templates[] = $file;
 			$templates[] = calendarp_get_template_dir() . $file;
 		}
@@ -54,7 +75,7 @@ class Calendar_Plus_Template_Loader {
 			$template = locate_template( array_unique( $templates ) );
 			if ( ! $template ) {
 				$template = calendarp_get_plugin_dir() . 'public/templates/' . $file;
-            }
+			}
 		}
 
 		return $template;

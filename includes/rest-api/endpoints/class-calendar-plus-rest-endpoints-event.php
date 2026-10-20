@@ -1,13 +1,16 @@
 <?php
 /**
- * @author: WPMUDEV, Ignacio Cruz (igmoweb)
- * @version:
+ * Calendar Plus: includes/rest-api/endpoints/class-calendar-plus-rest-endpoints-event.php.
+ *
+ * @author WPMUDEV, Ignacio Cruz (igmoweb)
+ * @package Calendar_Plus
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
+/** Calendar component: Calendar_Plus_REST_Endpoints_Events. */
 class Calendar_Plus_REST_Endpoints_Events extends Calendar_Plus_REST_Controller {
 
 	/**
@@ -17,73 +20,90 @@ class Calendar_Plus_REST_Endpoints_Events extends Calendar_Plus_REST_Controller 
 	 */
 	protected $rest_base = 'events';
 
+	/**
+	 * Register routes.
+	 *
+	 * @return mixed Calendar operation result.
+	 */
 	public function register_routes() {
-		register_rest_route( $this->namespace, '/' . $this->rest_base, array(
+		register_rest_route(
+			$this->namespace,
+			'/' . $this->rest_base,
 			array(
-				'methods'             => WP_REST_Server::READABLE,
-				'callback'            => array( $this, 'get_items' ),
-				'permission_callback' => array( $this, 'get_items_permissions_check' ),
-				'args'                => $this->get_collection_params(),
-			),
-			'schema' => array( $this, 'get_public_item_schema' ),
-		) );
+				array(
+					'methods'             => WP_REST_Server::READABLE,
+					'callback'            => array( $this, 'get_items' ),
+					'permission_callback' => array( $this, 'get_items_permissions_check' ),
+					'args'                => $this->get_collection_params(),
+				),
+				'schema' => array( $this, 'get_public_item_schema' ),
+			)
+		);
 
-		register_rest_route( $this->namespace, '/' . $this->rest_base . '/(?P<id>[\d]+)/dates', array(
+		register_rest_route(
+			$this->namespace,
+			'/' . $this->rest_base . '/(?P<id>[\d]+)/dates',
 			array(
-				'methods'             => WP_REST_Server::READABLE,
-				'callback'            => array( $this, 'get_item_dates' ),
-				'permission_callback' => array( $this, 'get_items_permissions_check' ),
-			),
-			'schema' => array( $this, 'get_public_item_schema' ),
-		) );
+				array(
+					'methods'             => WP_REST_Server::READABLE,
+					'callback'            => array( $this, 'get_item_dates' ),
+					'permission_callback' => array( $this, 'get_items_permissions_check' ),
+				),
+				'schema' => array( $this, 'get_public_item_schema' ),
+			)
+		);
 
-		register_rest_route( $this->namespace, '/' . $this->rest_base . '/(?P<id>[\d]+)/dates/(?P<date_id>[\d]+)', array(
+		register_rest_route(
+			$this->namespace,
+			'/' . $this->rest_base . '/(?P<id>[\d]+)/dates/(?P<date_id>[\d]+)',
 			array(
-				'methods'             => WP_REST_Server::DELETABLE,
-				'callback'            => array( $this, 'delete_item_date' ),
-				'permission_callback' => array( $this, 'edit_item_permissions_check' ),
-			),
-			array(
-				'methods'             => WP_REST_Server::EDITABLE,
-				'callback'            => array( $this, 'edit_item_date' ),
-				'permission_callback' => array( $this, 'edit_item_date_permissions_check' ),
-				'args'                => array(
-					'edit_all_recurrences' => array(
-						'description'       => __( 'Edit all recurrences for this date', 'calendar-plus' ),
-						'type'              => 'boolean',
-						'sanitize_callback' => 'boolval',
-						'validate_callback' => 'rest_validate_request_arg',
-						'default'           => false,
-					),
-					'from_time'            => array(
-						'description'       => __( 'New "from time" for this date', 'calendar-plus' ),
-						'required'          => true,
-						'type'              => 'string',
-						'default'           => '',
-						'sanitize_callback' => 'sanitize_text_field',
-						'validate_callback' => 'rest_validate_request_arg',
-					),
-					'until_time'           => array(
-						'description'       => __( 'New "to time" for this date', 'calendar-plus' ),
-						'required'          => true,
-						'type'              => 'string',
-						'default'           => '',
-						'sanitize_callback' => 'sanitize_text_field',
-						'validate_callback' => 'rest_validate_request_arg',
+				array(
+					'methods'             => WP_REST_Server::DELETABLE,
+					'callback'            => array( $this, 'delete_item_date' ),
+					'permission_callback' => array( $this, 'edit_item_date_permissions_check' ),
+				),
+				array(
+					'methods'             => WP_REST_Server::EDITABLE,
+					'callback'            => array( $this, 'edit_item_date' ),
+					'permission_callback' => array( $this, 'edit_item_date_permissions_check' ),
+					'args'                => array(
+						'edit_all_recurrences' => array(
+							'description'       => __( 'Edit all recurrences for this date', 'calendar-plus' ),
+							'type'              => 'boolean',
+							'sanitize_callback' => 'boolval',
+							'validate_callback' => 'rest_validate_request_arg',
+							'default'           => false,
+						),
+						'from_time'            => array(
+							'description'       => __( 'New "from time" for this date', 'calendar-plus' ),
+							'required'          => true,
+							'type'              => 'string',
+							'default'           => '',
+							'sanitize_callback' => 'sanitize_text_field',
+							'validate_callback' => 'rest_validate_request_arg',
+						),
+						'until_time'           => array(
+							'description'       => __( 'New "to time" for this date', 'calendar-plus' ),
+							'required'          => true,
+							'type'              => 'string',
+							'default'           => '',
+							'sanitize_callback' => 'sanitize_text_field',
+							'validate_callback' => 'rest_validate_request_arg',
+						),
 					),
 				),
-			),
-			'schema' => array( $this, 'get_public_item_schema' ),
-		) );
+				'schema' => array( $this, 'get_public_item_schema' ),
+			)
+		);
 	}
 
 	/**
 	 * Checks if a given request has access to read events.
 	 *
+	 * @param WP_REST_Request $request Full details about the request.
 	 * @since 2.0
 	 * @access public
 	 *
-	 * @param  WP_REST_Request $request Full details about the request.
 	 * @return true|WP_Error True if the request has read access, WP_Error object otherwise.
 	 */
 	public function get_items_permissions_check( $request ) {
@@ -100,19 +120,19 @@ class Calendar_Plus_REST_Endpoints_Events extends Calendar_Plus_REST_Controller 
 	/**
 	 * Checks if a given request has access to delete a post.
 	 *
+	 * @param WP_REST_Request $request Full details about the request.
 	 * @since 4.7.0
 	 * @access public
 	 *
-	 * @param WP_REST_Request $request Full details about the request.
 	 * @return true|WP_Error True if the request has access to delete the item, WP_Error object otherwise.
 	 */
 	public function edit_item_permissions_check( $request ) {
 
-		$post = get_post( $request['id'] );
+		$post      = get_post( $request['id'] );
 		$post_type = get_post_type_object( $this->post_type );
 
-		if ( $post && ( ! current_user_can( $post_type->cap->edit_posts, $post->ID ) || ! current_user_can( 'manage_calendar_plus' ) ) ) {
-			return new WP_Error( 'rest_cannot_delete', __( 'Sorry, you are not allowed to edit this event.' ), array( 'status' => rest_authorization_required_code() ) );
+		if ( ! $post || $this->post_type !== $post->post_type || ! current_user_can( 'edit_post', $post->ID ) || ! current_user_can( 'manage_calendar_plus' ) ) {
+			return new WP_Error( 'rest_cannot_delete', __( 'Sorry, you are not allowed to edit this event.', 'calendar-plus' ), array( 'status' => rest_authorization_required_code() ) );
 		}
 
 		return true;
@@ -121,12 +141,31 @@ class Calendar_Plus_REST_Endpoints_Events extends Calendar_Plus_REST_Controller 
 
 
 	/**
+	 * Handle edit item date permissions check.
+	 *
+	 * @param mixed $request Request.
+	 *
+	 * @return mixed Calendar operation result.
+	 */
+	public function edit_item_date_permissions_check( $request ) {
+		$permission = $this->edit_item_permissions_check( $request );
+		if ( is_wp_error( $permission ) ) {
+			return $permission;
+		}
+		$cell = calendarp_get_event_cell( absint( $request['date_id'] ) );
+		if ( ! $cell || (int) $cell->event_id !== (int) $request['id'] ) {
+			return new WP_Error( 'calendarp_rest_wrong_date', __( 'The date does not exist for that event.', 'calendar-plus' ), array( 'status' => 404 ) );
+		}
+		return true;
+	}
+
+	/**
 	 * Retrieves a collection of posts.
 	 *
+	 * @param WP_REST_Request $request Full details about the request.
 	 * @since 4.7.0
 	 * @access public
 	 *
-	 * @param WP_REST_Request $request Full details about the request.
 	 * @return WP_REST_Response|WP_Error Response object on success, or WP_Error object on failure.
 	 */
 	public function get_items( $request ) {
@@ -134,16 +173,16 @@ class Calendar_Plus_REST_Endpoints_Events extends Calendar_Plus_REST_Controller 
 		// Retrieve the list of registered collection query parameters.
 		$registered = $this->get_collection_params();
 
-		$year = $request['year'];
+		$year  = $request['year'];
 		$month = $request['month'];
 
 		if ( ! checkdate( $month, 1, $year ) ) {
-			return new WP_Error( 'calendarp_rest_wrong_date', __( 'Please, enter a valid date.' ), array( 'status' => rest_authorization_required_code() ) );
+			return new WP_Error( 'calendarp_rest_wrong_date', __( 'Please, enter a valid date.', 'calendar-plus' ), array( 'status' => rest_authorization_required_code() ) );
 		}
 
 		$month = str_pad( $month, 2, '0', STR_PAD_LEFT );
-		$year = str_pad( $year, 4, '0', STR_PAD_LEFT );
-		$args = array(
+		$year  = str_pad( $year, 4, '0', STR_PAD_LEFT );
+		$args  = array(
 			'grouped_by_day' => false,
 		);
 
@@ -156,7 +195,7 @@ class Calendar_Plus_REST_Endpoints_Events extends Calendar_Plus_REST_Controller 
 		}
 
 		$query_result = calendarp_get_events_in_month( $month, $year, $args );
-		$events = array();
+		$events       = array();
 		foreach ( $query_result as $_event ) {
 			$event = calendarp_get_event( $_event->event_id );
 			if ( ! $event->current_user_can_read() ) {
@@ -165,7 +204,7 @@ class Calendar_Plus_REST_Endpoints_Events extends Calendar_Plus_REST_Controller 
 
 			$event->attributes = $_event;
 
-			$data    = $this->prepare_item_for_response( $event, $request );
+			$data     = $this->prepare_item_for_response( $event, $request );
 			$events[] = $this->prepare_response_for_collection( $data );
 		}
 
@@ -180,23 +219,25 @@ class Calendar_Plus_REST_Endpoints_Events extends Calendar_Plus_REST_Controller 
 	/**
 	 * Retrieves a collection of event dates.
 	 *
+	 * @param WP_REST_Request $request Full details about the request.
 	 * @since 4.7.0
 	 * @access public
-	 *
-	 * @param WP_REST_Request $request Full details about the request.
 	 *
 	 * @return WP_REST_Response|WP_Error Response object on success, or WP_Error object on failure.
 	 */
 	public function get_item_dates( $request ) {
-		$event_id = $request['id'];
+		$event_id = absint( $request['id'] );
+		$event    = calendarp_get_event( $event_id );
+		if ( ! $event || ! $event->current_user_can_read() ) {
+			return new WP_Error( 'calendarp_rest_forbidden', __( 'You cannot view this event.', 'calendar-plus' ), array( 'status' => 403 ) );
+		}
 		return rest_ensure_response( calendar_plus()->generator->get_all_event_dates( $event_id ) );
 	}
 
 	/**
-	 * Delete an event date from its timetable
+	 * Delete an event date from its timetable.
 	 *
-	 * @param $request
-	 *
+	 * @param mixed $request Request.
 	 * @return mixed|WP_REST_Response
 	 */
 	public function delete_item_date( $request ) {
@@ -204,9 +245,16 @@ class Calendar_Plus_REST_Endpoints_Events extends Calendar_Plus_REST_Controller 
 		return rest_ensure_response( true );
 	}
 
+	/**
+	 * Handle edit item date.
+	 *
+	 * @param mixed $request Request.
+	 *
+	 * @return mixed Calendar operation result.
+	 */
 	public function edit_item_date( $request ) {
 		global $wpdb;
-		$cell_id = absint( $request['date_id'] );
+		$cell_id              = absint( $request['date_id'] );
 		$edit_all_recurrences = $request['edit_all_recurrences'];
 
 		$cell = calendarp_get_event_cell( $cell_id );
@@ -214,28 +262,34 @@ class Calendar_Plus_REST_Endpoints_Events extends Calendar_Plus_REST_Controller 
 			return new WP_Error( 'calendarp_rest_wrong_date', __( 'The date does not exist for that event.', 'calendar-plus' ), array( 'status' => 404 ) );
 		}
 
-		$event = calendarp_get_event( absint( $cell->event_id ) );
+		$event_id = absint( $cell->event_id );
+		$event    = calendarp_get_event( $event_id );
 
 		if ( ! $event ) {
 			return new WP_Error( 'calendarp_rest_wrong_event', __( 'The event does not exist.', 'calendar-plus' ), array( 'status' => 404 ) );
 		}
 
 		$from = $request['from_time'];
-		$to = $request['until_time'];
+		$to   = $request['until_time'];
+		$from = Calendar_Plus_Event_Rules_Times_Formatter::format_single_time( $from );
+		$to   = Calendar_Plus_Event_Rules_Times_Formatter::format_single_time( $to );
+		if ( false === $from || false === $to ) {
+			return new WP_Error( 'calendarp_rest_malformed_rule', __( 'Please, use correct dates.', 'calendar-plus' ), array( 'status' => 400 ) );
+		}
 
 		if ( ! empty( $request['from_am_pm'] ) ) {
-			$from = explode( ':', $from );
+			$from    = explode( ':', $from );
 			$from[0] = calendarp_am_pm_to_24h( $from[0], $request['from_am_pm'] );
-			$from = $from[0] . ':' . $from[1];
+			$from    = $from[0] . ':' . $from[1];
 		}
 		if ( ! empty( $request['until_am_pm'] ) ) {
-			$to = explode( ':', $to );
+			$to    = explode( ':', $to );
 			$to[0] = calendarp_am_pm_to_24h( $to[0], $request['until_am_pm'] );
-			$to = $to[0] . ':' . $to[1];
+			$to    = $to[0] . ':' . $to[1];
 		}
 
-		// Check if times are wellformed
-		$rule = array(
+		// Check if times are wellformed.
+		$rule           = array(
 			'rule_type' => 'times',
 			'from'      => $from,
 			'until'     => $to,
@@ -247,23 +301,31 @@ class Calendar_Plus_REST_Endpoints_Events extends Calendar_Plus_REST_Controller 
 		}
 
 		if ( $edit_all_recurrences ) {
+			// phpcs:ignore WordPress.DB.DirectDatabaseQuery -- Native schedule write uses typed update placeholders; both schedule and event caches are invalidated below.
 			$wpdb->update(
 				$wpdb->calendarp_calendar,
-				array( 'from_time' => $formatted_rule['from'], 'until_time' => $formatted_rule['until'] ),
+				array(
+					'from_time'  => $formatted_rule['from'],
+					'until_time' => $formatted_rule['until'],
+				),
 				array( 'event_id' => $event->ID ),
 				array( '%s', '%s' ),
 				array( '%d' )
 			);
 
-			// Update the new rules
-			$rules = $event->get_rules();
-			$rules['times'][0]['form'] = $formatted_rule['from'];
+			// Update the new rules.
+			$rules                      = $event->get_rules();
+			$rules['times'][0]['from']  = $formatted_rule['from'];
 			$rules['times'][0]['until'] = $formatted_rule['until'];
 			$event->update_rules( $rules );
 		} else {
+			// phpcs:ignore WordPress.DB.DirectDatabaseQuery -- Native schedule write uses typed update placeholders; both schedule and event caches are invalidated below.
 			$wpdb->update(
 				$wpdb->calendarp_calendar,
-				array( 'from_time' => $formatted_rule['from'], 'until_time' => $formatted_rule['until'] ),
+				array(
+					'from_time'  => $formatted_rule['from'],
+					'until_time' => $formatted_rule['until'],
+				),
 				array( 'ID' => $cell_id ),
 				array( '%s', '%s' ),
 				array( '%d' )
@@ -334,6 +396,13 @@ class Calendar_Plus_REST_Endpoints_Events extends Calendar_Plus_REST_Controller 
 		return $params;
 	}
 
+	/**
+	 * Handle sanitize categories list.
+	 *
+	 * @param mixed $categories Categories.
+	 *
+	 * @return mixed Calendar operation result.
+	 */
 	public function sanitize_categories_list( $categories ) {
 		if ( empty( $categories ) ) {
 			return array();
@@ -350,6 +419,11 @@ class Calendar_Plus_REST_Endpoints_Events extends Calendar_Plus_REST_Controller 
 		return array_map( 'absint', $cats );
 	}
 
+	/**
+	 * Retrieve item schema.
+	 *
+	 * @return mixed Calendar operation result.
+	 */
 	public function get_item_schema() {
 		$schema = array(
 			'$schema'    => 'http://json-schema.org/draft-04/schema#',
@@ -411,11 +485,11 @@ class Calendar_Plus_REST_Endpoints_Events extends Calendar_Plus_REST_Controller 
 	 * This method determines whether we need to override the regular password
 	 * check in core with a filter.
 	 *
+	 * @param Calendar_Plus_Event $event Event to check against.
+	 * @param WP_REST_Request     $request Request data to check.
 	 * @since 2.0
 	 * @access public
 	 *
-	 * @param Calendar_Plus_Event         $event    Event to check against.
-	 * @param WP_REST_Request $request Request data to check.
 	 * @return bool True if the user can access password-protected content, otherwise false.
 	 */
 	public function can_access_password_content( $event, $request ) {
@@ -443,17 +517,15 @@ class Calendar_Plus_REST_Endpoints_Events extends Calendar_Plus_REST_Controller 
 	/**
 	 * Prepares a single event output for response.
 	 *
+	 * @param Calendar_Plus_Event $event Event object.
+	 * @param WP_REST_Request     $request Request object.
 	 * @since 2.0
 	 * @access public
-	 *
-	 * @param Calendar_Plus_Event         $event    Event object.
-	 * @param WP_REST_Request $request Request object.
 	 *
 	 * @return WP_REST_Response Response object.
 	 */
 	public function prepare_item_for_response( $event, $request ) {
 		$post = $event->post;
-		$GLOBALS['post'] = $post;
 
 		setup_postdata( $post );
 
@@ -473,25 +545,25 @@ class Calendar_Plus_REST_Endpoints_Events extends Calendar_Plus_REST_Controller 
 
 		$start = '';
 		if ( ! empty( $schema['properties']['start'] ) ) {
-			$start = strtotime( $event->attributes->from_date . ' ' . $event->attributes->from_time );
+			$start         = strtotime( $event->attributes->from_date . ' ' . $event->attributes->from_time );
 			$data['start'] = array(
-				'year'   => date( 'Y', $start ),
-				'month'  => date( 'n', $start ),
-				'day'    => date( 'j', $start ),
-				'hour'   => date( 'H', $start ),
-				'minute' => date( 'i', $start ),
+				'year'   => gmdate( 'Y', $start ),
+				'month'  => gmdate( 'n', $start ),
+				'day'    => gmdate( 'j', $start ),
+				'hour'   => gmdate( 'H', $start ),
+				'minute' => gmdate( 'i', $start ),
 			);
 		}
 
 		$end = '';
 		if ( ! empty( $schema['properties']['end'] ) ) {
-			$end = strtotime( $event->attributes->until_date . ' ' . $event->attributes->until_time );
+			$end         = strtotime( $event->attributes->until_date . ' ' . $event->attributes->until_time );
 			$data['end'] = array(
-				'year'   => date( 'Y', $end ),
-				'month'  => date( 'n', $end ),
-				'day'    => date( 'j', $end ),
-				'hour'   => date( 'H', $end ),
-				'minute' => date( 'i', $end ),
+				'year'   => gmdate( 'Y', $end ),
+				'month'  => gmdate( 'n', $end ),
+				'day'    => gmdate( 'j', $end ),
+				'hour'   => gmdate( 'H', $end ),
+				'minute' => gmdate( 'i', $end ),
 			);
 		}
 
@@ -517,7 +589,8 @@ class Calendar_Plus_REST_Endpoints_Events extends Calendar_Plus_REST_Controller 
 
 		if ( ! empty( $schema['properties']['desc'] ) ) {
 			/** This filter is documented in wp-includes/post-template.php */
-			$excerpt = apply_filters( 'the_excerpt', apply_filters( 'get_the_excerpt', $post->post_excerpt, $post ) );
+			// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- Preserve native WordPress excerpt filters.
+			$excerpt      = apply_filters( 'the_excerpt', apply_filters( 'get_the_excerpt', $post->post_excerpt, $post ) );
 			$data['desc'] = post_password_required( $post ) ? '' : $excerpt;
 		}
 
@@ -538,7 +611,7 @@ class Calendar_Plus_REST_Endpoints_Events extends Calendar_Plus_REST_Controller 
 
 				$meta = get_post_meta( $location->ID );
 				foreach ( $meta as $key => $value ) {
-					if ( in_array( $key, array( '_location_type', '_address', '_city', '_state', '_postcode', '_country', '_gmaps_options' ) ) ) {
+					if ( in_array( $key, array( '_location_type', '_address', '_city', '_state', '_postcode', '_country', '_gmaps_options' ), true ) ) {
 						$data['location']['meta'][ $key ] = $value[0];
 					}
 				}
@@ -552,10 +625,10 @@ class Calendar_Plus_REST_Endpoints_Events extends Calendar_Plus_REST_Controller 
 		}
 
 		$args = (object) array(
-			'from_time'  => date( 'H:i', $start ),
-			'until_time' => date( 'H:i', $end ),
-			'from_date'  => date( 'Y-m-d', $start ),
-			'until_date' => date( 'Y-m-d', $end ),
+			'from_time'  => gmdate( 'H:i', $start ),
+			'until_time' => gmdate( 'H:i', $end ),
+			'from_date'  => gmdate( 'Y-m-d', $start ),
+			'until_date' => gmdate( 'Y-m-d', $end ),
 		);
 
 		$data['calendars'] = array(
@@ -587,10 +660,10 @@ class Calendar_Plus_REST_Endpoints_Events extends Calendar_Plus_REST_Controller 
 	/**
 	 * Prepares links for the request.
 	 *
+	 * @param Calendar_Plus_Event $event Event object.
 	 * @since 2.0
 	 * @access protected
 	 *
-	 * @param Calendar_Plus_Event $event Event object.
 	 * @return array Links for the given post.
 	 */
 	protected function prepare_links( $event ) {
@@ -616,7 +689,8 @@ class Calendar_Plus_REST_Endpoints_Events extends Calendar_Plus_REST_Controller 
 		$post_type_obj = get_post_type_object( $post->post_type );
 
 		// If we have a featured media, add that.
-		if ( $featured_media = get_post_thumbnail_id( $post->ID ) ) {
+		$featured_media = get_post_thumbnail_id( $post->ID );
+		if ( $featured_media ) {
 			$image_url = rest_url( 'wp/v2/media/' . $featured_media );
 
 			$links['https://api.w.org/featuredmedia'] = array(
@@ -678,5 +752,4 @@ class Calendar_Plus_REST_Endpoints_Events extends Calendar_Plus_REST_Controller 
 	public function protected_title_format() {
 		return '%s';
 	}
-
 }

@@ -1,0 +1,1035 @@
+/* Scoped defaults. Core block styles and user styles can override every part. */
+:where(.calendarp-showcase) {
+	--cp-ink: #172a35;
+	--cp-muted: #63717a;
+	--cp-line: #e0e6e8;
+	--cp-cream: #f7f7f4;
+	--cp-accent: #006b64;
+	--cp-accent-dark: #00524d;
+	--cp-soft: #e5f3ef;
+	--cp-gold: #f5cc68;
+	--cp-hero: #103e3d;
+	--cp-hero-text: #ffffff;
+	--cp-card: #ffffff;
+	--cp-control: #ffffff;
+	--cp-control-text: #3d5155;
+	--cp-button-text: #ffffff;
+	--cp-date: #ffffff;
+	--cp-past: #eaf0ed;
+	color: var(--cp-ink);
+	background: var(--cp-cream);
+	font:
+		400 16px/1.55 system-ui,
+		-apple-system,
+		"Segoe UI",
+		Roboto,
+		Arial,
+		sans-serif;
+}
+:where(.calendarp-showcase, .calendarp-showcase *) {
+	box-sizing: border-box;
+}
+:where(.calendarp-showcase a) {
+	color: inherit;
+	text-decoration: none;
+}
+:where(
+	.calendarp-showcase h1,
+	.calendarp-showcase h2,
+	.calendarp-showcase h3,
+	.calendarp-showcase p
+) {
+	margin: 0;
+}
+:where(.calendarp-showcase h1, .calendarp-showcase h2, .calendarp-showcase h3) {
+	font-family: inherit;
+	font-weight: 750;
+}
+:where(.calendarp-showcase h2) {
+	font-size: 30px;
+	line-height: 1.2;
+	letter-spacing: -0.04em;
+}
+:where(.calendarp-showcase a:hover) {
+	text-decoration: underline;
+}
+.calendarp-showcase :focus-visible {
+	outline: 3px solid var(--cp-accent);
+	outline-offset: 4px;
+}
+:where(.calendarp-showcase-container) {
+	width: 100%;
+	max-width: 1216px;
+	margin-inline: auto;
+	padding-inline: 28px;
+}
+:where(.calendarp-showcase-hero) {
+	position: relative;
+	overflow: hidden;
+	background: var(--cp-hero);
+	color: var(--cp-hero-text);
+}
+.calendarp-showcase-hero::after {
+	content: "";
+	position: absolute;
+	width: 380px;
+	height: 380px;
+	border: 1px solid currentColor;
+	opacity: 0.08;
+	border-radius: 50%;
+	inset-inline-end: -45px;
+	top: -95px;
+	box-shadow:
+		0 0 0 50px currentColor,
+		0 0 0 110px currentColor;
+	pointer-events: none;
+}
+:where(.calendarp-showcase-hero-inner) {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 40px;
+	padding-block: 65px;
+	position: relative;
+	z-index: 1;
+}
+:where(.calendarp-showcase-eyebrow) {
+	font-size: 11px;
+	font-weight: 750;
+	letter-spacing: 0.18em;
+	text-transform: uppercase;
+	margin-bottom: 16px;
+}
+:where(.calendarp-showcase-hero h1) {
+	color: inherit;
+	font-size: clamp(38px, 4.6vw, 66px);
+	line-height: 1.06;
+	letter-spacing: -0.055em;
+	margin-bottom: 22px;
+}
+:where(.calendarp-showcase-intro) {
+	font-size: 16px;
+	line-height: 1.7;
+	max-width: 610px;
+	opacity: 0.85;
+}
+:where(.calendarp-showcase-hero-note) {
+	flex-shrink: 0;
+	border-inline-start: 1px solid currentColor;
+	padding-inline-start: 22px;
+	font-size: 12px;
+}
+:where(.calendarp-showcase-hero-note p:first-child) {
+	font-weight: 750;
+	font-size: 15px;
+	margin-bottom: 5px;
+}
+:where(.calendarp-showcase-main) {
+	padding-block: 44px 100px;
+}
+:where(.calendarp-showcase-section-top, .calendarp-showcase-list-top) {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 20px;
+	margin-bottom: 23px;
+}
+:where(.calendarp-showcase-section-top p) {
+	color: var(--cp-muted);
+	font-size: 14px;
+	margin-top: 9px;
+}
+:where(.calendarp-showcase-list-top) {
+	margin-top: 43px;
+	margin-bottom: 21px;
+}
+:where(.calendarp-showcase-field-layoutSwitch nav) {
+	display: flex;
+	border: 1px solid var(--cp-line);
+	background: var(--cp-card);
+	border-radius: 10px;
+	padding: 4px;
+	font-size: inherit;
+}
+:where(.calendarp-showcase-field-layoutSwitch) {
+	font-size: 12px;
+	font-weight: 700;
+	flex-shrink: 0;
+}
+:where(.calendarp-showcase-field-layoutSwitch a) {
+	padding: 8px 14px;
+	border-radius: 7px;
+	color: var(--cp-muted);
+}
+:where(.calendarp-showcase-field-layoutSwitch a[aria-current]) {
+	color: var(--cp-accent-dark);
+	background: var(--cp-soft);
+}
+:where(.calendarp-showcase-field-filters) {
+	background: var(--cp-card);
+	border: 1px solid var(--cp-line);
+	border-radius: 16px;
+	padding: 15px;
+	margin-bottom: 32px;
+	box-shadow: 0 7px 24px #263e3a08;
+	font-size: 13px;
+}
+:where(.calendarp-showcase-field-filters form) {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 12px;
+	align-items: center;
+}
+:where(.calendarp-showcase-field-filters label) {
+	flex: 1 1 175px;
+	min-width: 0;
+}
+:where(.calendarp-showcase-field-filters label:has(input[type="search"])) {
+	flex: 3 1 250px;
+}
+:where(
+	.calendarp-showcase-field-filters input,
+	.calendarp-showcase-field-filters select
+) {
+	width: 100%;
+	height: 45px;
+	border: 1px solid var(--cp-line);
+	background: var(--cp-control);
+	color: var(--cp-control-text);
+	border-radius: 9px;
+	padding-inline: 14px;
+	font: inherit;
+}
+:where(.calendarp-showcase-field-filters button) {
+	height: 45px;
+	border: 0;
+	border-radius: 9px;
+	padding-inline: 23px;
+	background: var(--cp-accent);
+	color: var(--cp-button-text);
+	font: inherit;
+	font-weight: 700;
+	cursor: pointer;
+}
+:where(.calendarp-showcase-field-filters button:hover) {
+	background: var(--cp-accent-dark);
+}
+:where(.calendarp-showcase-featured) {
+	display: grid;
+	grid-template-columns: 1fr 1fr;
+	background: var(--cp-card);
+	border: 1px solid var(--cp-line);
+	border-radius: 19px;
+	overflow: hidden;
+	min-height: 325px;
+	box-shadow: 0 12px 30px #203c340b;
+}
+:where(.calendarp-showcase-visual) {
+	position: relative;
+	overflow: hidden;
+	min-height: 150px;
+	padding: 21px;
+	display: flex;
+	justify-content: space-between;
+	align-items: flex-start;
+	gap: 10px;
+	background: var(--cp-soft);
+}
+:where(.calendarp-showcase-feature-visual) {
+	min-height: 310px;
+	background: linear-gradient(135deg, var(--cp-accent), var(--cp-hero));
+}
+:where(.calendarp-showcase-field-image) {
+	position: absolute;
+	inset: 0;
+}
+:where(.calendarp-showcase-field-image img) {
+	display: block;
+	width: 100%;
+	height: 100%;
+	object-fit: contain;
+	margin: 0;
+}
+:where(.calendarp-showcase-no-image) {
+	display: flex;
+	justify-content: flex-end;
+	align-items: flex-end;
+	width: 100%;
+	height: 100%;
+	font-size: 210px;
+	line-height: 0.7;
+	opacity: 0.13;
+	overflow: hidden;
+	color: var(--cp-ink);
+}
+:where(.calendarp-showcase-feature-visual .calendarp-showcase-no-image) {
+	font-size: 310px;
+	color: var(--cp-gold);
+	opacity: 0.25;
+}
+.calendarp-showcase-feature-visual:has(.calendarp-showcase-no-image)::before {
+	content: "";
+	position: absolute;
+	width: 355px;
+	height: 355px;
+	border: 1px solid #ffffff40;
+	border-radius: 50%;
+	inset-inline-start: 21%;
+	top: -105px;
+	box-shadow:
+		0 0 0 45px #ffffff09,
+		0 0 0 100px #ffffff07,
+		0 0 0 155px #ffffff04;
+}
+:where(.calendarp-showcase-feature-label) {
+	position: absolute;
+	inset-inline-start: 30px;
+	top: 30px;
+	color: white;
+	background: #103e3dcc;
+	border: 1px solid #ffffff44;
+	border-radius: 30px;
+	padding: 7px 12px;
+	text-transform: uppercase;
+	letter-spacing: 0.09em;
+	font-size: 11px;
+	font-weight: 700;
+	z-index: 1;
+}
+:where(.calendarp-showcase-visual-title) {
+	position: absolute;
+	inset-inline: 30px;
+	bottom: 30px;
+	color: white;
+	font-size: clamp(30px, 3vw, 45px);
+	max-width: 350px;
+	line-height: 1.07;
+	letter-spacing: -0.05em;
+}
+/* The editable fallback headline is reserved for events without an image. */
+.calendarp-showcase-feature-visual:has(img) .calendarp-showcase-visual-title {
+	display: none;
+}
+:where(.calendarp-showcase-copy) {
+	min-width: 0;
+	padding: 23px 22px 24px;
+	display: flex;
+	flex-direction: column;
+	flex: 1;
+}
+:where(.calendarp-showcase-feature-copy) {
+	padding: 35px 38px;
+	justify-content: center;
+}
+:where(.calendarp-showcase-copy .wp-block-post-title) {
+	font-size: 19px;
+	line-height: 1.3;
+	letter-spacing: -0.025em;
+	margin-bottom: 11px;
+	color: inherit;
+}
+:where(.calendarp-showcase-feature-copy .wp-block-post-title) {
+	font-size: clamp(24px, 2.3vw, 34px);
+	line-height: 1.2;
+	letter-spacing: -0.04em;
+	margin-block: 17px 13px;
+}
+:where(.calendarp-showcase-field-summary) {
+	font-size: 13px;
+	color: var(--cp-muted);
+	line-height: 1.6;
+	margin-bottom: 19px;
+}
+:where(.calendarp-showcase-feature-copy .calendarp-showcase-field-summary) {
+	font-size: 14px;
+	line-height: 1.65;
+	margin-bottom: 16px;
+}
+:where(.calendarp-showcase-field p) {
+	font: inherit;
+	margin: 0;
+}
+:where(.calendarp-showcase-meta) {
+	display: grid;
+	gap: 8px;
+	margin-top: auto;
+	font-size: 12px;
+	font-weight: 600;
+	color: var(--cp-muted);
+	overflow-wrap: anywhere;
+}
+:where(.calendarp-showcase-feature-copy .calendarp-showcase-meta) {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 9px 20px;
+}
+:where(.calendarp-showcase-field-link) {
+	color: var(--cp-accent);
+	font-size: 13px;
+	font-weight: 800;
+	margin-top: 19px;
+	padding-top: 16px;
+	border-top: 1px solid var(--cp-line);
+}
+:where(.calendarp-showcase-feature-copy .calendarp-showcase-field-link) {
+	border-top: 0;
+	padding-top: 0;
+	margin-top: 23px;
+}
+:where(.calendarp-showcase-cards) {
+	display: grid;
+	grid-template-columns: repeat(var(--cp-columns, 3), minmax(0, 1fr));
+	gap: var(--cp-gap, 20px);
+}
+:where(.calendarp-showcase-card) {
+	background: var(--cp-card);
+	border: 1px solid var(--cp-line);
+	border-radius: 15px;
+	overflow: hidden;
+	display: flex;
+	flex-direction: column;
+	transition:
+		transform 0.2s,
+		box-shadow 0.2s;
+	min-width: 0;
+}
+:where(.calendarp-showcase-card:hover) {
+	transform: translateY(-3px);
+	box-shadow: 0 14px 30px #203c3414;
+}
+:where(.calendarp-showcase-field-dateBadge) {
+	position: relative;
+	z-index: 1;
+	background: var(--cp-date);
+	border-radius: 10px;
+	min-width: 67px;
+	padding: 11px;
+	text-align: center;
+	box-shadow: 0 4px 15px #0000000b;
+}
+:where(.calendarp-showcase-field-dateBadge strong) {
+	display: block;
+	font-size: 1.7em;
+	line-height: 1;
+	font-weight: 800;
+	letter-spacing: -0.06em;
+}
+:where(.calendarp-showcase-field-dateBadge small) {
+	display: block;
+	color: var(--cp-accent);
+	font-size: 0.7em;
+	letter-spacing: 0.1em;
+	text-transform: uppercase;
+	margin-top: 6px;
+	font-weight: 800;
+}
+:where(.calendarp-showcase-field-categories, .calendarp-showcase-field-tags) {
+	position: relative;
+	z-index: 1;
+	display: flex;
+	flex-wrap: wrap;
+	gap: 4px;
+	align-self: flex-start;
+	font-size: 11px;
+	font-weight: 750;
+}
+:where(
+	.calendarp-showcase-field-categories span,
+	.calendarp-showcase-field-tags span
+) {
+	display: inline-block;
+	background: var(--cp-soft);
+	color: var(--cp-accent-dark);
+	border-radius: 5px;
+	padding: 5px 9px;
+	overflow-wrap: anywhere;
+}
+:where(.calendarp-showcase-visual .calendarp-showcase-field-categories span) {
+	border-radius: 30px;
+	background: var(--cp-card);
+}
+:where(.calendarp-showcase-field-resultCount) {
+	color: var(--cp-muted);
+	font-size: 13px;
+}
+:where(.calendarp-showcase-past) {
+	margin-top: 52px;
+	padding: 24px 28px;
+	background: var(--cp-past);
+	border: 1px solid var(--cp-line);
+	border-radius: 16px;
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	gap: 22px;
+}
+:where(.calendarp-showcase-past h3) {
+	font-size: 19px;
+	line-height: 1.2;
+	margin-bottom: 5px;
+	letter-spacing: -0.025em;
+}
+:where(.calendarp-showcase-past p) {
+	font-size: 13px;
+	color: var(--cp-muted);
+}
+:where(.calendarp-showcase-field-pastLink) {
+	background: var(--cp-card);
+	border: 1px solid var(--cp-line);
+	border-radius: 9px;
+	padding: 12px 17px;
+	font-size: 13px;
+	font-weight: 750;
+	color: var(--cp-accent);
+}
+:where(.calendarp-showcase-pagination) {
+	display: flex;
+	justify-content: center;
+	flex-wrap: wrap;
+	gap: 20px;
+	margin-top: 30px;
+	color: var(--cp-accent);
+}
+:where(.calendarp-showcase-notice) {
+	margin-block: 20px;
+	color: var(--cp-muted);
+}
+:where(
+	.calendarp-showcase-results[data-layout="list"] .calendarp-showcase-cards
+) {
+	display: flex;
+	flex-direction: column;
+	gap: var(--cp-gap, 14px);
+}
+:where(
+	.calendarp-showcase-results[data-layout="list"] .calendarp-showcase-card
+) {
+	display: grid;
+	grid-template-columns: 160px minmax(0, 1fr);
+	min-height: 185px;
+}
+:where(
+	.calendarp-showcase-results[data-layout="list"]
+		.calendarp-showcase-card
+		.calendarp-showcase-visual
+) {
+	min-height: 100%;
+	height: 100%;
+	padding: 22px;
+	flex-direction: column;
+	justify-content: space-between;
+}
+:where(
+	.calendarp-showcase-results[data-layout="list"]
+		.calendarp-showcase-card
+		.calendarp-showcase-copy
+) {
+	display: grid;
+	grid-template-columns: minmax(0, 1fr) 195px;
+	column-gap: 24px;
+	align-content: center;
+	align-items: center;
+	padding: 23px 28px;
+}
+:where(
+	.calendarp-showcase-results[data-layout="list"]
+		.calendarp-showcase-card
+		.wp-block-post-title
+) {
+	grid-column: 1;
+	grid-row: 1;
+	font-size: 21px;
+	margin-bottom: 8px;
+}
+:where(
+	.calendarp-showcase-results[data-layout="list"]
+		.calendarp-showcase-card
+		.calendarp-showcase-field-summary
+) {
+	grid-column: 1;
+	grid-row: 2;
+	margin: 0;
+}
+:where(
+	.calendarp-showcase-results[data-layout="list"]
+		.calendarp-showcase-card
+		.calendarp-showcase-meta
+) {
+	grid-column: 2;
+	grid-row: 1 / span 2;
+	margin: 0;
+	padding-inline-start: 22px;
+	border-inline-start: 1px solid var(--cp-line);
+	font-size: 13px;
+}
+:where(
+	.calendarp-showcase-results[data-layout="list"]
+		.calendarp-showcase-card
+		.calendarp-showcase-field-link
+) {
+	grid-column: 1 / -1;
+	grid-row: 3;
+	margin-top: 15px;
+	padding-top: 12px;
+}
+@media (max-width: 950px) {
+	:where(.calendarp-showcase-hero-note) {
+		display: none;
+	}
+	:where(.calendarp-showcase-cards) {
+		grid-template-columns: repeat(
+			min(2, var(--cp-columns, 3)),
+			minmax(0, 1fr)
+		);
+	}
+	:where(.calendarp-showcase-feature-copy) {
+		padding: 28px;
+	}
+	:where(.calendarp-showcase-field-filters label:has(input[type="search"])) {
+		flex-basis: 100%;
+	}
+}
+@media (max-width: 900px) {
+	:where(
+		.calendarp-showcase-results[data-layout="list"] .calendarp-showcase-card
+	) {
+		grid-template-columns: 125px minmax(0, 1fr);
+	}
+	:where(
+		.calendarp-showcase-results[data-layout="list"]
+			.calendarp-showcase-card
+			.calendarp-showcase-copy
+	) {
+		grid-template-columns: 1fr;
+		padding: 20px 22px;
+	}
+	:where(
+		.calendarp-showcase-results[data-layout="list"]
+			.calendarp-showcase-card
+			.calendarp-showcase-copy
+			> *
+	) {
+		grid-column: 1;
+		grid-row: auto;
+	}
+	:where(
+		.calendarp-showcase-results[data-layout="list"]
+			.calendarp-showcase-card
+			.calendarp-showcase-meta
+	) {
+		border: 0;
+		padding: 0;
+		display: flex;
+		flex-wrap: wrap;
+		gap: 6px 18px;
+		margin-top: 12px;
+	}
+}
+@media (max-width: 650px) {
+	:where(.calendarp-showcase-container) {
+		padding-inline: 18px;
+	}
+	:where(.calendarp-showcase-hero-inner) {
+		padding-block: 47px 51px;
+	}
+	:where(.calendarp-showcase-hero h1) {
+		font-size: 45px;
+	}
+	:where(.calendarp-showcase-intro) {
+		font-size: 14px;
+	}
+	:where(.calendarp-showcase-main) {
+		padding-block: 30px 55px;
+	}
+	:where(.calendarp-showcase-section-top) {
+		flex-wrap: wrap;
+		align-items: start;
+	}
+	:where(.calendarp-showcase h2) {
+		font-size: 24px;
+	}
+	:where(.calendarp-showcase-field-layoutSwitch a) {
+		padding: 7px 9px;
+	}
+	:where(.calendarp-showcase-field-filters) {
+		padding: 13px;
+		margin-bottom: 23px;
+	}
+	:where(
+		.calendarp-showcase-field-filters label,
+		.calendarp-showcase-field-filters button
+	) {
+		flex-basis: 100%;
+	}
+	:where(.calendarp-showcase-featured) {
+		grid-template-columns: 1fr;
+	}
+	:where(.calendarp-showcase-feature-visual) {
+		min-height: 215px;
+	}
+	:where(.calendarp-showcase-feature-copy) {
+		padding: 26px 23px;
+	}
+	:where(.calendarp-showcase-feature-copy .wp-block-post-title) {
+		font-size: 26px;
+	}
+	:where(.calendarp-showcase-list-top) {
+		margin-top: 34px;
+	}
+	:where(.calendarp-showcase-cards) {
+		grid-template-columns: 1fr;
+	}
+	:where(.calendarp-showcase-visual) {
+		min-height: 128px;
+	}
+	:where(.calendarp-showcase-past) {
+		display: block;
+		padding: 22px;
+	}
+	:where(.calendarp-showcase-field-pastLink) {
+		display: inline-block;
+		margin-top: 17px;
+	}
+	:where(
+		.calendarp-showcase-results[data-layout="list"] .calendarp-showcase-card
+	) {
+		grid-template-columns: 84px minmax(0, 1fr);
+		min-height: 0;
+	}
+	:where(
+		.calendarp-showcase-results[data-layout="list"]
+			.calendarp-showcase-card
+			.calendarp-showcase-visual
+	) {
+		padding: 13px 8px;
+		align-items: center;
+		justify-content: flex-start;
+		gap: 12px;
+	}
+	:where(
+		.calendarp-showcase-results[data-layout="list"]
+			.calendarp-showcase-card
+			.calendarp-showcase-field-dateBadge
+	) {
+		min-width: 0;
+		width: 100%;
+		padding: 10px 5px;
+	}
+	:where(
+		.calendarp-showcase-results[data-layout="list"]
+			.calendarp-showcase-card
+			.calendarp-showcase-copy
+	) {
+		padding: 16px 15px;
+	}
+	:where(
+		.calendarp-showcase-results[data-layout="list"]
+			.calendarp-showcase-card
+			.wp-block-post-title
+	) {
+		font-size: 16px;
+	}
+	:where(
+		.calendarp-showcase-results[data-layout="list"]
+			.calendarp-showcase-card
+			.calendarp-showcase-meta
+	) {
+		display: grid;
+		font-size: 11px;
+		gap: 4px;
+	}
+}
+@media (prefers-reduced-motion: reduce) {
+	.calendarp-showcase-card {
+		transition: none;
+	}
+	.calendarp-showcase-card:hover {
+		transform: none;
+	}
+}
+@media (prefers-contrast: more) {
+	.calendarp-showcase-field-filters input,
+	.calendarp-showcase-field-filters select {
+		border-color: currentColor;
+	}
+}
+/* Template editing uses the same canvas; headings remain selectable. */
+.calendarp-showcase-template-editor > .block-editor-inner-blocks {
+	display: block;
+}
+/* Theme defaults must not replace the prototype's hierarchy. Saved block styles win. */
+.calendarp-showcase :where(h1, h2, h3) {
+	font-family: inherit;
+	font-weight: 750;
+}
+.calendarp-showcase
+	:where(.calendarp-showcase-hero h1:not([class*="-font-size"])) {
+	font-size: clamp(38px, 4.6vw, 66px);
+	line-height: 1.06;
+}
+.calendarp-showcase :where(h2:not([class*="-font-size"])) {
+	font-size: 30px;
+	line-height: 1.2;
+}
+.calendarp-showcase
+	:where(
+		.calendarp-showcase-copy .wp-block-post-title:not([class*="-font-size"])
+	) {
+	font-size: 19px;
+	line-height: 1.3;
+}
+.calendarp-showcase
+	:where(
+		.calendarp-showcase-feature-copy
+			.wp-block-post-title:not([class*="-font-size"])
+	) {
+	font-size: clamp(24px, 2.3vw, 34px);
+	line-height: 1.2;
+}
+.calendarp-showcase
+	:where(
+		.calendarp-showcase-results[data-layout="list"]
+			.calendarp-showcase-card
+			.wp-block-post-title:not([class*="-font-size"])
+	) {
+	font-size: 21px;
+}
+.calendarp-showcase
+	:where(.calendarp-showcase-past h3:not([class*="-font-size"])) {
+	font-size: 19px;
+}
+.calendarp-showcase :where(.calendarp-showcase-hero-note) {
+	border: 1px solid #ffffff26;
+	border-radius: 14px;
+	padding: 18px 22px;
+	background: #ffffff09;
+}
+@media (max-width: 650px) {
+	.calendarp-showcase
+		:where(.calendarp-showcase-hero h1:not([class*="-font-size"])) {
+		font-size: 45px;
+	}
+	.calendarp-showcase :where(h2:not([class*="-font-size"])) {
+		font-size: 24px;
+	}
+	.calendarp-showcase
+		:where(
+			.calendarp-showcase-feature-copy
+				.wp-block-post-title:not([class*="-font-size"])
+		) {
+		font-size: 26px;
+	}
+	.calendarp-showcase
+		:where(
+			.calendarp-showcase-results[data-layout="list"]
+				.calendarp-showcase-card
+				.wp-block-post-title:not([class*="-font-size"])
+		) {
+		font-size: 16px;
+	}
+}
+:where(.calendarp-showcase) {
+	--cp-tone-a: #d9e9e3;
+	--cp-tone-b: #f3e5d2;
+	--cp-tone-c: #dfe4ee;
+	--cp-tone-d: #e8deeb;
+	--cp-tone-e: #e4e9d8;
+	--cp-tone-f: #e6e5e2;
+}
+:where(.calendarp-showcase-card:nth-child(6n + 1) .calendarp-showcase-visual) {
+	background: var(--cp-tone-a);
+}
+:where(.calendarp-showcase-card:nth-child(6n + 2) .calendarp-showcase-visual) {
+	background: var(--cp-tone-b);
+}
+:where(.calendarp-showcase-card:nth-child(6n + 3) .calendarp-showcase-visual) {
+	background: var(--cp-tone-c);
+}
+:where(.calendarp-showcase-card:nth-child(6n + 4) .calendarp-showcase-visual) {
+	background: var(--cp-tone-d);
+}
+:where(.calendarp-showcase-card:nth-child(6n + 5) .calendarp-showcase-visual) {
+	background: var(--cp-tone-e);
+}
+:where(.calendarp-showcase-card:nth-child(6n + 6) .calendarp-showcase-visual) {
+	background: var(--cp-tone-f);
+}
+.calendarp-showcase :where(.calendarp-showcase-meta > *) {
+	margin-block-start: 0;
+}
+:where(
+	.calendarp-showcase-card
+		.calendarp-showcase-visual:has(.calendarp-showcase-image-square)
+) {
+	aspect-ratio: 1;
+}
+:where(
+	.calendarp-showcase-card
+		.calendarp-showcase-visual:has(.calendarp-showcase-image-portrait)
+) {
+	aspect-ratio: 3 / 4;
+}
+/* The optional full-page template owns these blocks; the theme is never modified. */
+:where(.calendarp-showcase-site-frame) {
+	margin: 0;
+	font:
+		400 16px/1.55 system-ui,
+		-apple-system,
+		"Segoe UI",
+		Roboto,
+		Arial,
+		sans-serif;
+	color: #172a35;
+}
+:where(.calendarp-showcase-site-topbar) {
+	background: #102e32;
+	color: #b4cbc7;
+	padding-block: 11px;
+	font-size: 11px;
+	font-weight: 750;
+	letter-spacing: 0.08em;
+}
+:where(.calendarp-showcase-site-frame p) {
+	margin: 0;
+}
+:where(.calendarp-showcase-site-header) {
+	background: white;
+	padding-block: 20px;
+}
+:where(.calendarp-showcase-site-header-inner) {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 30px;
+}
+:where(.calendarp-showcase-brand) {
+	display: flex;
+	align-items: center;
+	gap: 13px;
+	flex-shrink: 0;
+}
+:where(.calendarp-showcase-brand .wp-block-site-title) {
+	font-size: 17px;
+	font-weight: 800;
+	line-height: 1.15;
+	max-width: 300px;
+}
+:where(.calendarp-showcase-brand .wp-block-site-tagline) {
+	font-size: 10px;
+	color: #63717a;
+	margin-top: 6px;
+}
+:where(.calendarp-showcase-site-frame a) {
+	color: inherit;
+	text-decoration: none;
+}
+:where(.calendarp-showcase-site-frame a:hover) {
+	text-decoration: underline;
+}
+:where(.calendarp-showcase-site-frame .wp-block-navigation) {
+	font-size: 13px;
+	font-weight: 750;
+	gap: 24px;
+}
+:where(.calendarp-showcase-site-main, .calendarp-showcase-site-footer) {
+	margin-block-start: 0;
+}
+:where(.calendarp-showcase-site-footer) {
+	background: #102e32;
+	color: #b4cbc7;
+	padding-block: 28px;
+	font-size: 12px;
+}
+:where(.calendarp-showcase-site-footer-inner) {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	gap: 20px;
+}
+:where(.calendarp-showcase-site-footer .wp-block-site-title) {
+	font-size: inherit;
+	font-weight: 600;
+}
+.calendarp-showcase-site-frame :where(.wp-block-site-title) {
+	font-family: inherit;
+}
+.calendarp-showcase-site-frame
+	:where(
+		.calendarp-showcase-brand
+			.wp-block-site-title:not([class*="-font-size"])
+	) {
+	font-size: 17px;
+}
+.calendarp-showcase-site-frame
+	:where(
+		.calendarp-showcase-site-footer
+			.wp-block-site-title:not([class*="-font-size"])
+	) {
+	font-size: 12px;
+}
+@media (max-width: 650px) {
+	:where(.calendarp-showcase-site-header) {
+		padding-block: 16px;
+	}
+	:where(.calendarp-showcase-site-footer-inner) {
+		display: block;
+	}
+	:where(.calendarp-showcase-site-footer-inner p) {
+		margin-bottom: 6px;
+	}
+}
+.calendarp-showcase-site-frame > *,
+.calendarp-showcase-site-footer-inner > * {
+	margin-block-start: 0;
+}
+.calendarp-showcase :where(h1, h2, h3, .wp-block-post-title) {
+	overflow-wrap: anywhere;
+}
+.calendarp-showcase-field-categories.has-text-color span,
+.calendarp-showcase-field-tags.has-text-color span,
+.calendarp-showcase-field-dateBadge.has-text-color small,
+.calendarp-showcase-field-filters.has-text-color input,
+.calendarp-showcase-field-filters.has-text-color select {
+	color: inherit;
+}
+.calendarp-showcase-field-categories.has-background span,
+.calendarp-showcase-field-tags.has-background span {
+	background: inherit;
+}
+:where(.calendarp-showcase-field-dateBadge) {
+	font-weight: 800;
+}
+:where(
+	.calendarp-showcase-field-dateBadge strong,
+	.calendarp-showcase-field-dateBadge small
+) {
+	font-weight: inherit;
+}
+.calendarp-showcase-field-dateBadge[style*="letter-spacing"] strong,
+.calendarp-showcase-field-dateBadge[style*="letter-spacing"] small {
+	letter-spacing: inherit;
+}
+.calendarp-showcase-field-dateBadge[style*="text-transform"] small {
+	text-transform: inherit;
+}
+.calendarp-showcase-field-filters[style*="font-weight"] button {
+	font-weight: inherit;
+}
+:where(.calendarp-showcase-brand, .calendarp-showcase-brand-text) {
+	min-width: 0;
+}
+:where(.calendarp-showcase-brand) {
+	flex-shrink: 1;
+}
+:where(.calendarp-showcase-brand .wp-block-site-title) {
+	overflow-wrap: anywhere;
+}
+:where(
+	.calendarp-showcase-site-header .wp-block-navigation,
+	.calendarp-showcase-brand .wp-block-site-logo
+) {
+	flex-shrink: 0;
+}
+:where(.calendarp-showcase-field-summary) {
+	overflow-wrap: anywhere;
+}

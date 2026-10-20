@@ -107,6 +107,7 @@
 			from_am_pm: from_am_pm,
 			until_am_pm: until_am_pm,
 			cell_id: cellId,
+			nonce: CalendarPlusi18n.nonce,
 			action: 'calendarp_edit_calendar_cell'
 		};
 

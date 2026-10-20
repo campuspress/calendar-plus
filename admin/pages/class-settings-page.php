@@ -1,9 +1,31 @@
 <?php
+/**
+ * Calendar Plus: admin/pages/class-settings-page.php.
+ *
+ * @package Calendar_Plus
+ */
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
+
+/** Calendar component: Calendar_Plus_Admin_Settings_Page. */
 class Calendar_Plus_Admin_Settings_Page {
 
-    public $slug;
 
+	/**
+	 * Calendar component state.
+	 *
+	 * @var mixed
+	 */
+	public $slug;
+
+	/**
+	 * Initialize this calendar component.
+	 *
+	 * @param mixed $plugin_name Plugin name.
+	 */
 	public function __construct( $plugin_name ) {
 		$this->slug = $plugin_name . '-settings';
 		add_action( 'admin_menu', array( $this, 'add_menu' ) );
@@ -11,34 +33,59 @@ class Calendar_Plus_Admin_Settings_Page {
 		add_action( 'option_page_capability_calendar_plus_settings', array( $this, 'set_settings_api_capability' ) );
 	}
 
+	/**
+	 * Set settings api capability.
+	 *
+	 * @param mixed $cap Cap.
+	 *
+	 * @return mixed Calendar operation result.
+	 */
 	public function set_settings_api_capability( $cap ) {
 		return 'manage_calendar_plus';
 	}
 
+	/**
+	 * Add menu.
+	 *
+	 * @return mixed Calendar operation result.
+	 */
 	public function add_menu() {
 		$id = add_submenu_page( 'edit.php?post_type=calendar_event', __( 'Calendar+ Settings', 'calendar-plus' ), __( 'Settings', 'calendar-plus' ), 'manage_calendar_plus', $this->slug, array( $this, 'render' ) );
 		add_action( 'load-' . $id, array( $this, 'on_load' ) );
 	}
 
+	/**
+	 * Handle on load.
+	 *
+	 * @return mixed Calendar operation result.
+	 */
 	public function on_load() {
 		add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_scripts' ) );
 		$this->handle_remote_feed_deletion();
 	}
 
+	/**
+	 * Handle handle remote feed deletion.
+	 *
+	 * @return mixed Calendar operation result.
+	 */
 	private function handle_remote_feed_deletion() {
 
-		if ( ! isset( $_GET['delete_remote_feed'] ) ) {
+		if ( null === calendarp_form_input( 'delete_remote_feed', null, 'get' ) ) {
 			return;
 		}
 
 		check_admin_referer( calendarp_get_settings_slug() . '_import' );
+		if ( ! current_user_can( 'manage_calendar_plus' ) ) {
+			return;
+		}
 
 		$_SERVER['REQUEST_URI'] = remove_query_arg( array( '_wpnonce', 'delete_remote_feed' ) );
 
-		$feed = $_GET['delete_remote_feed'];
+		$feed  = calendarp_form_input( 'delete_remote_feed', '', 'get' );
 		$feeds = get_option( 'calendar_plus_remote_feeds', array() );
 
-		if ( $feeds && is_numeric( $_GET['delete_remote_feed'] ) && isset( $feeds[ $feed ] ) ) {
+		if ( $feeds && is_numeric( calendarp_form_input( 'delete_remote_feed', '', 'get' ) ) && isset( $feeds[ $feed ] ) ) {
 			unset( $feeds[ $feed ] );
 		}
 
@@ -51,25 +98,33 @@ class Calendar_Plus_Admin_Settings_Page {
 		add_settings_error( calendarp_get_settings_slug(), 'remote-feed-deleted', __( 'Remote feed deleted.', 'calendar-plus' ), 'updated' );
 	}
 
+	/**
+	 * Enqueue scripts.
+	 *
+	 * @return mixed Calendar operation result.
+	 */
 	public function enqueue_scripts() {
 		wp_enqueue_script(
 			'calendarp-settings',
 			calendarp_get_plugin_url() . 'admin/js/settings.js',
-			[ 'jquery' ], calendarp_get_version(), true
+			array( 'jquery' ),
+			calendarp_get_version(),
+			true
 		);
 
 		wp_enqueue_style(
 			'calendarp-settings',
 			calendarp_get_plugin_url() . 'admin/css/settings.css',
-			[], calendarp_get_version()
+			array(),
+			calendarp_get_version()
 		);
 
 		$users = calendarp_get_allowed_users();
 
-		// Convert to JSON, JS will manage  to add the users
+		// Convert to JSON, JS will manage  to add the users.
 		$users_list = array();
 		foreach ( $users as $user ) {
-			/** @var WP_User $user */
+			/** Calendar component state. @var WP_User $user */
 			$element = array(
 				'id'   => $user->ID,
 				'name' => $user->display_name,
@@ -86,7 +141,7 @@ class Calendar_Plus_Admin_Settings_Page {
 			$users_list[] = $element;
 		}
 
-		// Some strings for JS that needs translations
+		// Some strings for JS that needs translations.
 		$i10n = array(
 			'ays'         => __( 'Are you sure?', 'calendar-plus' ),
 			'removeTitle' => __( 'Remove user from list', 'calendar-plus' ),
@@ -97,6 +152,11 @@ class Calendar_Plus_Admin_Settings_Page {
 		wp_localize_script( 'calendarp-settings', 'calendarpSettings', $i10n );
 	}
 
+	/**
+	 * Retrieve tabs.
+	 *
+	 * @return mixed Calendar operation result.
+	 */
 	private function get_tabs() {
 		return apply_filters(
 			'calendarp_settings_tabs',
@@ -110,23 +170,38 @@ class Calendar_Plus_Admin_Settings_Page {
 		);
 	}
 
+	/**
+	 * Retrieve current tab.
+	 *
+	 * @return mixed Calendar operation result.
+	 */
 	private function get_current_tab() {
 		$tabs = $this->get_tabs();
 
-		if ( ! isset( $_GET['tab'] ) ) {
+		if ( ! ( null !== calendarp_form_input( 'tab', null, 'get' ) ) ) {
 			return key( $tabs );
 		}
 
-		return isset( $tabs[ $_GET['tab'] ] ) ? $_GET['tab'] : key( $tabs );
+		return isset( $tabs[ calendarp_form_input( 'tab', '', 'get' ) ] ) ? calendarp_form_input( 'tab', '', 'get' ) : key( $tabs );
 	}
 
+	/**
+	 * Render tabs.
+	 *
+	 * @return mixed Calendar operation result.
+	 */
 	private function render_tabs() {
-		$tabs = $this->get_tabs();
+		$tabs        = $this->get_tabs();
 		$current_tab = $this->get_current_tab();
 
 		require_once calendarp_get_plugin_dir() . 'admin/views/settings-tabs.php';
 	}
 
+	/**
+	 * Retrieve fields.
+	 *
+	 * @return mixed Calendar operation result.
+	 */
 	private function get_fields() {
 		$settings = calendarp_get_settings();
 
@@ -135,25 +210,25 @@ class Calendar_Plus_Admin_Settings_Page {
 				'general' => array(
 					'title'  => null,
 					'fields' => array(
-						'general-main-country'                => array(
+						'general-main-country'         => array(
 							'title' => __( 'Default Country', 'calendar-plus' ),
 							'args'  => $settings['country'],
 						),
-						'general-main-display-country'        => array(
+						'general-main-display-country' => array(
 							'title'    => __( 'Display country in locations address', 'calendar-plus' ),
 							'args'     => $settings['display_location_country'],
 							'sanitize' => 'isset',
 						),
-						'general-main-time-format'            => array(
+						'general-main-time-format'     => array(
 							'title' => __( 'Time format selector', 'calendar-plus' ),
 							'args'  => $settings['time_format'],
 						),
-						'general-main-events-page'            => array(
+						'general-main-events-page'     => array(
 							'title'    => __( 'Events Page', 'calendar-plus' ),
 							'args'     => absint( $settings['events_page_id'] ),
 							'sanitize' => 'absint',
 						),
-						'general-main-replace-sidebar'        => array(
+						'general-main-replace-sidebar' => array(
 							'title' => __( 'Replace Calendar Plus sidebar for', 'calendar-plus' ),
 							'args'  => $settings['replace_sidebar'],
 						),
@@ -217,6 +292,11 @@ class Calendar_Plus_Admin_Settings_Page {
 		);
 	}
 
+	/**
+	 * Register settings.
+	 *
+	 * @return mixed Calendar operation result.
+	 */
 	public function register_settings() {
 		include_once calendarp_get_plugin_dir() . 'admin/settings-fields.php';
 
@@ -251,8 +331,13 @@ class Calendar_Plus_Admin_Settings_Page {
 		do_action( 'calendarp_settings_fields', $settings );
 	}
 
+	/**
+	 * Handle render.
+	 *
+	 * @return mixed Calendar operation result.
+	 */
 	public function render() {
-		$tab = $this->get_current_tab();
+		$tab  = $this->get_current_tab();
 		$tabs = $this->get_tabs();
 
 		?>
@@ -263,17 +348,17 @@ class Calendar_Plus_Admin_Settings_Page {
 			$this->render_errors();
 
 			if ( 'import' === $tab ) {
-				require_once dirname( __FILE__ ) . '/ical-import-view.php';
+				require_once __DIR__ . '/ical-import-view.php';
 			} else {
 				?>
 
-				<form action="<?php echo self_admin_url( 'options.php' ); ?>" method="post" enctype="multipart/form-data">
+				<form action="<?php echo esc_url( self_admin_url( 'options.php' ) ); ?>" method="post" enctype="multipart/form-data">
 					<?php
 
 					settings_fields( calendarp_get_settings_slug() );
 					do_settings_sections( $this->slug );
 
-					$submit_text = 'export' === $tab ? $tabs[ $tab ] : __( 'Save Changes' );
+					$submit_text = 'export' === $tab ? $tabs[ $tab ] : __( 'Save Changes', 'calendar-plus' );
 					submit_button( $submit_text, 'primary', calendarp_get_settings_slug() . "[submit-$tab]" );
 
 					?>
@@ -283,10 +368,22 @@ class Calendar_Plus_Admin_Settings_Page {
 		<?php
 	}
 
+	/**
+	 * Render errors.
+	 *
+	 * @return mixed Calendar operation result.
+	 */
 	private function render_errors() {
 		settings_errors( calendarp_get_settings_slug() );
 	}
 
+	/**
+	 * Handle sanitize settings.
+	 *
+	 * @param array $input Input.
+	 *
+	 * @return mixed Calendar operation result.
+	 */
 	public function sanitize_settings( $input ) {
 		$settings = calendarp_get_settings();
 
@@ -297,7 +394,7 @@ class Calendar_Plus_Admin_Settings_Page {
 		$ignore_fields = array( 'remote_feed' );
 
 		foreach ( $input as $field => $value ) {
-			if ( ! in_array( $field, $ignore_fields ) ) {
+			if ( ! in_array( $field, $ignore_fields, true ) ) {
 				$settings[ $field ] = $value;
 			}
 		}
@@ -312,29 +409,29 @@ class Calendar_Plus_Admin_Settings_Page {
 				$fields = $input['export_fields'];
 
 				foreach ( array( 'title', 'description', 'location', 'categories', 'tags' ) as $field ) {
-					if ( ! in_array( $field, $fields ) ) {
+					if ( ! in_array( $field, $fields, true ) ) {
 						$exclude_columns[] = $field;
 					}
 				}
 
-				if ( ! in_array( 'recurrence', $fields ) ) {
+				if ( ! in_array( 'recurrence', $fields, true ) ) {
 					$exclude_columns[] = 'type';
 					$exclude_columns[] = 'recurring_every';
 				}
 
-				if ( ! in_array( 'time', $fields ) ) {
+				if ( ! in_array( 'time', $fields, true ) ) {
 					$exclude_columns[] = 'from_time';
 					$exclude_columns[] = 'until_time';
 				}
 
-				if ( ! in_array( 'date', $fields ) ) {
+				if ( ! in_array( 'date', $fields, true ) ) {
 					$exclude_columns[] = 'from_date';
 					$exclude_columns[] = 'until_date';
 				}
 			}
 
 			$include_columns = array_diff( Calendar_Plus_Export_CSV::get_supported_columns(), $exclude_columns );
-			$export = new Calendar_Plus_Export_CSV( array(), $include_columns );
+			$export          = new Calendar_Plus_Export_CSV( array(), $include_columns );
 			$export->export();
 
 		} elseif ( isset( $input['submit-permissions'] ) ) {
@@ -347,7 +444,7 @@ class Calendar_Plus_Admin_Settings_Page {
 					continue;
 				}
 
-				$role = get_role( $role_name );
+				$role         = get_role( $role_name );
 				$role_options = $input['permissions'][ $role_name ];
 
 				foreach ( $caps as $cap ) {
@@ -362,28 +459,28 @@ class Calendar_Plus_Admin_Settings_Page {
 			$settings['display_location_country'] = isset( $input['display_location_country'] );
 
 		} elseif ( isset( $input['submit-ical-import'] ) ) {
+			check_admin_referer( calendarp_get_settings_slug() . '-options' );
 
 			if ( empty( $_FILES['ical-file'] ) ) {
-				wp_die( __( 'Please select a file to upload', 'calendarp' ) );
+				wp_die( esc_html__( 'Please select a file to upload', 'calendar-plus' ) );
 			}
 
+			// phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- PHP-provided upload metadata; native wp_handle_sideload validates it below. Never used as an output or SQL value.
 			$file = $_FILES['ical-file'];
-			$tmp_file = $file['tmp_name'];
-			$content = file_get_contents( $tmp_file );
-
-			// We'll use wp_handle_sideload to make sure
-			// that the file is properly checked and sanitized
-
-			// BUT FIRST! Let's temporarily knock off
-			// the bug workaround in S3 handler:
-			if ( class_exists( 'S3_Uploads\\Plugin' ) ) {
-				$s3 = S3_Uploads\Plugin::get_instance();
-				remove_filter(
-					'wp_handle_sideload_prefilter',
-					array( $s3, 'filter_sideload_move_temp_file_to_s3' )
-				);
+			if ( ! is_array( $file ) || ! isset( $file['tmp_name'], $file['size'], $file['error'] ) || ! is_string( $file['tmp_name'] ) || UPLOAD_ERR_OK !== (int) $file['error'] || (int) $file['size'] > 8 * MB_IN_BYTES || ! is_uploaded_file( $file['tmp_name'] ) ) {
+				wp_die( esc_html__( 'Select a valid iCalendar upload no larger than 8 MB.', 'calendar-plus' ) );
 			}
-			// Okay, so now, back to sideloading images as usual.
+			global $wp_filesystem;
+			if ( ! WP_Filesystem() ) {
+				wp_die( esc_html__( 'The WordPress filesystem is unavailable.', 'calendar-plus' ) );
+			}
+			$content = $wp_filesystem->get_contents( $file['tmp_name'] );
+			if ( false === $content ) {
+				wp_die( esc_html__( 'The uploaded calendar could not be read.', 'calendar-plus' ) );
+			}
+
+			// We'll use wp_handle_sideload to make sure.
+			// that the file is properly checked and sanitized.
 
 			$upload = wp_handle_sideload(
 				$file,
@@ -393,7 +490,7 @@ class Calendar_Plus_Admin_Settings_Page {
 				)
 			);
 			if ( isset( $upload['error'] ) ) {
-				wp_die( $upload['error'] );
+				wp_die( esc_html( $upload['error'] ) );
 			}
 
 			$object = array(
@@ -404,58 +501,64 @@ class Calendar_Plus_Admin_Settings_Page {
 				'context'        => 'import',
 				'post_status'    => 'private',
 			);
-			$id = wp_insert_attachment( $object, $upload['file'] );
+			$id     = wp_insert_attachment( $object, $upload['file'] );
 
 			$import_recurring = ! empty( $input['import-recurring'] );
-			$result = calendarp_import_events( $content, $import_recurring );
+			$result           = calendarp_import_events( $content, $import_recurring );
 
-			if ( is_wp_error( $result ) ):
+			if ( is_wp_error( $result ) ) :
 				add_settings_error(
-					calendarp_get_settings_slug(), $result->get_error_code(),
-					$result->get_error_message(), 'error'
+					calendarp_get_settings_slug(),
+					$result->get_error_code(),
+					$result->get_error_message(),
+					'error'
 				);
-			else:
+			else :
 				unset( $settings['import-recurring'], $settings['submit-ical-import'] );
 				wp_delete_attachment( $id, true );
 
 				add_settings_error(
-					calendarp_get_settings_slug(), 'ical-imported',
-					__( 'Events imported successfully.', 'calendar-plus' ), 'updated'
+					calendarp_get_settings_slug(),
+					'ical-imported',
+					__( 'Events imported successfully.', 'calendar-plus' ),
+					'updated'
 				);
 			endif;
 
 		} elseif ( isset( $input['submit-feed-sync-interval'] ) ) {
 
-			if ( isset( $input['feed_sync_interval'] ) && in_array( $input['feed_sync_interval'], [ 'hourly', 'twicedaily', 'daily' ] ) ) {
+			if ( isset( $input['feed_sync_interval'] ) && in_array( $input['feed_sync_interval'], array( 'hourly', 'twicedaily', 'daily' ), true ) ) {
 				calendarp_schedule_ical_sync_cron( $input['feed_sync_interval'] );
 			}
 
 			add_settings_error(
-				calendarp_get_settings_slug(), 'updated-sync-interval',
-				__( 'Updated feed sync interval.', 'calendar-plus' ),'updated'
+				calendarp_get_settings_slug(),
+				'updated-sync-interval',
+				__( 'Updated feed sync interval.', 'calendar-plus' ),
+				'updated'
 			);
 
 		} elseif ( isset( $input['submit-add-remote-feed'] ) ) {
 
-			if ( ! empty( $_POST['remote_feed'] ) && ! empty( $_POST['remote_feed']['source'] ) ) {
-				$feed_info = stripslashes_deep( $_POST['remote_feed'] );
+			$feed_info = calendarp_form_input( 'remote_feed', array() );
+			if ( ! empty( $feed_info['source'] ) ) {
 
-				$feeds = get_option( 'calendar_plus_remote_feeds', [] );
+				$feeds = get_option( 'calendar_plus_remote_feeds', array() );
 
-				$feed = [
+				$feed = array(
 					'name'         => sanitize_text_field( $feed_info['name'] ),
-					'source'       => $feed_info['source'],
+					'source'       => esc_url_raw( $feed_info['source'], array( 'http', 'https' ) ),
 					'type'         => sanitize_text_field( $feed_info['type'] ),
 					'author'       => intval( $feed_info['author'] ),
 					'category'     => intval( $feed_info['category'] ),
-					'status'       => in_array( $feed_info['status'], [ 'publish', 'draft', 'pending' ] ) ? $feed_info['status'] : 'publish',
+					'status'       => in_array( $feed_info['status'], array( 'publish', 'draft', 'pending' ), true ) ? $feed_info['status'] : 'publish',
 					'exclude_past' => intval( $feed_info['exclude_past'] ),
 					'keep_updated' => intval( $feed_info['keep_updated'] ),
-					'last_sync'    => [],
-				];
+					'last_sync'    => array(),
+				);
 
-				if ( isset( $_POST['remote_feed_id'] ) && isset( $feeds[ $_POST['remote_feed_id'] ] ) ) {
-					$feed_id = $_POST['remote_feed_id'];
+				if ( null !== calendarp_form_input( 'remote_feed_id', null ) && isset( $feeds[ absint( calendarp_form_input( 'remote_feed_id' ) ) ] ) ) {
+					$feed_id = absint( calendarp_form_input( 'remote_feed_id' ) );
 
 					foreach ( $feed as $item => $value ) {
 						if ( 'last_sync' !== $item ) {
@@ -464,18 +567,22 @@ class Calendar_Plus_Admin_Settings_Page {
 					}
 
 					add_settings_error(
-						calendarp_get_settings_slug(), 'updated-remote-feed',
-						__( 'Updated remote feed.', 'calendar-plus' ),'updated'
+						calendarp_get_settings_slug(),
+						'updated-remote-feed',
+						__( 'Updated remote feed.', 'calendar-plus' ),
+						'updated'
 					);
 
-					$_REQUEST['_wp_http_referer'] = remove_query_arg( 'edit_remote_feed', $_REQUEST['_wp_http_referer'] );
+					$_REQUEST['_wp_http_referer'] = remove_query_arg( 'edit_remote_feed', calendarp_form_input( '_wp_http_referer', '', 'request' ) );
 
 				} else {
 					$feeds[] = $feed;
 
 					add_settings_error(
-						calendarp_get_settings_slug(), 'updated-sync-interval',
-						__( 'Added remote feed.', 'calendar-plus' ),'updated'
+						calendarp_get_settings_slug(),
+						'updated-sync-interval',
+						__( 'Added remote feed.', 'calendar-plus' ),
+						'updated'
 					);
 				}
 

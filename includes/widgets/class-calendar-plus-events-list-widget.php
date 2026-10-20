@@ -1,4 +1,14 @@
 <?php
+/**
+ * Calendar Plus: includes/widgets/class-calendar-plus-events-list-widget.php.
+ *
+ * @package Calendar_Plus
+ */
+
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 
 
 /**
@@ -7,9 +17,9 @@
 class Calendar_Plus_Events_List_Widget extends WP_Widget {
 
 	/**
-	 * Class constructor
+	 * Class constructor.
 	 */
-	function __construct() {
+	public function __construct() {
 		parent::__construct(
 			'calendarp-events-list-widget',
 			__( 'Calendar+ Events List', 'calendar-plus' ),
@@ -21,17 +31,21 @@ class Calendar_Plus_Events_List_Widget extends WP_Widget {
 	}
 
 	/**
-	 * Register the widget class with WordPress
+	 * Register the widget class with WordPress.
+	 *
+	 * @return mixed Calendar operation result.
 	 */
 	public static function register_widget() {
 		register_widget( __CLASS__ );
 	}
 
 	/**
-	 * Render the widget content
+	 * Render the widget content.
 	 *
-	 * @param array $args Standard parameters for widgets in theme
-	 * @param array $instance Settings specific to this widget instance
+	 * @param array $args Standard parameters for widgets in theme.
+	 * @param array $instance Settings specific to this widget instance.
+	 *
+	 * @return mixed Calendar operation result.
 	 */
 	public function widget( $args, $instance ) {
 
@@ -41,26 +55,26 @@ class Calendar_Plus_Events_List_Widget extends WP_Widget {
 
 		$instance = wp_parse_args( $instance, $this->get_default_settings() );
 
-		echo $args['before_widget'];
-		echo $args['before_title'], $instance['title'], $args['after_title'];
+		echo wp_kses_post( $args['before_widget'] );
+		echo wp_kses_post( $args['before_title'] ), esc_html( $instance['title'] ), wp_kses_post( $args['after_title'] );
 
 		$query_args = array(
 			'category'        => $instance['categories'],
 			'events_per_page' => $instance['count'],
 		);
 
-		$events_by_date = calendarp_get_events_in_date_range( current_time( 'timestamp' ), false, $query_args );
+		$events_by_date = calendarp_get_events_in_date_range( calendarp_wall_time(), false, $query_args );
 
-		$display_name = in_array( 'name', $instance['event_fields'] );
-		$display_desc = in_array( 'description', $instance['event_fields'] );
-		$display_date = in_array( 'date', $instance['event_fields'] );
-		$display_time = in_array( 'time', $instance['event_fields'] );
-		$display_cats = in_array( 'category', $instance['event_fields'] );
+		$display_name = in_array( 'name', $instance['event_fields'], true );
+		$display_desc = in_array( 'description', $instance['event_fields'], true );
+		$display_date = in_array( 'date', $instance['event_fields'], true );
+		$display_time = in_array( 'time', $instance['event_fields'], true );
+		$display_cats = in_array( 'category', $instance['event_fields'], true );
 
 		echo '<ul class="events-list-widget">';
 
 		foreach ( $events_by_date as $date => $events ) {
-			/** @var Calendar_Plus_Event $event */
+			/** Calendar component state. @var Calendar_Plus_Event $event */
 			foreach ( $events as $event ) {
 
 				$output = array();
@@ -74,8 +88,10 @@ class Calendar_Plus_Events_List_Widget extends WP_Widget {
 
 					if ( $display_time && $display_date && $dates['date'] && $dates['time'] ) {
 						$output['date event-time'] = sprintf(
+							/* translators: 1: formatted time, 2: formatted date. */
 							_x( '%1$s at %2$s', 'time and date sep', 'calendar-plus' ),
-							$dates['date'], $dates['time']
+							$dates['date'],
+							$dates['time']
 						);
 
 					} elseif ( $display_time && $dates['time'] ) {
@@ -89,8 +105,12 @@ class Calendar_Plus_Events_List_Widget extends WP_Widget {
 					$output['description'] = get_the_excerpt( $event->ID );
 				}
 
-				if ( $display_cats && $cats = get_the_term_list( $event->ID, 'calendar_event_category' ) ) {
-					$output['category'] = sprintf( __( 'Posted in %s', 'calendar-plus' ), $cats );
+				$cats = $display_cats ? get_the_term_list( $event->ID, 'calendar_event_category' ) : false;
+				if ( $cats ) {
+					$output['category'] = sprintf( /* translators: %s: event category names. */
+						__( 'Posted in %s', 'calendar-plus' ),
+						$cats
+					);
 				}
 
 				if ( empty( $output ) ) {
@@ -108,10 +128,10 @@ class Calendar_Plus_Events_List_Widget extends WP_Widget {
 
 					if ( ! $linked ) {
 						$content = sprintf( '<a href="%s">%s</a>', esc_url( get_permalink( $event->ID ) ), $content );
-						$linked = true;
+						$linked  = true;
 					}
 
-					printf( '<li class="event-%s">%s</li>', $field, $content );
+					printf( '<li class="event-%s">%s</li>', esc_attr( $field ), wp_kses_post( $content ) );
 				}
 
 				echo '</ul></li>';
@@ -120,21 +140,20 @@ class Calendar_Plus_Events_List_Widget extends WP_Widget {
 
 		echo '</ul>';
 
-		echo '<p>', calendarp_events_permalink( false ), '</p>';
+		echo wp_kses_post( '<p>' ), esc_html( calendarp_events_permalink( false ) ), wp_kses_post( '</p>' );
 
-		echo $args['after_widget'];
+		echo wp_kses_post( $args['after_widget'] );
 	}
 
 	/**
-	 * Validate widget settings when they are saved
+	 * Validate widget settings when they are saved.
 	 *
-	 * @param array $input
-	 * @param array $previous
-	 *
+	 * @param array $input Input.
+	 * @param array $previous Previous.
 	 * @return array Validated settings
 	 */
 	public function update( $input, $previous ) {
-		$output = array();
+		$output   = array();
 		$defaults = $this->get_default_settings();
 
 		foreach ( $input as $setting => $input_value ) {
@@ -151,12 +170,17 @@ class Calendar_Plus_Events_List_Widget extends WP_Widget {
 					break;
 
 				case 'categories':
-					$all_categories = get_terms( array( 'taxonomy' => 'calendar_event_category', 'fields' => 'ids' ) );
-					$output_value = array_intersect( $all_categories, array_map( 'intval', $input_value ) );
+					$all_categories = get_terms(
+						array(
+							'taxonomy' => 'calendar_event_category',
+							'fields'   => 'ids',
+						)
+					);
+					$output_value   = array_intersect( $all_categories, array_map( 'intval', $input_value ) );
 					break;
 
 				case 'event_fields':
-					$all_fields = $defaults['event_fields'];
+					$all_fields   = $defaults['event_fields'];
 					$output_value = array_intersect( $all_fields, $input_value );
 					break;
 			}
@@ -170,7 +194,8 @@ class Calendar_Plus_Events_List_Widget extends WP_Widget {
 	}
 
 	/**
-	 * Retrieve a list of default widget setting values
+	 * Retrieve a list of default widget setting values.
+	 *
 	 * @return array
 	 */
 	public function get_default_settings() {
@@ -183,9 +208,11 @@ class Calendar_Plus_Events_List_Widget extends WP_Widget {
 	}
 
 	/**
-	 * Render the widget settings form
+	 * Render the widget settings form.
 	 *
-	 * @param array $instance
+	 * @param array $instance Instance.
+	 *
+	 * @return mixed Calendar operation result.
 	 */
 	public function form( $instance ) {
 		$defaults = $this->get_default_settings();
@@ -202,7 +229,7 @@ class Calendar_Plus_Events_List_Widget extends WP_Widget {
 
 			if ( 'title' === $setting || 'count' === $setting ) {
 				echo '<p>';
-				printf( '<label for="%s">%s</label>', $this->get_field_id( $setting ), esc_html( $label ) );
+				printf( '<label for="%s">%s</label>', esc_attr( $this->get_field_id( $setting ) ), esc_html( $label ) );
 				echo "\n";
 
 				if ( 'count' === $setting ) {
@@ -212,20 +239,26 @@ class Calendar_Plus_Events_List_Widget extends WP_Widget {
 					echo '<input type="text" class="widefat"';
 				}
 
-				printf( ' id="%s" name="%s" value="%s">',
-					$this->get_field_id( $setting ),
-					$this->get_field_name( $setting ),
+				printf(
+					' id="%s" name="%s" value="%s">',
+					esc_attr( $this->get_field_id( $setting ) ),
+					esc_attr( $this->get_field_name( $setting ) ),
 					esc_attr( $instance[ $setting ] )
 				);
 
 				echo '</p>';
 
 			} elseif ( 'categories' === $setting || 'event_fields' === $setting ) {
-				printf( '<fieldset class="calp-widget-checkbox-list" id="%s">', $this->get_field_id( $setting ) );
+				printf( '<fieldset class="calp-widget-checkbox-list" id="%s">', esc_attr( $this->get_field_id( $setting ) ) );
 				echo '<legend>', esc_html( $label ), '</legend>';
 
 				if ( 'categories' === $setting ) {
-					$options = get_terms( array( 'taxonomy' => 'calendar_event_category', 'fields' => 'id=>name' ) );
+					$options = get_terms(
+						array(
+							'taxonomy' => 'calendar_event_category',
+							'fields'   => 'id=>name',
+						)
+					);
 
 				} else {
 					$options = array(
@@ -240,9 +273,9 @@ class Calendar_Plus_Events_List_Widget extends WP_Widget {
 				foreach ( $options as $option => $option_label ) {
 					printf(
 						'<label><input type="checkbox" name="%s[]" value="%s"%s>%s</label><br>',
-						$this->get_field_name( $setting ),
-						$option,
-						checked( in_array( $option, $instance[ $setting ] ), true, false ),
+						esc_attr( $this->get_field_name( $setting ) ),
+						esc_attr( $option ),
+						checked( in_array( (string) $option, array_map( 'strval', $instance[ $setting ] ), true ), true, false ),
 						esc_html( $option_label )
 					);
 				}

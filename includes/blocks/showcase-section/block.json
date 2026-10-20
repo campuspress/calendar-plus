@@ -1,0 +1,59 @@
+{
+  "$schema": "https://schemas.wp.org/trunk/block.json",
+  "apiVersion": 3,
+  "name": "calendar-plus/showcase-section",
+  "version": "2.2.25",
+  "title": "Showcase Template Section",
+  "description": "An editable toolbar, featured event, event card, results heading or footer.",
+  "category": "widgets",
+  "icon": "calendar-alt",
+  "textdomain": "calendar-plus",
+  "attributes": {
+    "role": {
+      "type": "string",
+      "default": "card"
+    }
+  },
+  "supports": {
+    "html": false,
+    "color": {
+      "text": true,
+      "background": true,
+      "link": true,
+      "gradients": true
+    },
+    "spacing": {
+      "margin": true,
+      "padding": true,
+      "blockGap": true
+    },
+    "typography": {
+      "fontSize": true,
+      "lineHeight": true,
+      "textAlign": true,
+      "__experimentalFontFamily": true,
+      "__experimentalFontWeight": true,
+      "__experimentalFontStyle": true,
+      "__experimentalLetterSpacing": true,
+      "__experimentalTextTransform": true,
+      "__experimentalTextDecoration": true
+    },
+    "__experimentalBorder": {
+      "color": true,
+      "radius": true,
+      "style": true,
+      "width": true
+    },
+    "shadow": true,
+    "inserter": false
+  },
+  "editorScript": "calendarp-showcase-editor",
+  "style": "calendarp-showcase",
+  "render": "file:./render.php",
+  "parent": [
+    "calendar-plus/showcase-results"
+  ],
+  "usesContext": [
+    "calendarp/occurrence"
+  ]
+}
