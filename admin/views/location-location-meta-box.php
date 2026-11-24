@@ -30,9 +30,9 @@
 
 <script type="text/template" id="location-type-selector-template">
 	<div id="location-type-selector-controls">
-		<a href="#" class="location-selector" id="location-selector-standard" data-type="standard"><span class="dashicons dashicons-admin-post"></span> <?php _e( 'Add my own location', 'calendar-plus' ); ?>
+		<a href="javascript:void(0);" class="location-selector" id="location-selector-standard" data-type="standard"><span class="dashicons dashicons-admin-post"></span> <?php _e( 'Add my own location', 'calendar-plus' ); ?>
 		</a>
-		<a href="#" class="location-selector" id="location-selector-gmaps" data-type="gmaps"><span class="dashicons dashicons-location-alt"></span> <?php _e( 'Google Map', 'calendar-plus' ); ?>
+		<a href="javascript:void(0);" class="location-selector" id="location-selector-gmaps" data-type="gmaps"><span class="dashicons dashicons-location-alt"></span> <?php _e( 'Google Map', 'calendar-plus' ); ?>
 		</a>
 	</div>
 
@@ -50,8 +50,7 @@
 			<input type="hidden" name="gmaps[location-gmaps-zoom]" value="" />
 		</div>
 
-		<input type="text" id="location-gmaps-search" name="gmaps[location-gmaps-search]" value="" />
-		<div id="map_canvas" style="width: 50%; height: 100%;float:left"></div>
+		<div id="map_canvas" style="width: 50%; height: 500px;float:left"></div>
 		<div id="location-gmaps-fields" style="margin-left:3%; height: 100%;width:46%;float:left">
 			<p>
 				<label for="location-address"><?php _e( 'Address', 'calendar-plus' ); ?></label>
@@ -87,26 +86,26 @@
 
 		<?php if ( is_numeric( $map_options['lat'] ) && is_numeric( $map_options['long'] ) && is_numeric( $map_options['zoom'] ) ) : ?>
 		var mapOptions = {
-			center: new google.maps.LatLng( <?php echo $map_options['lat']; ?>, <?php echo $map_options['long']; ?> ),
-			zoom: <?php echo $map_options['zoom']; ?>,
-			mapTypeId: google.maps.MapTypeId.ROADMAP,
+			center: { lat: <?php echo (float) $map_options['lat']; ?>, lng: <?php echo (float) $map_options['long']; ?> },
+			zoom: <?php echo (int) $map_options['zoom']; ?>,
+			mapTypeId: 'roadmap',
 		};
 		<?php else : ?>
 		var mapOptions = {
-			center: new google.maps.LatLng(0, 0),
+			center: { lat: 0, lng: 0 },
 			zoom: 1,
-			mapTypeId: google.maps.MapTypeId.ROADMAP,
+			mapTypeId: 'roadmap',
 		};
 		<?php endif; ?>
 
 
-		<?php if ( $map_options['marker-lat'] && $map_options['marker-long'] ) : ?>
+		<?php if ( is_numeric( $map_options['marker-lat'] ) && is_numeric( $map_options['marker-long'] ) ) : ?>
 		var markerOptions = {
-			position: new google.maps.LatLng( <?php echo $map_options['marker-lat']; ?>, <?php echo $map_options['marker-long']; ?> ),
+			position: { lat: <?php echo (float) $map_options['marker-lat']; ?>, lng: <?php echo (float) $map_options['marker-long']; ?> },
 		};
 		<?php else : ?>
 		var markerOptions = {
-			position: new google.maps.LatLng(),
+			position: null,
 		};
 		<?php endif; ?>
 

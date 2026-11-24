@@ -599,30 +599,44 @@ function calendarp_get_formatted_time( $time ) {
 	return date_i18n( get_option( 'time_format' ), $time );
 }
 
-function calendarp_enqueue_google_maps_scripts() {
-	$api_key = calendarp_get_setting( 'gmaps_api_key' );
-	if ( ! $api_key ) {
-		// this will trigger a controlled error in JS
-		$api_key = 'false';
+/**
+ * Enqueue the Google Maps JavaScript API.
+ *
+ * The API loads asynchronously and calls `calendarpGmapsLoaded` when ready.
+ * That callback is defined in _src/common/gmaps-ready.js, which is bundled
+ * into the plugin's frontend and admin scripts.
+ *
+ * @param string $bundle Handle of the plugin script that renders the map.
+ *                       Google's script depends on it, so the callback is
+ *                       defined before Google can call it.
+ */
+function calendarp_enqueue_google_maps_scripts( $bundle ) {
+	// Without a key Google only shows its own error, so don't load it at all.
+	if ( ! calendarp_get_setting( 'gmaps_api_key' ) || wp_script_is( 'gmaps-api', 'registered' ) ) {
+		return;
 	}
 
-	$js = 'https://maps.googleapis.com/maps/api/js?libraries=places';
-	$js .= '&amp;key=' . $api_key;
+	$args = array(
+		'key'       => calendarp_get_setting( 'gmaps_api_key' ),
+		'libraries' => 'places',
+		'loading'   => 'async',
+		'callback'  => 'calendarpGmapsLoaded',
+	);
 
-	$settings = calendarp_get_settings();
-	if ( $settings['country'] ) {
-		$js .= '&amp;language=' . $settings['country'];
+	if ( calendarp_get_setting( 'country' ) ) {
+		$args['language'] = calendarp_get_setting( 'country' );
 	}
 
-	add_filter( 'script_loader_tag', function ( $tag, $handle ) {
-		if ( 'gmaps-api' !== $handle ) {
-			return $tag;
-		}
-
-		return str_replace( ' src', ' async defer src', $tag );
-	}, 10, 2 );
-
-	wp_enqueue_script( 'gmaps-api', $js, [], calendarp_get_version(), true );
+	wp_enqueue_script(
+		'gmaps-api',
+		add_query_arg( array_map( 'rawurlencode', $args ), 'https://maps.googleapis.com/maps/api/js' ),
+		array( $bundle ),
+		null, // Google versions the API itself.
+		array(
+			'in_footer' => true,
+			'strategy'  => 'async',
+		)
+	);
 }
 
 function calendarp_enqueue_public_script_and_styles() {
@@ -646,7 +660,7 @@ function calendarp_enqueue_public_script_and_styles() {
         $location = $event->get_location();
 
         if ( $location && $location->has_map() ) {
-            calendarp_enqueue_google_maps_scripts();
+            calendarp_enqueue_google_maps_scripts( 'calendar-plus-calendar' );
         }
     }
 

@@ -364,7 +364,11 @@
 	box-shadow: 0 2px 5px rgb(0 0 0 / 20%);
 	z-index: 1000;
 	background: #fff;
-	position: fixed;
+	position: absolute;
+	top: 100%;
+	left: 0;
+	right: 0;
+	margin-top: 4px;
 }
 
 #location-results .location-result {
@@ -373,7 +377,6 @@
 	display: block;
 	text-decoration: none;
 	color: #000;
-	width: 212px;
 }
 
 #location-results .location-result:hover {
@@ -513,18 +516,18 @@
 	width: 25%;
 }
 
-#location-gmaps {
-	height: 500px;
+#location-type-selector {
+	min-height: 520px;
+}
+
+#location-standard, #location-gmaps {
+	min-height: 500px;
 }
 
 .location-gmaps-search-button > span {
 	font-size: 19px;
 	line-height: 26px;
 	font-weight: normal;
-}
-
-#location-gmaps-search {
-	margin-right: 0;
 }
 
 .controls {
@@ -539,36 +542,9 @@
 }
 
 #location-gmaps-search {
-	margin-top: 16px;
-	border: 1px solid transparent;
-	border-radius: 2px 0 0 2px;
-	box-sizing: border-box;
-	-moz-box-sizing: border-box;
-	height: 32px;
-	outline: none;
+	margin: 10px 0 0 10px;
+	width: 300px;
 	box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
-}
-
-#location-gmaps-search {
-	background-color: #fff;
-	font-family: Roboto;
-	font-size: 15px;
-	font-weight: 300;
-	margin-left: 12px;
-	padding: 0 11px 0 13px;
-	text-overflow: ellipsis;
-	width: 400px;
-}
-
-#location-gmaps-search:focus {
-	border-color: #4d90fe;
-	margin-left: -1px;
-	padding-left: 14px; /* Regular padding-left + 1. */
-	width: 401px;
-}
-
-.pac-container {
-	font-family: Roboto;
 }
 
 #type-selector {

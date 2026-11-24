@@ -29,22 +29,24 @@
 		},
 		setSelector: function (e) {
 			e.preventDefault();
-			let new_type = $(e.target).data('type');
-			if (new_type === this.model.get('type'))
+			e.stopPropagation();
+			let new_type = $(e.currentTarget).data('type');
+			if (!new_type || new_type === this.model.get('type')) {
 				return;
+			}
 			this.model.set('type', new_type);
-			this.changeType();
 		},
 		changeType: function () {
 			let type = this.model.get('type');
+			if (!type || !this.tabs['location-' + type]) {
+				return;
+			}
 
-			if (false != this.$currentSelector) {
+			if (this.$currentSelector) {
 				this.$currentSelector.removeClass('selected');
 			}
 
-			if (false != this.$currentTab) {
-				this.$currentTab.hide();
-			}
+			let $oldTab = this.$currentTab;
 
 			$('input[name=location-type]').val(type);
 
@@ -52,11 +54,14 @@
 			this.$currentSelector = $('#location-selector-' + type);
 			this.$currentSelector.addClass('selected');
 
-			let self = this;
-			this.$currentTab.fadeIn(function () {
-				if (type === 'gmaps')
-					self.loadMap();
-			});
+			this.$currentTab.show();
+			if ($oldTab && $oldTab[0] !== this.$currentTab[0]) {
+				$oldTab.hide();
+			}
+
+			if (type === 'gmaps') {
+				this.loadMap();
+			}
 		},
 		loadMap: function () {
 			if (!this.mapModel) {

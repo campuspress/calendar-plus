@@ -140,7 +140,8 @@ function calendarp_get_google_map_html( $location_id ) {
 		return '';
 	}
 
-	if ( ! $location->has_map() ) {
+	// No API key means the Maps API is not loaded, so the map would stay empty.
+	if ( ! $location->has_map() || ! calendarp_get_setting( 'gmaps_api_key' ) ) {
 		return '';
 	}
 
