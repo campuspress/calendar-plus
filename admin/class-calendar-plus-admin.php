@@ -429,6 +429,8 @@ class Calendar_Plus_Admin {
 				'edit_gmap_address_button' => __( 'Edit', 'calendar-plus' ),
 				'delete_calendar_event'    => __( 'Are you sure that you want to delete this recurrence for this event?', 'calendar-plus' ),
 				'gmaps_api_key_error'      => sprintf( __( 'There was an error loading Google Maps. Please, check that <a href="%s">your API Key is valid</a>', 'calendar-plus' ), admin_url( 'edit.php?post_type=calendar_event&page=calendar-plus-settings' ) ),
+				'gmaps_enabled'            => (bool) calendarp_get_setting( 'gmaps_api_key' ),
+				'gmaps_places_error'       => __( 'Location search failed. Check in the Google Cloud Console that "Places API (New)" is enabled for your Google Maps API key and that its quota has not been exceeded.', 'calendar-plus' ),
 			);
 			wp_localize_script( 'calendar-plus-admin', 'CalendarPlusi18n', $i10n );
 
@@ -445,7 +447,7 @@ class Calendar_Plus_Admin {
 		}
 
 		if ( get_post_type() === 'calendar_location' ) {
-			calendarp_enqueue_google_maps_scripts();
+			calendarp_enqueue_google_maps_scripts( 'calendar-plus-admin' );
 		}
 
 		if ( get_post_type() === 'calendar_event' || get_post_type() === 'calendar_location' ) {

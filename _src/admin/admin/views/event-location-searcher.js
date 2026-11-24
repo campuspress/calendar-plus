@@ -36,10 +36,6 @@
 		},
 		showResults: function() {
 			if (this.$resultsWrapper.children().length) {
-				this.$resultsWrapper.css({
-					left: this.$searchInput.offset().left,
-					top: this.$searchInput.offset().top - this.$resultsWrapper.height() - 10
-				});
 				this.$resultsWrapper.show();
 			}
 		},
@@ -124,10 +120,6 @@
 		displayResults: function (results) {
 			this.cleanSearch();
 			this.$resultsWrapper.append(results.render().el);
-			this.$resultsWrapper.css({
-				left: this.$searchInput.offset().left,
-				top: this.$searchInput.offset().top - this.$resultsWrapper.height() - 10
-			});
 			this.$resultsWrapper.show();
 		}
 	});

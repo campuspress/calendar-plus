@@ -1,5 +1,20 @@
 Change Log:
 ----------------------------------------------------------------------
+2.2.20 - 2026-11-20
+----------------------------------------------------------------------
+- Fix: Google Maps sometimes not rendering ("google is not defined") because the API loads asynchronously.
+- Fix: Replace the legacy Places SearchBox with PlaceAutocompleteElement (Places API New) in the location editor.
+- Improve: Show a notice in the location editor when Places API (New) is not enabled for the API key.
+- Improve: Fill the address, city, state, postcode and country fields when a place is picked from the map search. Moving the pin does not change them.
+- Improve: Click the map to move the location pin.
+- Fix: Event location search results opening at the top of the screen instead of below the search field.
+
+----------------------------------------------------------------------
+2.2.19 - 2026-08-10
+----------------------------------------------------------------------
+- Fix: Event Location search result positioning and html structure
+
+----------------------------------------------------------------------
 2.2.18 - 2026-03-09
 ----------------------------------------------------------------------
 - Improve: Events importing
