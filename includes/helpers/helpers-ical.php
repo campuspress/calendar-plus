@@ -95,7 +95,7 @@ function calendarp_ical_sync_events() {
 			}
 
 			// fetch the file from the remote URL
-			$file = wp_remote_get( $source );
+			$file = wp_safe_remote_get( $source );
 
 			if ( is_wp_error( $file ) ) {
 				$feeds[ $i ]['last_sync']['status'] = 'request_error';

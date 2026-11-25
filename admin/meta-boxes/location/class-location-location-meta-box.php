@@ -44,11 +44,11 @@ class Calendar_Plus_Location_Location_Metabox extends Calendar_Plus_Meta_Box {
 
 		if ( 'gmaps' === $type ) {
 			$map_options = array(
-				'lat'         => $input['location-gmaps-lat'],
-				'long'        => $input['location-gmaps-long'],
-				'marker-lat'  => $input['location-gmaps-marker-lat'],
-				'marker-long' => $input['location-gmaps-marker-long'],
-				'zoom'        => $input['location-gmaps-zoom'],
+				'lat'         => is_numeric( $input['location-gmaps-lat'] ) ? (float) $input['location-gmaps-lat'] : '',
+				'long'        => is_numeric( $input['location-gmaps-long'] ) ? (float) $input['location-gmaps-long'] : '',
+				'marker-lat'  => is_numeric( $input['location-gmaps-marker-lat'] ) ? (float) $input['location-gmaps-marker-lat'] : '',
+				'marker-long' => is_numeric( $input['location-gmaps-marker-long'] ) ? (float) $input['location-gmaps-marker-long'] : '',
+				'zoom'        => is_numeric( $input['location-gmaps-zoom'] ) ? absint( $input['location-gmaps-zoom'] ) : '',
 			);
 
 			update_post_meta( $location_id, '_gmaps_options', $map_options );

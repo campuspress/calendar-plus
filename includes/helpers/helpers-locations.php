@@ -145,12 +145,12 @@ function calendarp_get_google_map_html( $location_id ) {
 		return '';
 	}
 
-	$height = calendarp_get_setting( 'event_single_map_height' );
+	$height = absint( calendarp_get_setting( 'event_single_map_height' ) );
 
 	$html = '<div id="map_canvas" style="width=100%;height:' . $height . 'px"';
 	$map_options = $location->gmaps_options;
 	foreach ( $map_options as $option => $value ) {
-		$html .= ' data-' . $option . '="' . $value . '"';
+		$html .= ' data-' . esc_attr( $option ) . '="' . esc_attr( $value ) . '"';
 	}
 	$html .= '></div>';
 

@@ -134,7 +134,7 @@ function calendarp_add_new_allowed_user() {
 	$id = absint( $_POST['id'] );
 
 	$user = get_userdata( $id );
-	if ( ! $user ) {
+	if ( ! $user || ! is_user_member_of_blog( $id ) ) {
 		wp_send_json_error();
 	}
 
