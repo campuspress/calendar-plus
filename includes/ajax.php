@@ -64,7 +64,7 @@ function calendarp_edit_calendar_cell() {
 
 		// Update the new rules
 		$rules = $event->get_rules();
-		$rules['times'][0]['form'] = $formatted_rule['from'];
+		$rules['times'][0]['from'] = $formatted_rule['from'];
 		$rules['times'][0]['until'] = $formatted_rule['until'];
 		$event->update_rules( $rules );
 	} else {
