@@ -5,6 +5,8 @@ Change Log:
 - Security: General hardening of input validation and output escaping.
 - Improve: Location map coordinates and zoom are stored as numbers.
 - Fix: Editing the times of all recurrences of an event did not save the new start time in the event rules.
+- Fix: The [calendarp-location] shortcode showed the map instead of the address for data="address".
+- Fix: Site administrators could not remove users from the Calendar+ managers list.
 - Remove: Unused internal REST routes.
 
 ----------------------------------------------------------------------
