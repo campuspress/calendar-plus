@@ -26,7 +26,7 @@ class Calendar_Plus_Location_Shortcode {
 		}
 
 		$atts = shortcode_atts( array(
-			'data' => 'address',
+			'data' => 'map',
 			'before' => '',
 			'after' => ''
 		), $atts, 'calendarp-location' );
