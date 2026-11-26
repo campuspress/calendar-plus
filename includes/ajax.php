@@ -88,7 +88,7 @@ add_action( 'wp_ajax_calendarp_remove_user', 'calendarp_remove_user_from_allowed
 function calendarp_remove_user_from_allowed_users_list() {
 	check_ajax_referer( 'calendarp-users-list', 'nonce' );
 
-	if ( ! current_user_can( 'calendarp_events_manager' ) ) {
+	if ( ! current_user_can( 'manage_calendar_plus' ) ) {
 		die();
 	}
 
