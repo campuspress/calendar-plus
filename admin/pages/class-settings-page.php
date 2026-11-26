@@ -444,7 +444,7 @@ class Calendar_Plus_Admin_Settings_Page {
 
 				$feed = [
 					'name'         => sanitize_text_field( $feed_info['name'] ),
-					'source'       => $feed_info['source'],
+					'source'       => esc_url_raw( $feed_info['source'], array( 'http', 'https', 'webcal' ) ),
 					'type'         => sanitize_text_field( $feed_info['type'] ),
 					'author'       => intval( $feed_info['author'] ),
 					'category'     => intval( $feed_info['category'] ),

@@ -64,7 +64,7 @@ function calendarp_edit_calendar_cell() {
 
 		// Update the new rules
 		$rules = $event->get_rules();
-		$rules['times'][0]['form'] = $formatted_rule['from'];
+		$rules['times'][0]['from'] = $formatted_rule['from'];
 		$rules['times'][0]['until'] = $formatted_rule['until'];
 		$event->update_rules( $rules );
 	} else {
@@ -88,7 +88,7 @@ add_action( 'wp_ajax_calendarp_remove_user', 'calendarp_remove_user_from_allowed
 function calendarp_remove_user_from_allowed_users_list() {
 	check_ajax_referer( 'calendarp-users-list', 'nonce' );
 
-	if ( ! current_user_can( 'calendarp_events_manager' ) ) {
+	if ( ! current_user_can( 'manage_calendar_plus' ) ) {
 		die();
 	}
 
@@ -134,7 +134,7 @@ function calendarp_add_new_allowed_user() {
 	$id = absint( $_POST['id'] );
 
 	$user = get_userdata( $id );
-	if ( ! $user ) {
+	if ( ! $user || ! is_user_member_of_blog( $id ) ) {
 		wp_send_json_error();
 	}
 

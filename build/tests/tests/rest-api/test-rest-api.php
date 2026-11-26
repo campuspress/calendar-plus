@@ -362,55 +362,6 @@ class Calendar_Plus_REST_API_Events_Tests extends Calendar_Plus_REST_API_UnitTes
 		$this->assertCount( 0, $data );
 	}
 
-	function test_delete_event_date() {
-		$user = get_user_by( 'login', 'admin' );
-		wp_set_current_user( $user->ID );
-
-		$calendar_plus = calendar_plus();
-		$calendar_plus->generator->delete_dates();
-		$args = $this->factory->post->generate_args();
-		$args['post_type'] = 'calendar_event';
-
-		// Event 1
-		$post_id_1 = $this->factory->post->create_object( $args );
-		$event_1 = calendarp_get_event( $post_id_1 );
-		$rules = array(
-			array(
-				'rule_type' => 'standard',
-				'from_date' => '2015-03-17',
-				'until_date' => '2015-03-17',
-				'from_time' => '10:00'
-			),
-			array(
-				'rule_type' => 'standard',
-				'from_date' => '2015-03-15',
-				'until_date' => '2015-03-15',
-				'from_time' => '10:00'
-			),
-			array(
-				'rule_type' => 'standard',
-				'from_date' => '2015-03-16',
-				'until_date' => '2015-03-16',
-				'from_time' => '10:00',
-				'until_time' => '11:00'
-			)
-		);
-		calendarp_generate_event_rules_and_dates( $event_1->ID, $rules );
-
-		$dates = $calendar_plus->generator->get_month_dates( 3, 2015 );
-		$delete_dates = array_values( wp_list_pluck( wp_list_filter( $dates, array( 'from_date' => '2015-03-16' ) ), 'ID' ) );
-		$delete_date = $delete_dates[0];
-
-		$request = new WP_REST_Request( 'DELETE', "/calendar-plus/v1/events/$event_1->ID/dates/$delete_date" );
-		/** @var WP_REST_Response $response */
-		$response = $this->server->dispatch( $request );
-		$this->assertTrue( $response->get_data() );
-
-		$dates = $calendar_plus->generator->get_month_dates( 3, 2015 );
-		$this->assertCount( 2, $dates );
-		$this->assertTrue( $event_1->has_custom_dates() );
-	}
-
 	function test_events_properties() {
 		$args = $this->factory->post->generate_args();
 		$args['post_type'] = 'calendar_event';

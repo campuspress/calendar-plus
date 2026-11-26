@@ -1,6 +1,6 @@
 {
     "name": "calendar-plus",
-    "version": "2.2.20",
+    "version": "2.2.21",
     "description": "Calendar+",
     "main": "gulpfile.babel.js",
     "dependencies": {
