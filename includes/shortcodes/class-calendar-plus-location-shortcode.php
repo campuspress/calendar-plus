@@ -29,7 +29,7 @@ class Calendar_Plus_Location_Shortcode {
 			'data' => 'address',
 			'before' => '',
 			'after' => ''
-		), $atts, 'calendarp-date' );
+		), $atts, 'calendarp-location' );
 
 		$location = calendarp_the_event_location();
 
@@ -38,7 +38,7 @@ class Calendar_Plus_Location_Shortcode {
 			if( $atts['data'] == 'description' ) {
 				$data = calendarp_get_location_description();
 			}
-			elseif( 'map' ) {
+			elseif ( 'map' === $atts['data'] ) {
 				$data = calendarp_get_google_map_html( $location->ID );
 			}
 			else {
